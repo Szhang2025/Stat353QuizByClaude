@@ -7,7 +7,24 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jstat/1.9.4/jstat.min.js"></script>
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['\\[', '\\]']]
+    },
+    options: {
+      skipHtmlTags: ['script','noscript','style','textarea','pre','code']
+    },
+    startup: {
+      typeset: false
+    }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js" id="MathJax-script" async></script>
 <style>
+  mjx-container{font-size:104% !important;}
+  .qtext mjx-container, .review-card mjx-container{margin:0 2px;}
   :root{
     --ink:#1c2333;
     --ink-soft:#4a5268;
@@ -398,9 +415,9 @@ function gen2(){
   let pA=rf(0.2,0.5,2), pB=rf(0.15,0.4,2);
   let capMin=Math.min(pA,pB);
   let pAB=rf(0.02, Math.max(0.03,capMin*0.6),2);
-  probs.push({q:`For two events A and B, P(A) = ${pA}, P(B) = ${pB}, and P(A \u2229 B) = ${pAB}. Find P(A \u222A B).`, a: rnd(pA+pB-pAB,4), tol:0.005});
+  probs.push({q:`For two events A and B, \\(P(A) = ${pA}\\), \\(P(B) = ${pB}\\), and \\(P(A \\cap B) = ${pAB}\\). Find \\(P(A \\cup B)\\).`, a: rnd(pA+pB-pAB,4), tol:0.005});
   let pA2=rf(0.1,0.8,2);
-  probs.push({q:`If P(A) = ${pA2}, what is P(A\u2032), the probability of the complement of A?`, a: rnd(1-pA2,4), tol:0.005});
+  probs.push({q:`If \\(P(A) = ${pA2}\\), what is \\(P(A')\\), the probability of the complement of A?`, a: rnd(1-pA2,4), tol:0.005});
   let counts=[ri(10,20),ri(10,20),ri(10,20)];
   let total=counts.reduce((x,y)=>x+y,0);
   let idx=ri(0,2);
@@ -413,16 +430,16 @@ function gen2(){
 function gen3(){
   const probs=[];
   let pA=rf(0.15,0.4,2), pB=rf(0.15,0.4,2);
-  probs.push({q:`Events A and B are disjoint (mutually exclusive), with P(A) = ${pA} and P(B) = ${pB}. Find P(A \u222A B).`, a: rnd(pA+pB,4), tol:0.005});
+  probs.push({q:`Events A and B are disjoint (mutually exclusive), with \\(P(A) = ${pA}\\) and \\(P(B) = ${pB}\\). Find \\(P(A \\cup B)\\).`, a: rnd(pA+pB,4), tol:0.005});
   let pA2=rf(0.2,0.6,2), pB2=rf(0.2,0.6,2);
-  probs.push({q:`Events A and B are independent, with P(A) = ${pA2} and P(B) = ${pB2}. Find P(A \u2229 B).`, a: rnd(pA2*pB2,4), tol:0.005});
+  probs.push({q:`Events A and B are independent, with \\(P(A) = ${pA2}\\) and \\(P(B) = ${pB2}\\). Find \\(P(A \\cap B)\\).`, a: rnd(pA2*pB2,4), tol:0.005});
   let pA3=rf(0.3,0.7,2), pB3=rf(0.2,0.6,2);
-  probs.push({q:`Events A and B are independent, with P(A) = ${pA3} and P(B) = ${pB3}. Find the probability that neither A nor B occurs.`, a: rnd((1-pA3)*(1-pB3),4), tol:0.005});
+  probs.push({q:`Events A and B are independent, with \\(P(A) = ${pA3}\\) and \\(P(B) = ${pB3}\\). Find the probability that neither A nor B occurs.`, a: rnd((1-pA3)*(1-pB3),4), tol:0.005});
   let pA4=rf(0.2,0.5,2), pB4=rf(0.2,0.5,2);
-  probs.push({q:`Events A and B are independent, with P(A) = ${pA4} and P(B) = ${pB4}. Find P(A \u222A B).`, a: rnd(pA4+pB4-pA4*pB4,4), tol:0.005});
+  probs.push({q:`Events A and B are independent, with \\(P(A) = ${pA4}\\) and \\(P(B) = ${pB4}\\). Find \\(P(A \\cup B)\\).`, a: rnd(pA4+pB4-pA4*pB4,4), tol:0.005});
   let pA5=rf(0.1,0.3,2), pB5=rf(0.1,0.3,2), pC5=rf(0.1,0.2,2);
   let pD = rnd(1-pA5-pB5-pC5,4);
-  probs.push({q:`Events A, B, C, and D form a partition of the sample space (they are disjoint and cover all outcomes). If P(A) = ${pA5}, P(B) = ${pB5}, and P(C) = ${pC5}, find P(D).`, a: pD, tol:0.005});
+  probs.push({q:`Events A, B, C, and D form a partition of the sample space (they are disjoint and cover all outcomes). If \\(P(A) = ${pA5}\\), \\(P(B) = ${pB5}\\), and \\(P(C) = ${pC5}\\), find \\(P(D)\\).`, a: pD, tol:0.005});
   return probs;
 }
 
@@ -479,27 +496,27 @@ function gen5(){
   let sum3=ps[0]+ps[1]+ps[2];
   ps[3]=rnd(1-sum3,4);
   let EX = xs.reduce((s,x,i)=>s+x*ps[i],0);
-  probs.push({q:`A discrete random variable X has the following PMF: P(X=0)=${ps[0]}, P(X=1)=${ps[1]}, P(X=2)=${ps[2]}, P(X=3)=${ps[3]}. Find E(X), the mean of X.`, a: rnd(EX,4), tol:0.01});
+  probs.push({q:`A discrete random variable X has the following PMF: \\(P(X{=}0){=}${ps[0]}\\), \\(P(X{=}1){=}${ps[1]}\\), \\(P(X{=}2){=}${ps[2]}\\), \\(P(X{=}3){=}${ps[3]}\\). Find \\(E(X)\\), the mean of X.`, a: rnd(EX,4), tol:0.01});
 
   // P2: mean of function aX+b
   let a2=ri(2,5), b2=ri(1,4);
   let EgX = a2*EX+b2;
-  probs.push({q:`Using the same PMF (P(X=0)=${ps[0]}, P(X=1)=${ps[1]}, P(X=2)=${ps[2]}, P(X=3)=${ps[3]}), find E(${a2}X + ${b2}).`, a: rnd(EgX,4), tol:0.01});
+  probs.push({q:`Using the same PMF (\\(P(X{=}0){=}${ps[0]}\\), \\(P(X{=}1){=}${ps[1]}\\), \\(P(X{=}2){=}${ps[2]}\\), \\(P(X{=}3){=}${ps[3]}\\)), find \\(E(${a2}X + ${b2})\\).`, a: rnd(EgX,4), tol:0.01});
 
   // P3: binomial
   let n=ri(6,12), p=rf(0.2,0.6,2), k=ri(1,n-1);
   let pBin = nCr(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k);
-  probs.push({q:`X follows a Binomial(n=${n}, p=${p}) distribution. Find P(X = ${k}).`, a: rnd(pBin,4), tol:0.001});
+  probs.push({q:`X follows a \\(\\text{Binomial}(n{=}${n}, p{=}${p})\\) distribution. Find \\(P(X = ${k})\\).`, a: rnd(pBin,4), tol:0.001});
 
   // P4: geometric (first success on trial k), p = prob success
   let pg=rf(0.15,0.5,2), kg=ri(2,6);
   let pGeo = Math.pow(1-pg,kg-1)*pg;
-  probs.push({q:`The probability of success on each independent trial is p = ${pg}. Let X be the trial number of the first success (geometric distribution). Find P(X = ${kg}).`, a: rnd(pGeo,4), tol:0.001});
+  probs.push({q:`The probability of success on each independent trial is \\(p = ${pg}\\). Let X be the trial number of the first success (geometric distribution). Find \\(P(X = ${kg})\\).`, a: rnd(pGeo,4), tol:0.001});
 
   // P5: poisson
   let lam=ri(2,8), kp=ri(0,lam+3);
   let pPois = Math.exp(-lam)*Math.pow(lam,kp)/fact(kp);
-  probs.push({q:`The number of arrivals per hour at a service desk follows a Poisson distribution with mean \u03bb = ${lam}. Find P(X = ${kp}) arrivals in an hour.`, a: rnd(pPois,4), tol:0.001});
+  probs.push({q:`The number of arrivals per hour at a service desk follows a Poisson distribution with mean \\(\\lambda = ${lam}\\). Find \\(P(X = ${kp})\\) arrivals in an hour.`, a: rnd(pPois,4), tol:0.001});
 
   return probs;
 }
@@ -510,27 +527,27 @@ function gen6(){
   // P1: uniform interval probability
   let a=ri(0,5), b=a+ri(8,15);
   let c=ri(a+1,b-1), d=ri(c+1,b);
-  probs.push({q:`X is uniformly distributed on the interval [${a}, ${b}]. Find P(${c} < X < ${d}).`, a: rnd((d-c)/(b-a),4), tol:0.005});
+  probs.push({q:`X is uniformly distributed on the interval \\([${a}, ${b}]\\). Find \\(P(${c} < X < ${d})\\).`, a: rnd((d-c)/(b-a),4), tol:0.005});
 
   // P2: uniform mean/sd
   let a2=ri(0,5), b2=a2+ri(6,14);
   let which = pick(['mean','sd']);
   let mU = (a2+b2)/2, sdU = (b2-a2)/Math.sqrt(12);
   if(which==='mean'){
-    probs.push({q:`X is uniformly distributed on [${a2}, ${b2}]. Find E(X), the mean of X.`, a: rnd(mU,4), tol:0.01});
+    probs.push({q:`X is uniformly distributed on \\([${a2}, ${b2}]\\). Find \\(E(X)\\), the mean of X.`, a: rnd(mU,4), tol:0.01});
   } else {
-    probs.push({q:`X is uniformly distributed on [${a2}, ${b2}]. Find the standard deviation of X. (SD = (b\u2212a)/\u221a12)`, a: rnd(sdU,4), tol:0.01});
+    probs.push({q:`X is uniformly distributed on \\([${a2}, ${b2}]\\). Find the standard deviation of X. \\((SD = (b-a)/\\sqrt{12})\\)`, a: rnd(sdU,4), tol:0.01});
   }
 
   // P3: exponential P(X>t)
   let lam=rf(0.1,0.5,2), t=ri(2,8);
-  probs.push({q:`X follows an Exponential distribution with rate \u03bb = ${lam}. Find P(X > ${t}).`, a: rnd(Math.exp(-lam*t),4), tol:0.005});
+  probs.push({q:`X follows an Exponential distribution with rate \\(\\lambda = ${lam}\\). Find \\(P(X > ${t})\\).`, a: rnd(Math.exp(-lam*t),4), tol:0.005});
 
   // P4: exponential mean given, find lambda then P(X<t)
   let meanX=ri(4,12);
   let t2=ri(1,meanX-1<1?1:meanX-1);
   let lam2=1/meanX;
-  probs.push({q:`The lifetime of a component (in years) follows an Exponential distribution with mean ${meanX} years. Find P(X < ${t2}) (the probability the component fails before year ${t2}).`, a: rnd(1-Math.exp(-lam2*t2),4), tol:0.005});
+  probs.push({q:`The lifetime of a component (in years) follows an Exponential distribution with mean ${meanX} years. Find \\(P(X < ${t2})\\) (the probability the component fails before year ${t2}).`, a: rnd(1-Math.exp(-lam2*t2),4), tol:0.005});
 
   // P5: normal probability
   let mu=ri(50,100), sigma=ri(5,15);
@@ -546,7 +563,7 @@ function gen6(){
     const y=1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
     return sign*y;
   }
-  probs.push({q:`X follows a Normal distribution with mean \u03bc = ${mu} and standard deviation \u03c3 = ${sigma}. Find P(X < ${x}).`, a: rnd(normCdf(z),4), tol:0.005});
+  probs.push({q:`X follows a Normal distribution with mean \\(\\mu = ${mu}\\) and standard deviation \\(\\sigma = ${sigma}\\). Find \\(P(X < ${x})\\).`, a: rnd(normCdf(z),4), tol:0.005});
 
   return probs;
 }
@@ -565,7 +582,7 @@ function gen7(){
     return p;
   }
   let p=buildTable();
-  const tableTxt = `Joint PMF table: P(X=0,Y=0)=${p[0]}, P(X=0,Y=1)=${p[1]}, P(X=1,Y=0)=${p[2]}, P(X=1,Y=1)=${p[3]}.`;
+  const tableTxt = `Joint PMF table: \\(P(X{=}0,Y{=}0){=}${p[0]}\\), \\(P(X{=}0,Y{=}1){=}${p[1]}\\), \\(P(X{=}1,Y{=}0){=}${p[2]}\\), \\(P(X{=}1,Y{=}1){=}${p[3]}\\).`;
   let pX0=p[0]+p[1], pX1=p[2]+p[3];
   let pY0=p[0]+p[2], pY1=p[1]+p[3];
   let EX=0*pX0+1*pX1, EY=0*pY0+1*pY1;
@@ -575,19 +592,19 @@ function gen7(){
   let varX=EX2-EX*EX, varY=EY2-EY*EY;
   let corr = cov/Math.sqrt(varX*varY);
 
-  probs.push({q:`${tableTxt} Find the marginal probability P(X=1).`, a: rnd(pX1,4), tol:0.005});
+  probs.push({q:`${tableTxt} Find the marginal probability \\(P(X=1)\\).`, a: rnd(pX1,4), tol:0.005});
   let p2=buildTable();
-  const t2 = `Joint PMF table: P(X=0,Y=0)=${p2[0]}, P(X=0,Y=1)=${p2[1]}, P(X=1,Y=0)=${p2[2]}, P(X=1,Y=1)=${p2[3]}.`;
+  const t2 = `Joint PMF table: \\(P(X{=}0,Y{=}0){=}${p2[0]}\\), \\(P(X{=}0,Y{=}1){=}${p2[1]}\\), \\(P(X{=}1,Y{=}0){=}${p2[2]}\\), \\(P(X{=}1,Y{=}1){=}${p2[3]}\\).`;
   let EX_2 = 0*(p2[0]+p2[1])+1*(p2[2]+p2[3]);
-  probs.push({q:`${t2} Find E(X).`, a: rnd(EX_2,4), tol:0.01});
+  probs.push({q:`${t2} Find \\(E(X)\\).`, a: rnd(EX_2,4), tol:0.01});
 
   let p3=buildTable();
-  const t3 = `Joint PMF table: P(X=0,Y=0)=${p3[0]}, P(X=0,Y=1)=${p3[1]}, P(X=1,Y=0)=${p3[2]}, P(X=1,Y=1)=${p3[3]}.`;
+  const t3 = `Joint PMF table: \\(P(X{=}0,Y{=}0){=}${p3[0]}\\), \\(P(X{=}0,Y{=}1){=}${p3[1]}\\), \\(P(X{=}1,Y{=}0){=}${p3[2]}\\), \\(P(X{=}1,Y{=}1){=}${p3[3]}\\).`;
   let EXY_3 = p3[3]; // only X=1,Y=1 term nonzero
-  probs.push({q:`${t3} Find E(XY).`, a: rnd(EXY_3,4), tol:0.01});
+  probs.push({q:`${t3} Find \\(E(XY)\\).`, a: rnd(EXY_3,4), tol:0.01});
 
-  probs.push({q:`${tableTxt} Find Cov(X, Y) = E(XY) \u2212 E(X)E(Y).`, a: rnd(cov,4), tol:0.01});
-  probs.push({q:`${tableTxt} Find the correlation coefficient \u03c1 between X and Y (using Cov(X,Y) and the standard deviations of X and Y).`, a: rnd(corr,4), tol:0.02});
+  probs.push({q:`${tableTxt} Find \\(\\operatorname{Cov}(X, Y) = E(XY) - E(X)E(Y)\\).`, a: rnd(cov,4), tol:0.01});
+  probs.push({q:`${tableTxt} Find the correlation coefficient \\(\\rho\\) between X and Y (using \\(\\operatorname{Cov}(X,Y)\\) and the standard deviations of X and Y).`, a: rnd(corr,4), tol:0.02});
 
   return probs;
 }
@@ -617,7 +634,7 @@ function gen8(){
   let d5=dataset(7,9);
   let qs5=quartiles(d5);
   let iqr = qs5.q3-qs5.q1;
-  probs.push({q:`A sample of ${d5.length} measurements is: {${d5.join(', ')}}. Find the interquartile range, IQR = Q3 \u2212 Q1.`, a: rnd(iqr,4), tol:0.5});
+  probs.push({q:`A sample of ${d5.length} measurements is: {${d5.join(', ')}}. Find the interquartile range, \\(IQR = Q_3 - Q_1\\).`, a: rnd(iqr,4), tol:0.5});
 
   return probs;
 }
@@ -632,31 +649,31 @@ function gen9(){
   const probs=[];
   let n=ri(80,300), x=ri(Math.round(n*0.2),Math.round(n*0.7));
   let phat=x/n;
-  probs.push({q:`In a random sample of n = ${n} items, x = ${x} have a certain characteristic. Find the sample proportion p\u0302 = x/n.`, a: rnd(phat,4), tol:0.002});
+  probs.push({q:`In a random sample of \\(n = ${n}\\) items, \\(x = ${x}\\) have a certain characteristic. Find the sample proportion \\(\\hat{p} = x/n\\).`, a: rnd(phat,4), tol:0.002});
 
   let n2=ri(80,300), x2=ri(Math.round(n2*0.2),Math.round(n2*0.7));
   let phat2=x2/n2, cl2=pick([0.90,0.95,0.99]);
   let z2=zForCL(cl2);
   let E2 = z2*Math.sqrt(phat2*(1-phat2)/n2);
-  probs.push({q:`In a random sample of n = ${n2}, x = ${x2} have the characteristic of interest. Find the margin of error E for a ${cl2*100}% confidence interval for the population proportion p. (E = z\u00b7\u221a(p\u0302(1\u2212p\u0302)/n))`, a: rnd(E2,4), tol:0.003});
+  probs.push({q:`In a random sample of \\(n = ${n2}\\), \\(x = ${x2}\\) have the characteristic of interest. Find the margin of error E for a ${cl2*100}% confidence interval for the population proportion p. \\((E = z\\sqrt{\\hat{p}(1-\\hat{p})/n})\\)`, a: rnd(E2,4), tol:0.003});
 
   let n3=ri(80,300), x3=ri(Math.round(n3*0.2),Math.round(n3*0.7));
   let phat3=x3/n3, cl3=pick([0.90,0.95,0.99]);
   let z3=zForCL(cl3);
   let E3 = z3*Math.sqrt(phat3*(1-phat3)/n3);
   let upper3 = phat3+E3;
-  probs.push({q:`In a random sample of n = ${n3}, x = ${x3} have the characteristic of interest. Find the upper bound of the ${cl3*100}% confidence interval for the population proportion p.`, a: rnd(upper3,4), tol:0.003});
+  probs.push({q:`In a random sample of \\(n = ${n3}\\), \\(x = ${x3}\\) have the characteristic of interest. Find the upper bound of the ${cl3*100}% confidence interval for the population proportion p.`, a: rnd(upper3,4), tol:0.003});
 
   let n4=ri(120,300); let p0=rf(0.3,0.55,2); let x4=ri(Math.round(n4*(p0-0.08)),Math.round(n4*(p0+0.08)));
   let phat4=x4/n4;
   let z4 = (phat4-p0)/Math.sqrt(p0*(1-p0)/n4);
-  probs.push({q:`A researcher tests H\u2080: p = ${p0} vs H\u2081: p \u2260 ${p0}. In a random sample of n = ${n4}, x = ${x4} have the characteristic. Find the test statistic z = (p\u0302 \u2212 p\u2080) / \u221a(p\u2080(1\u2212p\u2080)/n).`, a: rnd(z4,4), tol:0.02});
+  probs.push({q:`A researcher tests \\(H_0: p = ${p0}\\) vs \\(H_1: p \\ne ${p0}\\). In a random sample of \\(n = ${n4}\\), \\(x = ${x4}\\) have the characteristic. Find the test statistic \\(z = \\dfrac{\\hat{p} - p_0}{\\sqrt{p_0(1-p_0)/n}}\\).`, a: rnd(z4,4), tol:0.02});
 
   let n5=ri(120,300); let p05=rf(0.3,0.55,2); let x5=ri(Math.round(n5*(p05-0.08)),Math.round(n5*(p05+0.08)));
   let phat5=x5/n5;
   let z5 = (phat5-p05)/Math.sqrt(p05*(1-p05)/n5);
   let pval5 = 2*(1-jStat.normal.cdf(Math.abs(z5),0,1));
-  probs.push({q:`A researcher tests H\u2080: p = ${p05} vs H\u2081: p \u2260 ${p05} (two-sided). In a random sample of n = ${n5}, x = ${x5} have the characteristic. Find the p-value of the test.`, a: rnd(pval5,4), tol:0.01});
+  probs.push({q:`A researcher tests \\(H_0: p = ${p05}\\) vs \\(H_1: p \\ne ${p05}\\) (two-sided). In a random sample of \\(n = ${n5}\\), \\(x = ${x5}\\) have the characteristic. Find the p-value of the test.`, a: rnd(pval5,4), tol:0.01});
 
   return probs;
 }
@@ -667,27 +684,27 @@ function gen10(){
   function samp(){ let n=ri(80,250); let x=ri(Math.round(n*0.2),Math.round(n*0.7)); return {n,x,p:x/n}; }
 
   let s1=samp(), s2=samp();
-  probs.push({q:`Sample 1: n\u2081 = ${s1.n}, x\u2081 = ${s1.x}. Sample 2: n\u2082 = ${s2.n}, x\u2082 = ${s2.x}. Find the difference in sample proportions, p\u0302\u2081 \u2212 p\u0302\u2082.`, a: rnd(s1.p-s2.p,4), tol:0.003});
+  probs.push({q:`Sample 1: \\(n_1 = ${s1.n}\\), \\(x_1 = ${s1.x}\\). Sample 2: \\(n_2 = ${s2.n}\\), \\(x_2 = ${s2.x}\\). Find the difference in sample proportions, \\(\\hat{p}_1 - \\hat{p}_2\\).`, a: rnd(s1.p-s2.p,4), tol:0.003});
 
   let s3=samp(), s4=samp(), cl=pick([0.90,0.95,0.99]);
   let SE34 = Math.sqrt(s3.p*(1-s3.p)/s3.n + s4.p*(1-s4.p)/s4.n);
-  probs.push({q:`Sample 1: n\u2081 = ${s3.n}, x\u2081 = ${s3.x}. Sample 2: n\u2082 = ${s4.n}, x\u2082 = ${s4.x}. Find the standard error of p\u0302\u2081 \u2212 p\u0302\u2082 used for a ${cl*100}% confidence interval: SE = \u221a(p\u0302\u2081(1\u2212p\u0302\u2081)/n\u2081 + p\u0302\u2082(1\u2212p\u0302\u2082)/n\u2082).`, a: rnd(SE34,4), tol:0.003});
+  probs.push({q:`Sample 1: \\(n_1 = ${s3.n}\\), \\(x_1 = ${s3.x}\\). Sample 2: \\(n_2 = ${s4.n}\\), \\(x_2 = ${s4.x}\\). Find the standard error of \\(\\hat{p}_1 - \\hat{p}_2\\) used for a ${cl*100}% confidence interval: \\(SE = \\sqrt{\\dfrac{\\hat{p}_1(1-\\hat{p}_1)}{n_1} + \\dfrac{\\hat{p}_2(1-\\hat{p}_2)}{n_2}}\\).`, a: rnd(SE34,4), tol:0.003});
 
   let s5=samp(), s6=samp(), cl2=pick([0.90,0.95,0.99]);
   let SE56 = Math.sqrt(s5.p*(1-s5.p)/s5.n + s6.p*(1-s6.p)/s6.n);
   let z56 = zForCL(cl2);
   let upper56 = (s5.p-s6.p) + z56*SE56;
-  probs.push({q:`Sample 1: n\u2081 = ${s5.n}, x\u2081 = ${s5.x}. Sample 2: n\u2082 = ${s6.n}, x\u2082 = ${s6.x}. Find the upper bound of the ${cl2*100}% confidence interval for p\u2081 \u2212 p\u2082.`, a: rnd(upper56,4), tol:0.004});
+  probs.push({q:`Sample 1: \\(n_1 = ${s5.n}\\), \\(x_1 = ${s5.x}\\). Sample 2: \\(n_2 = ${s6.n}\\), \\(x_2 = ${s6.x}\\). Find the upper bound of the ${cl2*100}% confidence interval for \\(p_1 - p_2\\).`, a: rnd(upper56,4), tol:0.004});
 
   let s7=samp(), s8=samp();
   let pPool78 = (s7.x+s8.x)/(s7.n+s8.n);
-  probs.push({q:`Sample 1: n\u2081 = ${s7.n}, x\u2081 = ${s7.x}. Sample 2: n\u2082 = ${s8.n}, x\u2082 = ${s8.x}. For a test of H\u2080: p\u2081 = p\u2082, find the pooled proportion p\u0302 = (x\u2081+x\u2082)/(n\u2081+n\u2082).`, a: rnd(pPool78,4), tol:0.003});
+  probs.push({q:`Sample 1: \\(n_1 = ${s7.n}\\), \\(x_1 = ${s7.x}\\). Sample 2: \\(n_2 = ${s8.n}\\), \\(x_2 = ${s8.x}\\). For a test of \\(H_0: p_1 = p_2\\), find the pooled proportion \\(\\hat{p} = \\dfrac{x_1+x_2}{n_1+n_2}\\).`, a: rnd(pPool78,4), tol:0.003});
 
   let s9=samp(), s10=samp();
   let pPool910 = (s9.x+s10.x)/(s9.n+s10.n);
   let SEpool = Math.sqrt(pPool910*(1-pPool910)*(1/s9.n+1/s10.n));
   let z910 = (s9.p-s10.p)/SEpool;
-  probs.push({q:`Sample 1: n\u2081 = ${s9.n}, x\u2081 = ${s9.x}. Sample 2: n\u2082 = ${s10.n}, x\u2082 = ${s10.x}. For a test of H\u2080: p\u2081 = p\u2082 vs H\u2081: p\u2081 \u2260 p\u2082, find the test statistic z using the pooled proportion.`, a: rnd(z910,4), tol:0.03});
+  probs.push({q:`Sample 1: \\(n_1 = ${s9.n}\\), \\(x_1 = ${s9.x}\\). Sample 2: \\(n_2 = ${s10.n}\\), \\(x_2 = ${s10.x}\\). For a test of \\(H_0: p_1 = p_2\\) vs \\(H_1: p_1 \\ne p_2\\), find the test statistic z using the pooled proportion.`, a: rnd(z910,4), tol:0.03});
 
   return probs;
 }
@@ -698,26 +715,26 @@ function gen11(){
   function samp(){ return {xbar: ri(40,100), s: ri(5,20), n: ri(10,40)}; }
 
   let s1=samp();
-  probs.push({q:`A sample has \u0304x = ${s1.xbar}, s = ${s1.s}, n = ${s1.n}. Find the standard error of the mean, SE = s/\u221an.`, a: rnd(s1.s/Math.sqrt(s1.n),4), tol:0.02});
+  probs.push({q:`A sample has \\(\\bar{x} = ${s1.xbar}\\), \\(s = ${s1.s}\\), \\(n = ${s1.n}\\). Find the standard error of the mean, \\(SE = s/\\sqrt{n}\\).`, a: rnd(s1.s/Math.sqrt(s1.n),4), tol:0.02});
 
   let s2=samp(), cl2=pick([0.90,0.95,0.99]);
   let df2=s2.n-1, tcrit2=jStat.studentt.inv(1-(1-cl2)/2,df2);
-  probs.push({q:`A sample has n = ${s2.n} (so df = ${df2}). Find the t critical value for a ${cl2*100}% confidence interval (two-sided).`, a: rnd(tcrit2,4), tol:0.03});
+  probs.push({q:`A sample has \\(n = ${s2.n}\\) (so \\(df = ${df2}\\)). Find the t critical value for a ${cl2*100}% confidence interval (two-sided).`, a: rnd(tcrit2,4), tol:0.03});
 
   let s3=samp(), cl3=pick([0.90,0.95,0.99]);
   let df3=s3.n-1, tcrit3=jStat.studentt.inv(1-(1-cl3)/2,df3);
   let ME3 = tcrit3*s3.s/Math.sqrt(s3.n);
-  probs.push({q:`A sample has \u0304x = ${s3.xbar}, s = ${s3.s}, n = ${s3.n}. Find the margin of error for a ${cl3*100}% confidence interval for \u03bc. (ME = t\u00b7s/\u221an)`, a: rnd(ME3,4), tol:0.05});
+  probs.push({q:`A sample has \\(\\bar{x} = ${s3.xbar}\\), \\(s = ${s3.s}\\), \\(n = ${s3.n}\\). Find the margin of error for a ${cl3*100}% confidence interval for \\(\\mu\\). \\((ME = t\\cdot s/\\sqrt{n})\\)`, a: rnd(ME3,4), tol:0.05});
 
   let s4=samp(), cl4=pick([0.90,0.95,0.99]);
   let df4=s4.n-1, tcrit4=jStat.studentt.inv(1-(1-cl4)/2,df4);
   let ME4 = tcrit4*s4.s/Math.sqrt(s4.n);
   let upper4 = s4.xbar+ME4;
-  probs.push({q:`A sample has \u0304x = ${s4.xbar}, s = ${s4.s}, n = ${s4.n}. Find the upper bound of the ${cl4*100}% confidence interval for \u03bc.`, a: rnd(upper4,4), tol:0.05});
+  probs.push({q:`A sample has \\(\\bar{x} = ${s4.xbar}\\), \\(s = ${s4.s}\\), \\(n = ${s4.n}\\). Find the upper bound of the ${cl4*100}% confidence interval for \\(\\mu\\).`, a: rnd(upper4,4), tol:0.05});
 
   let s5=samp(), mu0=s5.xbar+pick([-1,1])*ri(2,6);
   let t5 = (s5.xbar-mu0)/(s5.s/Math.sqrt(s5.n));
-  probs.push({q:`A sample has \u0304x = ${s5.xbar}, s = ${s5.s}, n = ${s5.n}. Test H\u2080: \u03bc = ${mu0} vs H\u2081: \u03bc \u2260 ${mu0}. Find the test statistic t = (\u0304x \u2212 \u03bc\u2080)/(s/\u221an).`, a: rnd(t5,4), tol:0.03});
+  probs.push({q:`A sample has \\(\\bar{x} = ${s5.xbar}\\), \\(s = ${s5.s}\\), \\(n = ${s5.n}\\). Test \\(H_0: \\mu = ${mu0}\\) vs \\(H_1: \\mu \\ne ${mu0}\\). Find the test statistic \\(t = \\dfrac{\\bar{x} - \\mu_0}{s/\\sqrt{n}}\\).`, a: rnd(t5,4), tol:0.03});
 
   return probs;
 }
@@ -733,27 +750,27 @@ function gen12(){
   }
 
   let a1=samp(), b1=samp();
-  probs.push({q:`Sample 1: \u0304x\u2081=${a1.xbar}, s\u2081=${a1.s}, n\u2081=${a1.n}. Sample 2: \u0304x\u2082=${b1.xbar}, s\u2082=${b1.s}, n\u2082=${b1.n}. Find the difference in sample means, \u0304x\u2081 \u2212 \u0304x\u2082.`, a: rnd(a1.xbar-b1.xbar,4), tol:0.05});
+  probs.push({q:`Sample 1: \\(\\bar{x}_1{=}${a1.xbar}\\), \\(s_1{=}${a1.s}\\), \\(n_1{=}${a1.n}\\). Sample 2: \\(\\bar{x}_2{=}${b1.xbar}\\), \\(s_2{=}${b1.s}\\), \\(n_2{=}${b1.n}\\). Find the difference in sample means, \\(\\bar{x}_1 - \\bar{x}_2\\).`, a: rnd(a1.xbar-b1.xbar,4), tol:0.05});
 
   let a2=samp(), b2=samp();
   let SE2 = Math.sqrt(a2.s*a2.s/a2.n + b2.s*b2.s/b2.n);
-  probs.push({q:`Sample 1: s\u2081=${a2.s}, n\u2081=${a2.n}. Sample 2: s\u2082=${b2.s}, n\u2082=${b2.n}. Find the (Welch, unpooled) standard error: SE = \u221a(s\u2081\u00b2/n\u2081 + s\u2082\u00b2/n\u2082).`, a: rnd(SE2,4), tol:0.02});
+  probs.push({q:`Sample 1: \\(s_1{=}${a2.s}\\), \\(n_1{=}${a2.n}\\). Sample 2: \\(s_2{=}${b2.s}\\), \\(n_2{=}${b2.n}\\). Find the (Welch, unpooled) standard error: \\(SE = \\sqrt{s_1^2/n_1 + s_2^2/n_2}\\).`, a: rnd(SE2,4), tol:0.02});
 
   let a3=samp(), b3=samp();
   let df3 = welchDf(a3,b3);
-  probs.push({q:`Sample 1: s\u2081=${a3.s}, n\u2081=${a3.n}. Sample 2: s\u2082=${b3.s}, n\u2082=${b3.n}. Find the Welch\u2013Satterthwaite degrees of freedom (round to the nearest whole number).`, a: Math.round(df3), tol:1});
+  probs.push({q:`Sample 1: \\(s_1{=}${a3.s}\\), \\(n_1{=}${a3.n}\\). Sample 2: \\(s_2{=}${b3.s}\\), \\(n_2{=}${b3.n}\\). Find the Welch\u2013Satterthwaite degrees of freedom (round to the nearest whole number).`, a: Math.round(df3), tol:1});
 
   let a4=samp(), b4=samp();
   let SE4 = Math.sqrt(a4.s*a4.s/a4.n + b4.s*b4.s/b4.n);
   let t4 = (a4.xbar-b4.xbar)/SE4;
-  probs.push({q:`Sample 1: \u0304x\u2081=${a4.xbar}, s\u2081=${a4.s}, n\u2081=${a4.n}. Sample 2: \u0304x\u2082=${b4.xbar}, s\u2082=${b4.s}, n\u2082=${b4.n}. Test H\u2080: \u03bc\u2081 = \u03bc\u2082 vs H\u2081: \u03bc\u2081 \u2260 \u03bc\u2082. Find the Welch test statistic t = (\u0304x\u2081\u2212\u0304x\u2082)/SE.`, a: rnd(t4,4), tol:0.04});
+  probs.push({q:`Sample 1: \\(\\bar{x}_1{=}${a4.xbar}\\), \\(s_1{=}${a4.s}\\), \\(n_1{=}${a4.n}\\). Sample 2: \\(\\bar{x}_2{=}${b4.xbar}\\), \\(s_2{=}${b4.s}\\), \\(n_2{=}${b4.n}\\). Test \\(H_0: \\mu_1 = \\mu_2\\) vs \\(H_1: \\mu_1 \\ne \\mu_2\\). Find the Welch test statistic \\(t = (\\bar{x}_1-\\bar{x}_2)/SE\\).`, a: rnd(t4,4), tol:0.04});
 
   let a5=samp(), b5=samp(), cl5=pick([0.90,0.95,0.99]);
   let SE5 = Math.sqrt(a5.s*a5.s/a5.n + b5.s*b5.s/b5.n);
   let df5 = welchDf(a5,b5);
   let tcrit5 = jStat.studentt.inv(1-(1-cl5)/2, df5);
   let ME5 = tcrit5*SE5;
-  probs.push({q:`Sample 1: \u0304x\u2081=${a5.xbar}, s\u2081=${a5.s}, n\u2081=${a5.n}. Sample 2: \u0304x\u2082=${b5.xbar}, s\u2082=${b5.s}, n\u2082=${b5.n}. Using the Welch\u2013Satterthwaite df (rounded to the nearest whole number), find the margin of error for a ${cl5*100}% confidence interval for \u03bc\u2081\u2212\u03bc\u2082.`, a: rnd(ME5,4), tol:0.15});
+  probs.push({q:`Sample 1: \\(\\bar{x}_1{=}${a5.xbar}\\), \\(s_1{=}${a5.s}\\), \\(n_1{=}${a5.n}\\). Sample 2: \\(\\bar{x}_2{=}${b5.xbar}\\), \\(s_2{=}${b5.s}\\), \\(n_2{=}${b5.n}\\). Using the Welch\u2013Satterthwaite df (rounded to the nearest whole number), find the margin of error for a ${cl5*100}% confidence interval for \\(\\mu_1-\\mu_2\\).`, a: rnd(ME5,4), tol:0.15});
 
   return probs;
 }
@@ -772,7 +789,7 @@ function gen13(){
     return {k,obs,exp,total,chi2};
   }
   let g1=gofSet();
-  probs.push({q:`A die-fairness style test has observed counts across ${g1.k} categories: {${g1.obs.join(', ')}} (total n = ${g1.total}). Under H\u2080, the categories are equally likely, so each expected count is n/${g1.k} = ${rnd(g1.total/g1.k,2)}. Find the chi-square goodness-of-fit statistic \u03c7\u00b2 = \u03a3(O\u2212E)\u00b2/E.`, a: rnd(g1.chi2,4), tol:0.05});
+  probs.push({q:`A die-fairness style test has observed counts across ${g1.k} categories: {${g1.obs.join(', ')}} (total \\(n = ${g1.total}\\)). Under \\(H_0\\), the categories are equally likely, so each expected count is \\(n/${g1.k} = ${rnd(g1.total/g1.k,2)}\\). Find the chi-square goodness-of-fit statistic \\(\\chi^2 = \\sum (O-E)^2/E\\).`, a: rnd(g1.chi2,4), tol:0.05});
 
   let g2=gofSet();
   probs.push({q:`A goodness-of-fit test uses ${g2.k} categories. Find the degrees of freedom for the test.`, a: g2.k-1, tol:0.4});
@@ -794,7 +811,7 @@ function gen13(){
   let ci=ri(0,it3.r-1), cj=ri(0,it3.c-1);
   let expCell = (it3.rowTot[ci]*it3.colTot[cj])/it3.grand;
   let tableTxt3 = it3.table.map((row,i)=>`Row ${i+1}: {${row.join(', ')}}`).join('; ');
-  probs.push({q:`A ${it3.r}\u00d7${it3.c} contingency table has observed counts \u2014 ${tableTxt3} (row totals: {${it3.rowTot.join(', ')}}; column totals: {${it3.colTot.join(', ')}}; grand total = ${it3.grand}). For a chi-square test of independence, find the expected count for the cell in row ${ci+1}, column ${cj+1}. (E = row total \u00d7 column total / grand total)`, a: rnd(expCell,4), tol:0.05});
+  probs.push({q:`A \\(${it3.r}\\times${it3.c}\\) contingency table has observed counts \u2014 ${tableTxt3} (row totals: {${it3.rowTot.join(', ')}}; column totals: {${it3.colTot.join(', ')}}; grand total = ${it3.grand}). For a chi-square test of independence, find the expected count for the cell in row ${ci+1}, column ${cj+1}. \\((E = \\text{row total} \\times \\text{column total} / \\text{grand total})\\)`, a: rnd(expCell,4), tol:0.05});
 
   let it4=indTable();
   // compute full chi-square statistic
@@ -802,10 +819,10 @@ function gen13(){
   let expTable=[];
   for(let i=0;i<it4.r;i++){ expTable.push([]); for(let j=0;j<it4.c;j++){ let e=(it4.rowTot[i]*it4.colTot[j])/it4.grand; expTable[i].push(e); chi2ind += Math.pow(it4.table[i][j]-e,2)/e; } }
   let tableTxt4 = it4.table.map((row,i)=>`Row ${i+1}: {${row.join(', ')}}`).join('; ');
-  probs.push({q:`A ${it4.r}\u00d7${it4.c} contingency table has observed counts \u2014 ${tableTxt4} (row totals: {${it4.rowTot.join(', ')}}; column totals: {${it4.colTot.join(', ')}}; grand total = ${it4.grand}). Find the chi-square test statistic for independence, \u03c7\u00b2 = \u03a3(O\u2212E)\u00b2/E.`, a: rnd(chi2ind,4), tol:0.1});
+  probs.push({q:`A \\(${it4.r}\\times${it4.c}\\) contingency table has observed counts \u2014 ${tableTxt4} (row totals: {${it4.rowTot.join(', ')}}; column totals: {${it4.colTot.join(', ')}}; grand total = ${it4.grand}). Find the chi-square test statistic for independence, \\(\\chi^2 = \\sum (O-E)^2/E\\).`, a: rnd(chi2ind,4), tol:0.1});
 
   let it5=indTable();
-  probs.push({q:`For a chi-square test of independence on a ${it5.r}\u00d7${it5.c} contingency table, find the degrees of freedom, df = (r\u22121)(c\u22121).`, a: (it5.r-1)*(it5.c-1), tol:0.4});
+  probs.push({q:`For a chi-square test of independence on a \\(${it5.r}\\times${it5.c}\\) contingency table, find the degrees of freedom, \\(df = (r-1)(c-1)\\).`, a: (it5.r-1)*(it5.c-1), tol:0.4});
 
   return probs;
 }
@@ -826,45 +843,45 @@ function gen14(){
   // P1: df treatment and error
   let k=ri(3,6), n=ri(k*5+3, k*10);
   let dfT=k-1, dfE=n-k;
-  let mc1=buildMC(`df(treatment) = ${dfT}, df(error) = ${dfE}`, [
-    `df(treatment) = ${k}, df(error) = ${n-k-1}`,
-    `df(treatment) = ${dfT}, df(error) = ${n}`,
-    `df(treatment) = ${n-k}, df(error) = ${dfT}`
+  let mc1=buildMC(`\\(df(\\text{treatment}) = ${dfT}\\), \\(df(\\text{error}) = ${dfE}\\)`, [
+    `\\(df(\\text{treatment}) = ${k}\\), \\(df(\\text{error}) = ${n-k-1}\\)`,
+    `\\(df(\\text{treatment}) = ${dfT}\\), \\(df(\\text{error}) = ${n}\\)`,
+    `\\(df(\\text{treatment}) = ${n-k}\\), \\(df(\\text{error}) = ${dfT}\\)`
   ]);
-  probs.push({q:`In a one-way ANOVA with k = ${k} groups and a total of n = ${n} observations, what are the degrees of freedom for treatment and error?`, choices:mc1.choices, correct:mc1.correct});
+  probs.push({q:`In a one-way ANOVA with \\(k = ${k}\\) groups and a total of \\(n = ${n}\\) observations, what are the degrees of freedom for treatment and error?`, choices:mc1.choices, correct:mc1.correct});
 
   // P2: SSTr from SST, SSE
   let SST=ri(150,400), SSE=ri(50,SST-30);
   let SSTr=SST-SSE;
-  let mc2=buildMC(`SSTr = ${SSTr}`, [`SSTr = ${SST+SSE}`, `SSTr = ${SSE-SST}`, `SSTr = ${SST}`]);
-  probs.push({q:`In a one-way ANOVA, SST (total sum of squares) = ${SST} and SSE (error sum of squares) = ${SSE}. Since SST = SSTr + SSE, what is SSTr (treatment sum of squares)?`, choices:mc2.choices, correct:mc2.correct});
+  let mc2=buildMC(`\\(SSTr = ${SSTr}\\)`, [`\\(SSTr = ${SST+SSE}\\)`, `\\(SSTr = ${SSE-SST}\\)`, `\\(SSTr = ${SST}\\)`]);
+  probs.push({q:`In a one-way ANOVA, \\(SST\\) (total sum of squares) \\(= ${SST}\\) and \\(SSE\\) (error sum of squares) \\(= ${SSE}\\). Since \\(SST = SSTr + SSE\\), what is \\(SSTr\\) (treatment sum of squares)?`, choices:mc2.choices, correct:mc2.correct});
 
   // P3: F statistic from MSTr, MSE
   let MSTr=ri(20,60), MSE=ri(5,19);
   let F=rnd(MSTr/MSE,2);
   let distract=[rnd(MSE/MSTr,2), rnd(MSTr+MSE,2), rnd(MSTr-MSE,2)];
-  let mc3=buildMC(`F = ${F}`, distract.map(d=>`F = ${d}`));
-  probs.push({q:`In a one-way ANOVA, MSTr (mean square treatment) = ${MSTr} and MSE (mean square error) = ${MSE}. What is the F test statistic, F = MSTr/MSE?`, choices:mc3.choices, correct:mc3.correct});
+  let mc3=buildMC(`\\(F = ${F}\\)`, distract.map(d=>`\\(F = ${d}\\)`));
+  probs.push({q:`In a one-way ANOVA, \\(MSTr\\) (mean square treatment) \\(= ${MSTr}\\) and \\(MSE\\) (mean square error) \\(= ${MSE}\\). What is the F test statistic, \\(F = MSTr/MSE\\)?`, choices:mc3.choices, correct:mc3.correct});
 
   // P4: conceptual - null hypothesis of one-way ANOVA
-  let mc4=buildMC(`All population (group) means are equal: \u03bc\u2081 = \u03bc\u2082 = \u2026 = \u03bc\u2096`, [
+  let mc4=buildMC(`All population (group) means are equal: \\(\\mu_1 = \\mu_2 = \\cdots = \\mu_k\\)`, [
     `All population variances are equal`,
     `At least one pair of sample means is equal`,
     `The overall sample mean equals zero`
   ]);
-  probs.push({q:`What is the null hypothesis H\u2080 tested by a one-way ANOVA?`, choices:mc4.choices, correct:mc4.correct});
+  probs.push({q:`What is the null hypothesis \\(H_0\\) tested by a one-way ANOVA?`, choices:mc4.choices, correct:mc4.correct});
 
   // P5: decision rule
   let alpha=pick([0.01,0.05,0.10]);
   let Fstat=rf(1.5,6,2);
   let Fcrit=rf(2.0,3.5,2);
   let reject = Fstat>Fcrit;
-  let mc5=buildMC(reject? `Reject H\u2080, since F = ${Fstat} > F-critical = ${Fcrit}` : `Fail to reject H\u2080, since F = ${Fstat} \u2264 F-critical = ${Fcrit}`, [
-    reject? `Fail to reject H\u2080, since F = ${Fstat} > F-critical = ${Fcrit}` : `Reject H\u2080, since F = ${Fstat} \u2264 F-critical = ${Fcrit}`,
-    `Reject H\u2081, since the p-value is small`,
+  let mc5=buildMC(reject? `Reject \\(H_0\\), since \\(F = ${Fstat} > F\\text{-critical} = ${Fcrit}\\)` : `Fail to reject \\(H_0\\), since \\(F = ${Fstat} \\le F\\text{-critical} = ${Fcrit}\\)`, [
+    reject? `Fail to reject \\(H_0\\), since \\(F = ${Fstat} > F\\text{-critical} = ${Fcrit}\\)` : `Reject \\(H_0\\), since \\(F = ${Fstat} \\le F\\text{-critical} = ${Fcrit}\\)`,
+    `Reject \\(H_1\\), since the p-value is small`,
     `No decision can be made without the sample means`
   ]);
-  probs.push({q:`A one-way ANOVA at \u03b1 = ${alpha} produces test statistic F = ${Fstat}, with F-critical = ${Fcrit}. What is the correct conclusion?`, choices:mc5.choices, correct:mc5.correct});
+  probs.push({q:`A one-way ANOVA at \\(\\alpha = ${alpha}\\) produces test statistic \\(F = ${Fstat}\\), with F-critical \\(= ${Fcrit}\\). What is the correct conclusion?`, choices:mc5.choices, correct:mc5.correct});
 
   return probs;
 }
@@ -875,8 +892,8 @@ function gen15(){
   // P1: predict y from simple linear regression line
   let b0=ri(2,20), b1=rf(0.5,4,2), x0=ri(3,15);
   let yhat=rnd(b0+b1*x0,2);
-  let mc1=buildMC(`\u0177 = ${yhat}`, [`\u0177 = ${rnd(b0-b1*x0,2)}`, `\u0177 = ${rnd(b1+b0*x0,2)}`, `\u0177 = ${rnd(b0*b1*x0,2)}`]);
-  probs.push({q:`The fitted regression line is \u0177 = ${b0} + ${b1}x. What is the predicted value of y when x = ${x0}?`, choices:mc1.choices, correct:mc1.correct});
+  let mc1=buildMC(`\\(\\hat{y} = ${yhat}\\)`, [`\\(\\hat{y} = ${rnd(b0-b1*x0,2)}\\)`, `\\(\\hat{y} = ${rnd(b1+b0*x0,2)}\\)`, `\\(\\hat{y} = ${rnd(b0*b1*x0,2)}\\)`]);
+  probs.push({q:`The fitted regression line is \\(\\hat{y} = ${b0} + ${b1}x\\). What is the predicted value of y when \\(x = ${x0}\\)?`, choices:mc1.choices, correct:mc1.correct});
 
   // P2: interpret slope
   let b1b=rf(1,8,2), unitY=pick(['dollars','points','minutes','units']), unitX=pick(['hour','year','item','session']);
@@ -885,7 +902,7 @@ function gen15(){
     `When x = 0, y is predicted to be ${b1b}`,
     `The correlation between x and y is ${b1b}`
   ]);
-  probs.push({q:`In a simple linear regression \u0177 = b\u2080 + ${b1b}x, how should the slope ${b1b} be interpreted?`, choices:mc2.choices, correct:mc2.correct});
+  probs.push({q:`In a simple linear regression \\(\\hat{y} = b_0 + ${b1b}x\\), how should the slope ${b1b} be interpreted?`, choices:mc2.choices, correct:mc2.correct});
 
   // P3: R^2 interpretation
   let r2=rf(0.4,0.95,2);
@@ -895,14 +912,14 @@ function gen15(){
     `The correlation between x and y is ${pct}`,
     `${pct}% of the residuals are positive`
   ]);
-  probs.push({q:`A simple linear regression model has R\u00b2 = ${r2}. What does this value mean?`, choices:mc3.choices, correct:mc3.correct});
+  probs.push({q:`A simple linear regression model has \\(R^2 = ${r2}\\). What does this value mean?`, choices:mc3.choices, correct:mc3.correct});
 
   // P4: residual computation
   let yobs=ri(20,80), b0c=ri(5,20), b1c=rf(0.5,3,2), xc=ri(3,15);
   let yhatC=rnd(b0c+b1c*xc,2);
   let resid=rnd(yobs-yhatC,2);
-  let mc4=buildMC(`residual = ${resid}`, [`residual = ${rnd(yhatC-yobs,2)}`, `residual = ${rnd(yobs+yhatC,2)}`, `residual = ${yobs}`]);
-  probs.push({q:`For an observation with x = ${xc} and observed y = ${yobs}, the fitted line gives \u0177 = ${b0c} + ${b1c}x. What is the residual (observed \u2212 predicted) for this point?`, choices:mc4.choices, correct:mc4.correct});
+  let mc4=buildMC(`residual \\(= ${resid}\\)`, [`residual \\(= ${rnd(yhatC-yobs,2)}\\)`, `residual \\(= ${rnd(yobs+yhatC,2)}\\)`, `residual \\(= ${yobs}\\)`]);
+  probs.push({q:`For an observation with \\(x = ${xc}\\) and observed \\(y = ${yobs}\\), the fitted line gives \\(\\hat{y} = ${b0c} + ${b1c}x\\). What is the residual (observed \u2212 predicted) for this point?`, choices:mc4.choices, correct:mc4.correct});
 
   // P5: multiple regression conceptual
   let mc5=buildMC(`Holding all other predictors constant, y is predicted to change by that coefficient's value for a one-unit increase in that predictor`, [
@@ -910,7 +927,7 @@ function gen15(){
     `The coefficient is always equal to the correlation between that predictor and y`,
     `A larger coefficient always means that predictor is more statistically significant`
   ]);
-  probs.push({q:`In a multiple regression model \u0177 = b\u2080 + b\u2081x\u2081 + b\u2082x\u2082 + \u2026, how is each coefficient b\u1d62 (i \u2265 1) interpreted?`, choices:mc5.choices, correct:mc5.correct});
+  probs.push({q:`In a multiple regression model \\(\\hat{y} = b_0 + b_1x_1 + b_2x_2 + \\cdots\\), how is each coefficient \\(b_i\\) \\((i \\ge 1)\\) interpreted?`, choices:mc5.choices, correct:mc5.correct});
 
   return probs;
 }
@@ -928,36 +945,36 @@ function gen16(){
   let xbarbar=ri(40,100), Rbar=ri(3,15);
   let A2=CONTROL_CONSTANTS[n].A2;
   let UCL=rnd(xbarbar+A2*Rbar,3);
-  let mc1=buildMC(`UCL = ${UCL}`, [`UCL = ${rnd(xbarbar-A2*Rbar,3)}`, `UCL = ${rnd(xbarbar*A2*Rbar,3)}`, `UCL = ${rnd(xbarbar+Rbar,3)}`]);
-  probs.push({q:`For an x\u0304-chart with subgroup size n = ${n}, the grand mean is x\u0304\u0304 = ${xbarbar} and the average range is R\u0304 = ${Rbar} (A\u2082 = ${A2} for n = ${n}). Find the upper control limit, UCL = x\u0304\u0304 + A\u2082R\u0304.`, choices:mc1.choices, correct:mc1.correct});
+  let mc1=buildMC(`\\(UCL = ${UCL}\\)`, [`\\(UCL = ${rnd(xbarbar-A2*Rbar,3)}\\)`, `\\(UCL = ${rnd(xbarbar*A2*Rbar,3)}\\)`, `\\(UCL = ${rnd(xbarbar+Rbar,3)}\\)`]);
+  probs.push({q:`For an \\(\\bar{x}\\)-chart with subgroup size \\(n = ${n}\\), the grand mean is \\(\\bar{\\bar{x}} = ${xbarbar}\\) and the average range is \\(\\bar{R} = ${Rbar}\\) \\((A_2 = ${A2}\\) for \\(n = ${n})\\). Find the upper control limit, \\(UCL = \\bar{\\bar{x}} + A_2\\bar{R}\\).`, choices:mc1.choices, correct:mc1.correct});
 
   // P2: x-bar chart LCL
   let n2=pick([2,3,4,5,6]);
   let xbarbar2=ri(40,100), Rbar2=ri(3,15);
   let A2b=CONTROL_CONSTANTS[n2].A2;
   let LCL2=rnd(xbarbar2-A2b*Rbar2,3);
-  let mc2=buildMC(`LCL = ${LCL2}`, [`LCL = ${rnd(xbarbar2+A2b*Rbar2,3)}`, `LCL = ${rnd(xbarbar2-Rbar2,3)}`, `LCL = ${rnd(xbarbar2/A2b,3)}`]);
-  probs.push({q:`For an x\u0304-chart with subgroup size n = ${n2}, x\u0304\u0304 = ${xbarbar2}, R\u0304 = ${Rbar2}, and A\u2082 = ${A2b}. Find the lower control limit, LCL = x\u0304\u0304 \u2212 A\u2082R\u0304.`, choices:mc2.choices, correct:mc2.correct});
+  let mc2=buildMC(`\\(LCL = ${LCL2}\\)`, [`\\(LCL = ${rnd(xbarbar2+A2b*Rbar2,3)}\\)`, `\\(LCL = ${rnd(xbarbar2-Rbar2,3)}\\)`, `\\(LCL = ${rnd(xbarbar2/A2b,3)}\\)`]);
+  probs.push({q:`For an \\(\\bar{x}\\)-chart with subgroup size \\(n = ${n2}\\), \\(\\bar{\\bar{x}} = ${xbarbar2}\\), \\(\\bar{R} = ${Rbar2}\\), and \\(A_2 = ${A2b}\\). Find the lower control limit, \\(LCL = \\bar{\\bar{x}} - A_2\\bar{R}\\).`, choices:mc2.choices, correct:mc2.correct});
 
   // P3: R chart UCL
   let n3=pick([2,3,4,5,6,7,8]);
   let Rbar3=ri(4,18);
   let D4=CONTROL_CONSTANTS[n3].D4;
   let UCLr=rnd(D4*Rbar3,3);
-  let mc3=buildMC(`UCL = ${UCLr}`, [`UCL = ${rnd(Rbar3/D4,3)}`, `UCL = ${rnd(D4+Rbar3,3)}`, `UCL = ${rnd(CONTROL_CONSTANTS[n3].D3*Rbar3,3)}`]);
-  probs.push({q:`For an R-chart with subgroup size n = ${n3} and R\u0304 = ${Rbar3} (D\u2084 = ${D4} for n = ${n3}), find the upper control limit, UCL = D\u2084R\u0304.`, choices:mc3.choices, correct:mc3.correct});
+  let mc3=buildMC(`\\(UCL = ${UCLr}\\)`, [`\\(UCL = ${rnd(Rbar3/D4,3)}\\)`, `\\(UCL = ${rnd(D4+Rbar3,3)}\\)`, `\\(UCL = ${rnd(CONTROL_CONSTANTS[n3].D3*Rbar3,3)}\\)`]);
+  probs.push({q:`For an R-chart with subgroup size \\(n = ${n3}\\) and \\(\\bar{R} = ${Rbar3}\\) \\((D_4 = ${D4}\\) for \\(n = ${n3})\\), find the upper control limit, \\(UCL = D_4\\bar{R}\\).`, choices:mc3.choices, correct:mc3.correct});
 
   // P4: p chart control limits
   let n4=ri(80,200), pbar=rf(0.02,0.12,3);
   let sigp=Math.sqrt(pbar*(1-pbar)/n4);
   let UCLp=rnd(Math.min(1,pbar+3*sigp),4);
   let LCLp=rnd(Math.max(0,pbar-3*sigp),4);
-  let mc4=buildMC(`UCL = ${UCLp}, LCL = ${LCLp}`, [
-    `UCL = ${rnd(pbar+2*sigp,4)}, LCL = ${rnd(pbar-2*sigp,4)}`,
-    `UCL = ${rnd(pbar+3*sigp,4)}, LCL = 0.05`,
-    `UCL = ${rnd(1-pbar,4)}, LCL = ${rnd(pbar,4)}`
+  let mc4=buildMC(`\\(UCL = ${UCLp}\\), \\(LCL = ${LCLp}\\)`, [
+    `\\(UCL = ${rnd(pbar+2*sigp,4)}\\), \\(LCL = ${rnd(pbar-2*sigp,4)}\\)`,
+    `\\(UCL = ${rnd(pbar+3*sigp,4)}\\), \\(LCL = 0.05\\)`,
+    `\\(UCL = ${rnd(1-pbar,4)}\\), \\(LCL = ${rnd(pbar,4)}\\)`
   ]);
-  probs.push({q:`For a p-chart with subgroup size n = ${n4} and center line p\u0304 = ${pbar}, the control limits are p\u0304 \u00b1 3\u221a(p\u0304(1\u2212p\u0304)/n) (bounded within [0,1]). Find the UCL and LCL.`, choices:mc4.choices, correct:mc4.correct});
+  probs.push({q:`For a p-chart with subgroup size \\(n = ${n4}\\) and center line \\(\\bar{p} = ${pbar}\\), the control limits are \\(\\bar{p} \\pm 3\\sqrt{\\bar{p}(1-\\bar{p})/n}\\) (bounded within \\([0,1]\\)). Find the UCL and LCL.`, choices:mc4.choices, correct:mc4.correct});
 
   // P5: conceptual - out of control signal
   let mc5=buildMC(`A point falls outside the control limits (or a nonrandom pattern such as a run appears)`, [
@@ -976,106 +993,106 @@ function gen16(){
    ========================================================================= */
 const TOPICS = [
 { id:1, title:"1. Sample Space, Events & Counting", type:"calc", gen:gen1, review:`
-<p><strong>Experiment / Sample space / Event:</strong> A <em>random experiment</em> is a process with an uncertain outcome. The <em>sample space</em> S is the set of all possible outcomes. An <em>event</em> is any subset of the sample space (a collection of outcomes we care about).</p>
-<p><strong>Multiplicative counting principle:</strong> If a task consists of k steps, and step 1 can be done in n\u2081 ways, step 2 in n\u2082 ways, ..., step k in n\u2096 ways, then the whole task can be done in n\u2081 \u00d7 n\u2082 \u00d7 ... \u00d7 n\u2096 ways.</p>
-<p><strong>Permutations</strong> (order matters, no repeats): arranging all n distinct items \u2192 n! ways; choosing and ordering r of n items \u2192 P(n,r) = n!/(n\u2212r)!.</p>
-<p><strong>Combinations</strong> (order doesn't matter): choosing r of n items \u2192 C(n,r) = n!/(r!(n\u2212r)!).</p>` },
+<p><strong>Experiment / Sample space / Event:</strong> A <em>random experiment</em> is a process with an uncertain outcome. The <em>sample space</em> \\(S\\) is the set of all possible outcomes. An <em>event</em> is any subset of the sample space (a collection of outcomes we care about).</p>
+<p><strong>Multiplicative counting principle:</strong> If a task consists of \\(k\\) steps, and step 1 can be done in \\(n_1\\) ways, step 2 in \\(n_2\\) ways, \\(\\ldots\\), step \\(k\\) in \\(n_k\\) ways, then the whole task can be done in \\(n_1 \\times n_2 \\times \\cdots \\times n_k\\) ways.</p>
+<p><strong>Permutations</strong> (order matters, no repeats): arranging all \\(n\\) distinct items \\(\\to n!\\) ways; choosing and ordering \\(r\\) of \\(n\\) items \\(\\to\\ P(n,r) = \\dfrac{n!}{(n-r)!}\\).</p>
+<p><strong>Combinations</strong> (order doesn't matter): choosing \\(r\\) of \\(n\\) items \\(\\to\\ C(n,r) = \\dbinom{n}{r} = \\dfrac{n!}{r!\\,(n-r)!}\\).</p>` },
 
 { id:2, title:"2. Probability of an Event", type:"calc", gen:gen2, review:`
-<p>When outcomes in a finite sample space are <strong>equally likely</strong>, P(event) = (number of outcomes in the event) / (number of outcomes in S).</p>
+<p>When outcomes in a finite sample space are <strong>equally likely</strong>, \\( P(\\text{event}) = \\dfrac{\\#\\text{ outcomes in the event}}{\\#\\text{ outcomes in } S} \\).</p>
 <p><strong>Basic probability rules:</strong></p>
 <ul>
-<li>0 \u2264 P(A) \u2264 1, and P(S) = 1</li>
-<li><strong>Complement rule:</strong> P(A\u2032) = 1 \u2212 P(A)</li>
-<li><strong>Addition rule (general):</strong> P(A \u222A B) = P(A) + P(B) \u2212 P(A \u2229 B)</li>
+<li>\\(0 \\le P(A) \\le 1\\), and \\(P(S) = 1\\)</li>
+<li><strong>Complement rule:</strong> \\(P(A') = 1 - P(A)\\)</li>
+<li><strong>Addition rule (general):</strong> \\(P(A \\cup B) = P(A) + P(B) - P(A \\cap B)\\)</li>
 </ul>` },
 
 { id:3, title:"3. Disjoint & Independent Events", type:"calc", gen:gen3, review:`
-<p><strong>Disjoint (mutually exclusive) events</strong> cannot happen at the same time: P(A \u2229 B) = 0, so P(A \u222A B) = P(A) + P(B).</p>
-<p><strong>Independent events</strong>: the occurrence of one does not affect the probability of the other. A and B are independent exactly when P(A \u2229 B) = P(A) \u00b7 P(B). For independent events, P(A \u222A B) = P(A) + P(B) \u2212 P(A)P(B), and P(neither) = (1\u2212P(A))(1\u2212P(B)).</p>
+<p><strong>Disjoint (mutually exclusive) events</strong> cannot happen at the same time: \\(P(A \\cap B) = 0\\), so \\(P(A \\cup B) = P(A) + P(B)\\).</p>
+<p><strong>Independent events</strong>: the occurrence of one does not affect the probability of the other. \\(A\\) and \\(B\\) are independent exactly when \\(P(A \\cap B) = P(A)\\cdot P(B)\\). For independent events, \\(P(A \\cup B) = P(A) + P(B) - P(A)P(B)\\), and \\(P(\\text{neither}) = (1-P(A))(1-P(B))\\).</p>
 <p>Note: disjoint events with nonzero probability are <em>never</em> independent (if one occurs the other cannot).</p>` },
 
 { id:4, title:"4. Total Probability & Bayes' Formula", type:"calc", gen:gen4, review:`
-<p><strong>Law of total probability:</strong> if B\u2081, B\u2082, ..., B\u2096 partition the sample space, then for any event A:</p>
-<p>P(A) = \u03a3\u1d62 P(B\u1d62) P(A | B\u1d62)</p>
-<p><strong>Bayes' formula</strong> reverses the conditioning \u2014 it finds P(B\u2c7c | A) from P(A | B\u1d62)'s:</p>
-<p>P(B\u2c7c | A) = [P(B\u2c7c) P(A | B\u2c7c)] / [\u03a3\u1d62 P(B\u1d62) P(A | B\u1d62)]</p>
+<p><strong>Law of total probability:</strong> if \\(B_1, B_2, \\ldots, B_k\\) partition the sample space, then for any event \\(A\\):</p>
+<p>\\[ P(A) = \\sum_i P(B_i)\\,P(A \\mid B_i) \\]</p>
+<p><strong>Bayes' formula</strong> reverses the conditioning \u2014 it finds \\(P(B_j \\mid A)\\) from the \\(P(A \\mid B_i)\\)'s:</p>
+<p>\\[ P(B_j \\mid A) = \\frac{P(B_j)\\,P(A \\mid B_j)}{\\sum_i P(B_i)\\,P(A \\mid B_i)} \\]</p>
 <p>Classic applications: which machine produced a defective part, or whether a positive diagnostic test really indicates disease (accounting for prevalence, sensitivity, and specificity).</p>` },
 
 { id:5, title:"5. Discrete Random Variables", type:"calc", gen:gen5, review:`
-<p>A <strong>discrete random variable</strong> X takes on a countable set of values, each with a probability given by its <strong>PMF</strong> p(x) = P(X = x), where \u03a3p(x) = 1. The <strong>CDF</strong> is F(x) = P(X \u2264 x).</p>
-<p><strong>Mean (expected value):</strong> E(X) = \u03a3 x\u00b7p(x). <strong>Variance:</strong> Var(X) = E(X\u00b2) \u2212 [E(X)]\u00b2, and SD(X) = \u221aVar(X).</p>
-<p><strong>Mean of a function:</strong> E(g(X)) = \u03a3 g(x)\u00b7p(x); for a linear function, E(aX+b) = aE(X) + b.</p>
+<p>A <strong>discrete random variable</strong> \\(X\\) takes on a countable set of values, each with a probability given by its <strong>PMF</strong> \\(p(x) = P(X=x)\\), where \\(\\sum p(x) = 1\\). The <strong>CDF</strong> is \\(F(x) = P(X \\le x)\\).</p>
+<p><strong>Mean (expected value):</strong> \\(E(X) = \\sum x\\,p(x)\\). <strong>Variance:</strong> \\(\\operatorname{Var}(X) = E(X^2) - [E(X)]^2\\), and \\(SD(X) = \\sqrt{\\operatorname{Var}(X)}\\).</p>
+<p><strong>Mean of a function:</strong> \\(E(g(X)) = \\sum g(x)\\,p(x)\\); for a linear function, \\(E(aX+b) = aE(X) + b\\).</p>
 <p><strong>Special discrete distributions:</strong></p>
 <ul>
-<li><strong>Binomial(n,p):</strong> P(X=k) = C(n,k) p\u1d4f(1\u2212p)\u207f\u207b\u1d4f; counts successes in n independent trials.</li>
-<li><strong>Geometric(p):</strong> P(X=k) = (1\u2212p)\u1d4f\u207b\u00b9p; the trial number of the first success.</li>
-<li><strong>Poisson(\u03bb):</strong> P(X=k) = e\u207b\u03bb\u03bb\u1d4f/k!; counts rare events in a fixed interval, with mean = variance = \u03bb.</li>
+<li><strong>Binomial\\((n,p)\\):</strong> \\(P(X=k) = \\dbinom{n}{k} p^k(1-p)^{n-k}\\); counts successes in \\(n\\) independent trials.</li>
+<li><strong>Geometric\\((p)\\):</strong> \\(P(X=k) = (1-p)^{k-1}p\\); the trial number of the first success.</li>
+<li><strong>Poisson\\((\\lambda)\\):</strong> \\(P(X=k) = \\dfrac{e^{-\\lambda}\\lambda^k}{k!}\\); counts rare events in a fixed interval, with mean = variance = \\(\\lambda\\).</li>
 </ul>` },
 
 { id:6, title:"6. Continuous Random Variables", type:"calc", gen:gen6, review:`
-<p>A <strong>continuous random variable</strong> has a <strong>density function</strong> f(x) with P(a < X < b) = \u222b\u2090\u1d47 f(x)dx (the area under the curve), and P(X=x)=0 for any single point.</p>
-<p><strong>Uniform(a,b):</strong> f(x)=1/(b\u2212a) on [a,b]; mean = (a+b)/2; SD = (b\u2212a)/\u221a12; probability of any subinterval is proportional to its length.</p>
-<p><strong>Exponential(\u03bb):</strong> models waiting times; P(X>t) = e\u207b\u03bb\u1d57; mean = 1/\u03bb.</p>
-<p><strong>Normal(\u03bc,\u03c3):</strong> the bell curve; standardize with z = (x\u2212\u03bc)/\u03c3 and use the standard normal table/CDF to find probabilities.</p>` },
+<p>A <strong>continuous random variable</strong> has a <strong>density function</strong> \\(f(x)\\) with \\(P(a < X < b) = \\displaystyle\\int_a^b f(x)\\,dx\\) (the area under the curve), and \\(P(X=x)=0\\) for any single point.</p>
+<p><strong>Uniform\\((a,b)\\):</strong> \\(f(x) = \\dfrac{1}{b-a}\\) on \\([a,b]\\); mean \\(= \\dfrac{a+b}{2}\\); \\(SD = \\dfrac{b-a}{\\sqrt{12}}\\); probability of any subinterval is proportional to its length.</p>
+<p><strong>Exponential\\((\\lambda)\\):</strong> models waiting times; \\(P(X>t) = e^{-\\lambda t}\\); mean \\(= 1/\\lambda\\).</p>
+<p><strong>Normal\\((\\mu,\\sigma)\\):</strong> the bell curve; standardize with \\(z = \\dfrac{x-\\mu}{\\sigma}\\) and use the standard normal table/CDF to find probabilities.</p>` },
 
 { id:7, title:"7. Joint Distributions of Two Discrete RVs", type:"calc", gen:gen7, review:`
-<p>A <strong>joint PMF</strong> p(x,y) = P(X=x, Y=y) gives the probability of every (x,y) pair, with all values summing to 1.</p>
-<p><strong>Marginal distributions:</strong> P(X=x) = \u03a3\u1d67 p(x,y); P(Y=y) = \u03a3\u2093 p(x,y).</p>
-<p><strong>Covariance:</strong> Cov(X,Y) = E(XY) \u2212 E(X)E(Y), where E(XY) = \u03a3\u2093\u03a3\u1d67 xy\u00b7p(x,y).</p>
-<p><strong>Correlation:</strong> \u03c1 = Cov(X,Y) / [SD(X)\u00b7SD(Y)], always between \u22121 and 1. Cov = 0 (equivalently \u03c1 = 0) when X and Y are uncorrelated; independent variables always have Cov = 0 (the converse isn't always true).</p>` },
+<p>A <strong>joint PMF</strong> \\(p(x,y) = P(X=x, Y=y)\\) gives the probability of every \\((x,y)\\) pair, with all values summing to 1.</p>
+<p><strong>Marginal distributions:</strong> \\(P(X=x) = \\sum_y p(x,y)\\); \\(P(Y=y) = \\sum_x p(x,y)\\).</p>
+<p><strong>Covariance:</strong> \\(\\operatorname{Cov}(X,Y) = E(XY) - E(X)E(Y)\\), where \\(E(XY) = \\sum_x\\sum_y xy\\,p(x,y)\\).</p>
+<p><strong>Correlation:</strong> \\(\\rho = \\dfrac{\\operatorname{Cov}(X,Y)}{SD(X)\\cdot SD(Y)}\\), always between \\(-1\\) and \\(1\\). \\(\\operatorname{Cov}=0\\) (equivalently \\(\\rho = 0\\)) when \\(X\\) and \\(Y\\) are uncorrelated; independent variables always have \\(\\operatorname{Cov}=0\\) (the converse isn't always true).</p>` },
 
 { id:8, title:"8. Descriptive Statistics", type:"calc", gen:gen8, review:`
-<p><strong>Population</strong> vs. <strong>sample</strong>: the population is the entire group of interest; a sample is a subset actually observed. A <strong>parameter</strong> describes the population (e.g. \u03bc); a <strong>statistic</strong> is computed from a sample (e.g. x\u0304) and estimates the parameter.</p>
-<p>An estimator is <strong>unbiased</strong> if its expected value equals the true parameter (e.g. the sample mean x\u0304 is an unbiased estimator of \u03bc); <strong>bias</strong> is the difference between the expected value of the estimator and the true parameter value.</p>
+<p><strong>Population</strong> vs. <strong>sample</strong>: the population is the entire group of interest; a sample is a subset actually observed. A <strong>parameter</strong> describes the population (e.g. \\(\\mu\\)); a <strong>statistic</strong> is computed from a sample (e.g. \\(\\bar{x}\\)) and estimates the parameter.</p>
+<p>An estimator is <strong>unbiased</strong> if its expected value equals the true parameter (e.g. the sample mean \\(\\bar{x}\\) is an unbiased estimator of \\(\\mu\\)); <strong>bias</strong> is the difference between the expected value of the estimator and the true parameter value.</p>
 <p><strong>Center:</strong> mean (average), median (middle value). <strong>Spread:</strong> standard deviation, range, interquartile range (IQR).</p>
-<p><strong>Five-number summary:</strong> minimum, Q1, median, Q3, maximum \u2014 visualized with a <strong>boxplot</strong>. Other common graphics: bar/pie charts (categorical data), histograms and density plots (shape of a distribution), scatterplots (relationship between two numeric variables).</p>` },
+<p><strong>Five-number summary:</strong> minimum, \\(Q_1\\), median, \\(Q_3\\), maximum \u2014 visualized with a <strong>boxplot</strong>. Other common graphics: bar/pie charts (categorical data), histograms and density plots (shape of a distribution), scatterplots (relationship between two numeric variables).</p>` },
 
 { id:9, title:"9. Inference for a Population Proportion", type:"calc", gen:gen9, review:`
-<p><strong>Point estimate:</strong> p\u0302 = x/n (sample proportion with the characteristic).</p>
-<p><strong>Confidence interval:</strong> p\u0302 \u00b1 z\u00b7\u221a(p\u0302(1\u2212p\u0302)/n), where z is the standard normal critical value for the desired confidence level (e.g. z=1.96 for 95%).</p>
-<p><strong>Hypothesis test</strong> of H\u2080: p = p\u2080 vs H\u2081: p \u2260 p\u2080 (or one-sided): test statistic z = (p\u0302 \u2212 p\u2080) / \u221a(p\u2080(1\u2212p\u2080)/n); compare to a critical value or compute a p-value and compare to \u03b1.</p>` },
+<p><strong>Point estimate:</strong> \\(\\hat{p} = x/n\\) (sample proportion with the characteristic).</p>
+<p><strong>Confidence interval:</strong> \\(\\hat{p} \\pm z\\sqrt{\\dfrac{\\hat{p}(1-\\hat{p})}{n}}\\), where \\(z\\) is the standard normal critical value for the desired confidence level (e.g. \\(z=1.96\\) for 95%).</p>
+<p><strong>Hypothesis test</strong> of \\(H_0: p = p_0\\) vs \\(H_1: p \\ne p_0\\) (or one-sided): test statistic \\(z = \\dfrac{\\hat{p} - p_0}{\\sqrt{p_0(1-p_0)/n}}\\); compare to a critical value or compute a p-value and compare to \\(\\alpha\\).</p>` },
 
 { id:10, title:"10. Inference for the Difference of Two Proportions", type:"calc", gen:gen10, review:`
-<p><strong>Point estimate:</strong> p\u0302\u2081 \u2212 p\u0302\u2082.</p>
-<p><strong>Confidence interval</strong> (unpooled): (p\u0302\u2081 \u2212 p\u0302\u2082) \u00b1 z\u00b7\u221a(p\u0302\u2081(1\u2212p\u0302\u2081)/n\u2081 + p\u0302\u2082(1\u2212p\u0302\u2082)/n\u2082).</p>
-<p><strong>Hypothesis test</strong> of H\u2080: p\u2081 = p\u2082 uses the <strong>pooled</strong> proportion p\u0302 = (x\u2081+x\u2082)/(n\u2081+n\u2082) in the standard error: z = (p\u0302\u2081\u2212p\u0302\u2082) / \u221a[p\u0302(1\u2212p\u0302)(1/n\u2081 + 1/n\u2082)].</p>` },
+<p><strong>Point estimate:</strong> \\(\\hat{p}_1 - \\hat{p}_2\\).</p>
+<p><strong>Confidence interval</strong> (unpooled): \\((\\hat{p}_1 - \\hat{p}_2) \\pm z\\sqrt{\\dfrac{\\hat{p}_1(1-\\hat{p}_1)}{n_1} + \\dfrac{\\hat{p}_2(1-\\hat{p}_2)}{n_2}}\\).</p>
+<p><strong>Hypothesis test</strong> of \\(H_0: p_1 = p_2\\) uses the <strong>pooled</strong> proportion \\(\\hat{p} = \\dfrac{x_1+x_2}{n_1+n_2}\\) in the standard error: \\(z = \\dfrac{\\hat{p}_1-\\hat{p}_2}{\\sqrt{\\hat{p}(1-\\hat{p})\\left(\\frac{1}{n_1} + \\frac{1}{n_2}\\right)}}\\).</p>` },
 
 { id:11, title:"11. Inference for a Population Mean", type:"calc", gen:gen11, review:`
-<p>When \u03c3 is unknown (the usual case), we use the sample standard deviation s and the <strong>t-distribution</strong> with df = n\u22121.</p>
-<p><strong>Confidence interval:</strong> x\u0304 \u00b1 t\u00b7(s/\u221an), where t is the t-critical value for the desired confidence level and df.</p>
-<p><strong>Hypothesis test</strong> of H\u2080: \u03bc = \u03bc\u2080: test statistic t = (x\u0304 \u2212 \u03bc\u2080) / (s/\u221an), compared to a t-critical value or used to find a p-value, both with df = n\u22121.</p>` },
+<p>When \\(\\sigma\\) is unknown (the usual case), we use the sample standard deviation \\(s\\) and the <strong>t-distribution</strong> with \\(df = n-1\\).</p>
+<p><strong>Confidence interval:</strong> \\(\\bar{x} \\pm t\\cdot\\dfrac{s}{\\sqrt{n}}\\), where \\(t\\) is the t-critical value for the desired confidence level and df.</p>
+<p><strong>Hypothesis test</strong> of \\(H_0: \\mu = \\mu_0\\): test statistic \\(t = \\dfrac{\\bar{x} - \\mu_0}{s/\\sqrt{n}}\\), compared to a t-critical value or used to find a p-value, both with \\(df = n-1\\).</p>` },
 
 { id:12, title:"12. Inference for the Difference of Two Means", type:"calc", gen:gen12, review:`
 <p>For two independent samples with unknown, possibly unequal population variances, we use the <strong>Welch (unpooled) approach</strong>.</p>
-<p><strong>Standard error:</strong> SE = \u221a(s\u2081\u00b2/n\u2081 + s\u2082\u00b2/n\u2082).</p>
+<p><strong>Standard error:</strong> \\(SE = \\sqrt{\\dfrac{s_1^2}{n_1} + \\dfrac{s_2^2}{n_2}}\\).</p>
 <p><strong>Welch\u2013Satterthwaite degrees of freedom</strong> (approximate, often rounded down or to the nearest integer):</p>
-<p>df = (s\u2081\u00b2/n\u2081 + s\u2082\u00b2/n\u2082)\u00b2 / [ (s\u2081\u00b2/n\u2081)\u00b2/(n\u2081\u22121) + (s\u2082\u00b2/n\u2082)\u00b2/(n\u2082\u22121) ]</p>
-<p><strong>CI:</strong> (x\u0304\u2081\u2212x\u0304\u2082) \u00b1 t\u00b7SE. <strong>Test statistic</strong> for H\u2080: \u03bc\u2081=\u03bc\u2082: t = (x\u0304\u2081\u2212x\u0304\u2082)/SE, with the Welch df above.</p>` },
+<p>\\[ df = \\frac{\\left(\\dfrac{s_1^2}{n_1} + \\dfrac{s_2^2}{n_2}\\right)^2}{\\dfrac{(s_1^2/n_1)^2}{n_1-1} + \\dfrac{(s_2^2/n_2)^2}{n_2-1}} \\]</p>
+<p><strong>CI:</strong> \\((\\bar{x}_1-\\bar{x}_2) \\pm t\\cdot SE\\). <strong>Test statistic</strong> for \\(H_0: \\mu_1=\\mu_2\\): \\(t = \\dfrac{\\bar{x}_1-\\bar{x}_2}{SE}\\), with the Welch df above.</p>` },
 
 { id:13, title:"13. Chi-Square Tests: Goodness-of-Fit & Independence", type:"calc", gen:gen13, review:`
-<p><strong>Goodness-of-fit (GOF) test:</strong> compares observed category counts to those expected under a hypothesized distribution. Test statistic: \u03c7\u00b2 = \u03a3 (O\u2212E)\u00b2/E, with df = (number of categories) \u2212 1.</p>
-<p><strong>Test of independence:</strong> uses a contingency (r \u00d7 c) table to test whether two categorical variables are related. Expected count for a cell = (row total \u00d7 column total) / grand total. Test statistic: \u03c7\u00b2 = \u03a3 (O\u2212E)\u00b2/E, with df = (r\u22121)(c\u22121).</p>
-<p>In both cases, a large \u03c7\u00b2 (relative to the chi-square critical value) leads to rejecting H\u2080.</p>` },
+<p><strong>Goodness-of-fit (GOF) test:</strong> compares observed category counts to those expected under a hypothesized distribution. Test statistic: \\(\\chi^2 = \\displaystyle\\sum \\dfrac{(O-E)^2}{E}\\), with \\(df = (\\text{number of categories}) - 1\\).</p>
+<p><strong>Test of independence:</strong> uses a contingency \\((r \\times c)\\) table to test whether two categorical variables are related. Expected count for a cell \\(= \\dfrac{\\text{row total} \\times \\text{column total}}{\\text{grand total}}\\). Test statistic: \\(\\chi^2 = \\displaystyle\\sum \\dfrac{(O-E)^2}{E}\\), with \\(df = (r-1)(c-1)\\).</p>
+<p>In both cases, a large \\(\\chi^2\\) (relative to the chi-square critical value) leads to rejecting \\(H_0\\).</p>` },
 
 { id:14, title:"14. One-Way ANOVA", type:"mc", gen:gen14, review:`
-<p><strong>One-way ANOVA</strong> compares the means of k \u2265 3 groups simultaneously. H\u2080: \u03bc\u2081 = \u03bc\u2082 = ... = \u03bc\u2096 vs H\u2081: at least one mean differs.</p>
-<p><strong>Sums of squares:</strong> SST (total) = SSTr (treatment/between-groups) + SSE (error/within-groups).</p>
-<p><strong>Degrees of freedom:</strong> df(treatment) = k\u22121; df(error) = n\u2212k (n = total observations); df(total) = n\u22121.</p>
-<p><strong>Mean squares:</strong> MSTr = SSTr/df(treatment); MSE = SSE/df(error).</p>
-<p><strong>Test statistic:</strong> F = MSTr/MSE, compared to an F-critical value (or via p-value). A large F suggests the group means are not all equal.</p>` },
+<p><strong>One-way ANOVA</strong> compares the means of \\(k \\ge 3\\) groups simultaneously. \\(H_0: \\mu_1 = \\mu_2 = \\cdots = \\mu_k\\) vs \\(H_1\\): at least one mean differs.</p>
+<p><strong>Sums of squares:</strong> \\(SST\\) (total) \\(= SSTr\\) (treatment/between-groups) \\(+\\ SSE\\) (error/within-groups).</p>
+<p><strong>Degrees of freedom:</strong> \\(df(\\text{treatment}) = k-1\\); \\(df(\\text{error}) = n-k\\) (\\(n\\) = total observations); \\(df(\\text{total}) = n-1\\).</p>
+<p><strong>Mean squares:</strong> \\(MSTr = SSTr/df(\\text{treatment})\\); \\(MSE = SSE/df(\\text{error})\\).</p>
+<p><strong>Test statistic:</strong> \\(F = MSTr/MSE\\), compared to an F-critical value (or via p-value). A large \\(F\\) suggests the group means are not all equal.</p>` },
 
 { id:15, title:"15. Simple & Multiple Regression", type:"mc", gen:gen15, review:`
-<p><strong>Simple linear regression</strong> fits a line \u0177 = b\u2080 + b\u2081x to predict y from a single predictor x. b\u2081 (the slope) is interpreted as the average change in y for a one-unit increase in x; b\u2080 is the predicted y when x = 0.</p>
-<p><strong>Residual</strong> for an observation = observed y \u2212 predicted \u0177. Least-squares regression minimizes the sum of squared residuals.</p>
-<p><strong>R\u00b2 (coefficient of determination)</strong> is the proportion of variability in y explained by the model, between 0 and 1.</p>
-<p><strong>Multiple regression</strong> extends this to several predictors: \u0177 = b\u2080 + b\u2081x\u2081 + b\u2082x\u2082 + .... Each slope b\u1d62 is interpreted "holding all other predictors constant."</p>` },
+<p><strong>Simple linear regression</strong> fits a line \\(\\hat{y} = b_0 + b_1x\\) to predict \\(y\\) from a single predictor \\(x\\). \\(b_1\\) (the slope) is interpreted as the average change in \\(y\\) for a one-unit increase in \\(x\\); \\(b_0\\) is the predicted \\(y\\) when \\(x = 0\\).</p>
+<p><strong>Residual</strong> for an observation \\(=\\) observed \\(y\\ -\\) predicted \\(\\hat{y}\\). Least-squares regression minimizes the sum of squared residuals.</p>
+<p><strong>\\(R^2\\) (coefficient of determination)</strong> is the proportion of variability in \\(y\\) explained by the model, between 0 and 1.</p>
+<p><strong>Multiple regression</strong> extends this to several predictors: \\(\\hat{y} = b_0 + b_1x_1 + b_2x_2 + \\cdots\\). Each slope \\(b_i\\) is interpreted "holding all other predictors constant."</p>` },
 
 { id:16, title:"16. Control Charts (x\u0304, R, p)", type:"mc", gen:gen16, review:`
-<p>Control charts monitor a process over time using a center line and control limits, typically at \u00b13 standard deviations.</p>
-<p><strong>x\u0304-chart</strong> (monitors the process mean): center line = x\u0304\u0304 (grand mean); UCL/LCL = x\u0304\u0304 \u00b1 A\u2082R\u0304, where A\u2082 depends on subgroup size n and R\u0304 is the average subgroup range.</p>
-<p><strong>R-chart</strong> (monitors process variability): center line = R\u0304; UCL = D\u2084R\u0304, LCL = D\u2083R\u0304 (D\u2083 = 0 for small n).</p>
-<p><strong>p-chart</strong> (monitors a proportion nonconforming): center line = p\u0304; UCL/LCL = p\u0304 \u00b1 3\u221a(p\u0304(1\u2212p\u0304)/n), bounded to [0,1].</p>
+<p>Control charts monitor a process over time using a center line and control limits, typically at \\(\\pm 3\\) standard deviations.</p>
+<p><strong>\\(\\bar{x}\\)-chart</strong> (monitors the process mean): center line \\(= \\bar{\\bar{x}}\\) (grand mean); \\(UCL/LCL = \\bar{\\bar{x}} \\pm A_2\\bar{R}\\), where \\(A_2\\) depends on subgroup size \\(n\\) and \\(\\bar{R}\\) is the average subgroup range.</p>
+<p><strong>R-chart</strong> (monitors process variability): center line \\(= \\bar{R}\\); \\(UCL = D_4\\bar{R}\\), \\(LCL = D_3\\bar{R}\\) (\\(D_3 = 0\\) for small \\(n\\)).</p>
+<p><strong>p-chart</strong> (monitors a proportion nonconforming): center line \\(= \\bar{p}\\); \\(UCL/LCL = \\bar{p} \\pm 3\\sqrt{\\dfrac{\\bar{p}(1-\\bar{p})}{n}}\\), bounded to \\([0,1]\\).</p>
 <p>A process signals "out of control" when a point falls outside the control limits or a nonrandom pattern (e.g., a run or trend) appears.</p>` }
 ];
 
@@ -1101,6 +1118,12 @@ function initApp(){
   selectTopic(currentTopicId);
 }
 
+function typesetMath(el){
+  if(window.MathJax && window.MathJax.typesetPromise){
+    window.MathJax.typesetPromise([el]).catch(err => console.error('MathJax typeset error:', err));
+  }
+}
+
 function selectTopic(id){
   currentTopicId = id;
   document.querySelectorAll('.topic-btn').forEach(b => {
@@ -1109,7 +1132,9 @@ function selectTopic(id){
   const topic = TOPICS.find(t => t.id === id);
   document.getElementById('topicEyebrow').textContent = topic.type === 'mc' ? 'Review \u00b7 Multiple choice' : 'Review \u00b7 Calculation';
   document.getElementById('topicTitle').textContent = topic.title;
-  document.getElementById('reviewBox').innerHTML = topic.review;
+  const reviewBox = document.getElementById('reviewBox');
+  reviewBox.innerHTML = topic.review;
+  typesetMath(reviewBox);
   renderProblems();
   window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -1161,6 +1186,7 @@ function renderProblems(){
       card.querySelector(`#ans-${idx}`).addEventListener('keydown', (e) => { if(e.key === 'Enter') submit(); });
     }
   });
+  typesetMath(box);
 }
 
 function checkCalcAnswer(idx, problem){
