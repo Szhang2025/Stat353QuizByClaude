@@ -1347,7 +1347,10 @@ const TOPICS = [
 <p><strong>Experiment / Sample space / Event:</strong> A <em>random experiment</em> is a process with an uncertain outcome. The <em>sample space</em> \\(S\\) is the set of all possible outcomes. An <em>event</em> is any subset of the sample space (a collection of outcomes we care about). We use capital letters such as \\(A\\) and \\(B\\) to denote events, use \\(A \\cup B\\) to denote the event that \\(A\\) or \\(B\\) occurs, and use \\(A \\cap B\\) to denote the event that they occur simultaneously.</p>
 <p><strong>Multiplicative counting principle:</strong> If a task consists of \\(k\\) steps, and step 1 can be done in \\(n_1\\) ways, step 2 in \\(n_2\\) ways, \\(\\ldots\\), step \\(k\\) in \\(n_k\\) ways, then the whole task can be done in \\(n_1 \\times n_2 \\times \\cdots \\times n_k\\) ways.</p>
 <p><strong>Permutations</strong> (order matters, no repeats): arranging all \\(n\\) distinct items \\(\\to n!\\) ways; choosing and ordering \\(r\\) of \\(n\\) items \\(\\to\\ P(n,r) = \\dfrac{n!}{(n-r)!}\\).</p>
-<p><strong>Combinations</strong> (order doesn't matter): choosing \\(r\\) of \\(n\\) distinct items \\(\\to\\ C(n,r) = \\dbinom{n}{r} = \\dfrac{n!}{r!\\,(n-r)!}\\).</p>` },
+<p><strong>Combinations</strong> (order doesn't matter): choosing \\(r\\) of \\(n\\) distinct items \\(\\to\\ C(n,r) = \\dbinom{n}{r} = \\dfrac{n!}{r!\\,(n-r)!}\\).</p>
+<p><strong>Mutually exclusive (disjoint) events:</strong> Two events are mutually exclusive if they cannot both occur at the same time, i.e., \\(A \\cap B = \\varnothing\\). For a collection of more than two events, they are mutually exclusive if no two of them can occur together.</p>
+<p><strong>Exhaustive events:</strong> A set of events is exhaustive if their union covers the entire sample space (at least one of them must occur). A set of events that is both mutually exclusive and exhaustive forms a <strong>partition</strong> of the sample space.</p>
+` },
 
 { id:2, title:"2. Probability of an Event", type:"calc", gen:gen2, review:`
 <p>When outcomes in a finite sample space are <strong>equally likely</strong>, \\( P(\\text{event}) = \\dfrac{\\#\\text{ outcomes in the event}}{\\#\\text{ outcomes in } S} \\).</p>
@@ -1466,6 +1469,10 @@ const NOTES = {
 <div class="ex-block"><div class="ex-label">Worked example</div>
 <p>From a class of 8 students, a teacher selects 3 students to form an unordered study group. How many different groups are possible? Compare this to selecting a president, secretary, and treasurer (an ordered assignment) from the same 8 students.</p>
 <p><strong>Solution:</strong> Unordered group (combination): \\(\\binom{8}{3} = \\dfrac{8!}{3!\\,5!} = 56\\). Ordered offices (permutation): \\(P(8,3) = \\dfrac{8!}{5!} = 336\\). The permutation count is larger because each group of 3 people can be arranged into offices in \\(3! = 6\\) different ways, and indeed \\(56 \\times 6 = 336\\).</p></div>
+<div class="ex-block"><div class="ex-label">Mutually exclusive &amp; exhaustive events</div>
+<p>A coin toss has two possible outcomes: heads and tails. These events are <strong>mutually exclusive</strong> (they cannot both happen on a single toss) and <strong>exhaustive</strong> (together they cover the entire sample space \\(S = \\{\\text{H}, \\text{T}\\}\\)). They form a <strong>partition</strong> of the sample space.</p>
+<p>Another example: a die roll. Let \\(A\\) = "roll is even" and \\(B\\) = "roll is odd." These are mutually exclusive and exhaustive, and their probabilities sum to 1: \\(P(A)+P(B)=1\\).</p>
+</div>
 `,
 2: `
 <p><strong>Notation used in this topic:</strong></p>
