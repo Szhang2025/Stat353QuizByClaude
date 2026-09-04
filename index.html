@@ -1831,8 +1831,24 @@ function checkCalcAnswer(idx, problem){
   }
 }
 
+</script>
 
-const PROXY_URL = "https://script.google.com/macros/s/AKfycbxSRD8ayq-zRW4mFOtxYvwNAibpQDLHdh4_1xEl1Xs9HL7qUhIW4t8Y1yL9zi1BZF-L/exec";
+<!-- Drop this whole block into your existing HTML file, right before </body> -->
+
+<!-- 1. The visible chat UI -->
+<div id="tutor-chat" style="max-width: 500px; margin: 2rem auto; font-family: sans-serif;">
+  <div id="chat-output" style="min-height: 100px; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 0.5rem; white-space: pre-wrap;">
+    Ask me a question about the course material!
+  </div>
+  <div style="display: flex; gap: 0.5rem;">
+    <input id="chat-input" type="text" placeholder="Type your question..." style="flex: 1; padding: 0.5rem;" />
+    <button id="chat-send">Send</button>
+  </div>
+</div>
+
+<!-- 2. The logic that talks to your Apps Script backend -->
+<script>
+  const PROXY_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
   let conversationHistory = []; // {role: "user"|"assistant", content: "..."}
 
   async function sendToTutor(studentMessage, studentId) {
@@ -1858,13 +1874,29 @@ const PROXY_URL = "https://script.google.com/macros/s/AKfycbxSRD8ayq-zRW4mFOtxYv
     return data.reply;
   }
 
-  // Example usage:
-  // sendToTutor("Why do we use n-1 in sample variance?").then(reply => {
-  //   document.getElementById("chat-output").innerText = reply;
-  // });
-  
-  
+  // 3. Wiring the UI to the logic above
+  const outputEl = document.getElementById("chat-output");
+  const inputEl = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("chat-send");
+
+  async function handleSend() {
+    const message = inputEl.value.trim();
+    if (!message) return;
+
+    inputEl.value = "";
+    outputEl.innerText = "Thinking...";
+
+    const reply = await sendToTutor(message);
+    outputEl.innerText = reply;
+  }
+
+  sendBtn.addEventListener("click", handleSend);
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleSend();
+  });
 </script>
+
+  
 </body>
 </html>
 
