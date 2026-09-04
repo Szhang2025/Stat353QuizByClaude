@@ -463,7 +463,60 @@
       <div id="problemsBox"></div>
     </main>
   </div>
-  <footer class="appfoot">Problems regenerate with new random values each time you click &ldquo;New problem set,&rdquo; so students can practice repeatedly. Use &ldquo;Show solution&rdquo; on any problem for a full worked-out explanation.</footer>
+
+
+  <!-- 2. The logic that talks to your Apps Script backend -->
+<script>
+  const PROXY_URL = "https://script.google.com/macros/s/AKfycbxSRD8ayq-zRW4mFOtxYvwNAibpQDLHdh4_1xEl1Xs9HL7qUhIW4t8Y1yL9zi1BZF-L/exec";
+  let conversationHistory = []; // {role: "user"|"assistant", content: "..."}
+
+  async function sendToTutor(studentMessage, studentId) {
+    conversationHistory.push({ role: "user", content: studentMessage });
+
+    const response = await fetch(PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" }, // Apps Script quirk: avoid CORS preflight
+      body: JSON.stringify({
+        message: studentMessage,
+        history: conversationHistory.slice(0, -1), // history before this turn
+        studentId: studentId || "anonymous"
+      })
+    });
+
+    const data = await response.json();
+    if (data.error) {
+      console.error("Tutor error:", data.error);
+      return "Sorry, something went wrong — please try again.";
+    }
+
+    conversationHistory.push({ role: "assistant", content: data.reply });
+    return data.reply;
+  }
+
+  // 3. Wiring the UI to the logic above
+  const outputEl = document.getElementById("chat-output");
+  const inputEl = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("chat-send");
+
+  async function handleSend() {
+    const message = inputEl.value.trim();
+    if (!message) return;
+
+    inputEl.value = "";
+    outputEl.innerText = "Thinking...";
+
+    const reply = await sendToTutor(message);
+    outputEl.innerText = reply;
+  }
+
+  sendBtn.addEventListener("click", handleSend);
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleSend();
+  });
+</script>
+
+  
+  <footer class="appfoot">Feedback sent to the instructor: szhang@stcloudstate.edu</footer>
 </div>
 
 <div class="modal-overlay" id="modalOverlay">
@@ -1846,55 +1899,7 @@ function checkCalcAnswer(idx, problem){
   </div>
 </div>
 
-<!-- 2. The logic that talks to your Apps Script backend -->
-<script>
-  const PROXY_URL = "https://script.google.com/macros/s/AKfycbxSRD8ayq-zRW4mFOtxYvwNAibpQDLHdh4_1xEl1Xs9HL7qUhIW4t8Y1yL9zi1BZF-L/exec";
-  let conversationHistory = []; // {role: "user"|"assistant", content: "..."}
 
-  async function sendToTutor(studentMessage, studentId) {
-    conversationHistory.push({ role: "user", content: studentMessage });
-
-    const response = await fetch(PROXY_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain" }, // Apps Script quirk: avoid CORS preflight
-      body: JSON.stringify({
-        message: studentMessage,
-        history: conversationHistory.slice(0, -1), // history before this turn
-        studentId: studentId || "anonymous"
-      })
-    });
-
-    const data = await response.json();
-    if (data.error) {
-      console.error("Tutor error:", data.error);
-      return "Sorry, something went wrong — please try again.";
-    }
-
-    conversationHistory.push({ role: "assistant", content: data.reply });
-    return data.reply;
-  }
-
-  // 3. Wiring the UI to the logic above
-  const outputEl = document.getElementById("chat-output");
-  const inputEl = document.getElementById("chat-input");
-  const sendBtn = document.getElementById("chat-send");
-
-  async function handleSend() {
-    const message = inputEl.value.trim();
-    if (!message) return;
-
-    inputEl.value = "";
-    outputEl.innerText = "Thinking...";
-
-    const reply = await sendToTutor(message);
-    outputEl.innerText = reply;
-  }
-
-  sendBtn.addEventListener("click", handleSend);
-  inputEl.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") handleSend();
-  });
-</script>
 
   
 </body>
