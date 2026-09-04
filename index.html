@@ -1830,6 +1830,42 @@ function checkCalcAnswer(idx, problem){
     fb.textContent = `Not quite. The correct answer is ${problem.a}.`;
   }
 }
+
+
+const PROXY_URL = "https://script.google.com/macros/s/AKfycbxSRD8ayq-zRW4mFOtxYvwNAibpQDLHdh4_1xEl1Xs9HL7qUhIW4t8Y1yL9zi1BZF-L/exec";
+  let conversationHistory = []; // {role: "user"|"assistant", content: "..."}
+
+  async function sendToTutor(studentMessage, studentId) {
+    conversationHistory.push({ role: "user", content: studentMessage });
+
+    const response = await fetch(PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" }, // Apps Script quirk: avoid CORS preflight
+      body: JSON.stringify({
+        message: studentMessage,
+        history: conversationHistory.slice(0, -1), // history before this turn
+        studentId: studentId || "anonymous"
+      })
+    });
+
+    const data = await response.json();
+    if (data.error) {
+      console.error("Tutor error:", data.error);
+      return "Sorry, something went wrong — please try again.";
+    }
+
+    conversationHistory.push({ role: "assistant", content: data.reply });
+    return data.reply;
+  }
+
+  // Example usage:
+  // sendToTutor("Why do we use n-1 in sample variance?").then(reply => {
+  //   document.getElementById("chat-output").innerText = reply;
+  // });
+  
+  
 </script>
 </body>
 </html>
+
+
