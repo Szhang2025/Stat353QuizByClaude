@@ -447,23 +447,21 @@
       </div>
       <nav class="topics" id="topicNav"></nav>
     </aside>
-    <main>
-      <div class="topic-header">
-        <div class="eyebrow" id="topicEyebrow">Topic</div>
-        <h2 id="topicTitle">&nbsp;</h2>
-      </div>
-      <div class="review-actions">
-        <button class="btn-examples" id="examplesBtn"><span class="ico">i</span> Examples &amp; notation</button>
-      </div>
-      <div class="review-card" id="reviewBox"></div>
-      <div class="problems-header">
-        <h3>Practice problems</h3>
-        <button class="btn btn-secondary btn-sm" id="regenBtn">New problem set &#8635;</button>
-      </div>
-      <div id="problemsBox"></div>
-    </main>
 
 
+<!-- Drop this whole block into your existing HTML file, right before </body> -->
+
+<!-- 1. The visible chat UI -->
+<div id="tutor-chat" style="max-width: 500px; margin: 2rem auto; font-family: sans-serif;">
+  <div id="chat-output" style="min-height: 100px; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 0.5rem; white-space: pre-wrap;">
+    Ask me a question about the course material!
+  </div>
+  <div style="display: flex; gap: 0.5rem;">
+    <input id="chat-input" type="text" placeholder="Type your question..." style="flex: 1; padding: 0.5rem;" />
+    <button id="chat-send">Send</button>
+  </div>
+</div>
+    
   <!-- 2. The logic that talks to your Apps Script backend -->
 <script>
   const PROXY_URL = "https://script.google.com/macros/s/AKfycbxSRD8ayq-zRW4mFOtxYvwNAibpQDLHdh4_1xEl1Xs9HL7qUhIW4t8Y1yL9zi1BZF-L/exec";
@@ -513,6 +511,24 @@
     if (e.key === "Enter") handleSend();
   });
 </script>
+    
+    <main>
+      <div class="topic-header">
+        <div class="eyebrow" id="topicEyebrow">Topic</div>
+        <h2 id="topicTitle">&nbsp;</h2>
+      </div>
+      <div class="review-actions">
+        <button class="btn-examples" id="examplesBtn"><span class="ico">i</span> Examples &amp; notation</button>
+      </div>
+      <div class="review-card" id="reviewBox"></div>
+      <div class="problems-header">
+        <h3>Practice problems</h3>
+        <button class="btn btn-secondary btn-sm" id="regenBtn">New problem set &#8635;</button>
+      </div>
+      <div id="problemsBox"></div>
+    </main>
+
+
 </div>
   
   <footer class="appfoot">Feedback sent to the instructor: szhang@stcloudstate.edu</footer>
@@ -1884,20 +1900,6 @@ function checkCalcAnswer(idx, problem){
 }
 
 </script>
-
-<!-- Drop this whole block into your existing HTML file, right before </body> -->
-
-<!-- 1. The visible chat UI -->
-<div id="tutor-chat" style="max-width: 500px; margin: 2rem auto; font-family: sans-serif;">
-  <div id="chat-output" style="min-height: 100px; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 0.5rem; white-space: pre-wrap;">
-    Ask me a question about the course material!
-  </div>
-  <div style="display: flex; gap: 0.5rem;">
-    <input id="chat-input" type="text" placeholder="Type your question..." style="flex: 1; padding: 0.5rem;" />
-    <button id="chat-send">Send</button>
-  </div>
-</div>
-
 
 
   
