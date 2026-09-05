@@ -1637,34 +1637,36 @@ function initApp(){
     return html;
   }
 
-  async function sendToTutor(studentMessage, studentId) {
-    try {
-      conversationHistory.push({ role: "user", content: studentMessage });
+async function sendToTutor(studentMessage, studentId) {
+  try {
+    conversationHistory.push({ role: "user", content: studentMessage });
 
-      const response = await fetch(PROXY_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: studentMessage,
-          history: conversationHistory.slice(0, -1),
-          studentId: studentId || "anonymous"
-        })
-      });
+    const response = await fetch(PROXY_URL, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "text/plain"  // Changed from application/json
+      },
+      body: JSON.stringify({
+        message: studentMessage,
+        history: conversationHistory.slice(0, -1),
+        studentId: studentId || "anonymous"
+      })
+    });
 
-      const data = await response.json();
-      
-      if (data.error) {
-        console.error("Tutor error:", data.error);
-        return "Sorry, something went wrong — please try again.";
-      }
-
-      conversationHistory.push({ role: "assistant", content: data.reply });
-      return data.reply;
-    } catch (error) {
-      console.error("Fetch error:", error);
-      return "Error connecting to tutor service. Please try again.";
+    const data = await response.json();
+    
+    if (data.error) {
+      console.error("Tutor error:", data.error);
+      return "Sorry, something went wrong — please try again.";
     }
+
+    conversationHistory.push({ role: "assistant", content: data.reply });
+    return data.reply;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return "Error connecting to tutor service. Please try again.";
   }
+}
 
   const outputEl = document.getElementById("chat-output");
   const inputEl = document.getElementById("chat-input");
