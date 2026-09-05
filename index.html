@@ -58,7 +58,6 @@
   .mono{font-family:'IBM Plex Mono',monospace;}
   a{color:var(--accent);}
 
-  /* ---------- Password screen ---------- */
   #passwordScreen{
     min-height:100vh;
     display:flex;
@@ -121,7 +120,6 @@
   .btn-secondary:hover{background:rgba(31,111,120,0.08);}
   #pwError{color:var(--bad); font-size:0.85rem; min-height:1.2em; margin-top:4px;}
 
-  /* ---------- App shell ---------- */
   #app{display:none; min-height:100vh;}
   .shell{
     display:flex;
@@ -262,8 +260,6 @@
   .mc-choice[disabled]{cursor:default;}
 
   .topbar-actions{display:flex; gap:10px; margin:8px 0 24px 0;}
-
-  /* ---------- Review header + examples button ---------- */
   .review-actions{display:flex; justify-content:flex-end; margin-bottom:8px;}
   .btn-examples{
     display:inline-flex;
@@ -289,7 +285,6 @@
     flex-shrink:0;
   }
 
-  /* ---------- Modal (examples & notation) ---------- */
   .modal-overlay{
     display:none;
     position:fixed; inset:0;
@@ -370,7 +365,6 @@
   .modal-body .notation-table td{padding:5px 10px 5px 0; vertical-align:top; border-bottom:1px dashed var(--line);}
   .modal-body .notation-table td:first-child{font-family:'IBM Plex Mono',monospace; color:var(--ink); white-space:nowrap;}
 
-  /* ---------- Solution reveal ---------- */
   .btn-solution{
     background:transparent;
     color:var(--ink-soft);
@@ -408,7 +402,6 @@
   .solution-box p:last-child{margin-bottom:0;}
   .solution-box strong{color:var(--ink);}
 
-  /* ---------- Chat UI styles ---------- */
   #tutor-chat {
     max-width: 800px;
     margin: 2rem auto;
@@ -427,6 +420,7 @@
     color: var(--ink);
     font-size: 0.95rem;
     line-height: 1.7;
+    white-space: pre-wrap;
   }
   
   #chat-output h1 {
@@ -499,24 +493,6 @@
     border: none;
     border-top: 2px solid var(--line);
     margin: 1.2em 0;
-  }
-  
-  #chat-output table {
-    border-collapse: collapse;
-    width: 100%;
-    margin: 0.6em 0;
-  }
-  
-  #chat-output th,
-  #chat-output td {
-    border: 1px solid var(--line);
-    padding: 0.4em 0.7em;
-    text-align: left;
-  }
-  
-  #chat-output th {
-    background: var(--paper);
-    font-weight: 600;
   }
   
   #chat-output strong {
@@ -627,12 +603,11 @@
       </div>
       <div id="problemsBox"></div>
 
-      <!-- ===== CHAT UI ===== -->
       <div id="tutor-chat">
-        <div id="chat-output"></div>
+        <div id="chat-output">I'm your AI tutor! Ask me a question about the course material! 🙈</div>
         <div class="chat-input-row">
-          <input id="chat-input" type="text" placeholder="Type your question... 💭" />
-          <button id="chat-send">Send 💌</button>
+          <input id="chat-input" type="text" placeholder="Type your question..." />
+          <button id="chat-send">Send</button>
         </div>
       </div>
 
@@ -698,20 +673,12 @@ async function doVerify(){
 }
 
 /* =========================================================================
-   CHAT LOGIC
+   CHAT LOGIC - KEEP YOUR ORIGINAL PROXY_URL
    ========================================================================= */
 function initChat() {
+  // YOUR ORIGINAL URL - DO NOT CHANGE
   const PROXY_URL = "https://script.google.com/macros/s/AKfycbxSRD8ayq-zRW4mFOtxYvwNAibpQDLHdh4_1xEl1Xs9HL7qUhIW4t8Y1yL9zi1BZF-L/exec";
   let conversationHistory = [];
-
-  if (typeof marked !== 'undefined') {
-    marked.setOptions({
-      breaks: true,
-      gfm: true,
-      headerIds: false,
-      mangle: false
-    });
-  }
 
   async function sendToTutor(studentMessage, studentId) {
     try {
@@ -751,16 +718,6 @@ function initChat() {
     
     if (typeof marked !== 'undefined') {
       html = marked.parse(content);
-    } else {
-      html = content
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/^---$/gm, '<hr>');
-      html = '<p>' + html + '</p>';
     }
     
     html = html.replace(/\\\(/g, '\\(');
@@ -782,19 +739,16 @@ function initChat() {
 
   async function handleSend() {
     const message = inputEl.value.trim();
-    if (!message) {
-      await renderContent(outputEl, "Please enter a question.");
-      return;
-    }
+    if (!message) return;
 
     inputEl.value = "";
-    await renderContent(outputEl, "Thinking... 🤔");
+    outputEl.textContent = "Thinking...";
 
     try {
       const reply = await sendToTutor(message);
       await renderContent(outputEl, reply);
     } catch (error) {
-      await renderContent(outputEl, "❌ Error: " + error.message);
+      outputEl.textContent = "Error: " + error.message;
     }
   }
 
@@ -802,33 +756,6 @@ function initChat() {
   inputEl.addEventListener("keydown", (e) => {
     if (e.key === "Enter") handleSend();
   });
-
-  const greeting = `
-# 👋 Welcome to STAT 353 Tutoring!
-
-I'm your AI tutor, and I'm here to help you learn statistics! 🥰
-
-## 📚 What I can help with:
-- **Probability** - sample spaces, rules, conditional probability
-- **Random Variables** - discrete, continuous, distributions
-- **Statistical Inference** - confidence intervals, hypothesis testing
-- **Regression** - simple and multiple
-- **ANOVA** - one-way analysis of variance
-- **Control Charts** - process monitoring
-
-## 💡 Try asking:
-> *"How do I find the sample space for rolling two dice?"*
-
-> *"What's the difference between a binomial and Poisson distribution?"*
-
-> *"How do I interpret a confidence interval?"*
-
----
-*Be patient with yourself — learning statistics takes practice! 🌸*
-  `;
-
-  renderContent(outputEl, greeting);
-  console.log("Chat initialized with Markdown + Math support");
 }
 
 /* =========================================================================
@@ -852,6 +779,7 @@ function quartiles(arr){
   const upper = n%2===0 ? s.slice(mid) : s.slice(mid+1);
   return {q1: median(lower), q3: median(upper)};
 }
+function zForCL(cl){ return jStat.normal.inv(1-(1-cl)/2,0,1); }
 
 function gen1(){
   const probs=[];
@@ -947,6 +875,10 @@ function gen4(){
   let pM1D = (s2.w1/100*s2.d1)/s2.pD;
   probs.push({q:`A factory has three machines producing ${s2.w1}%, ${s2.w2}%, and ${s2.w3}% of its daily output, respectively, with defect rates ${rnd(s2.d1*100,1)}%, ${rnd(s2.d2*100,1)}%, and ${rnd(s2.d3*100,1)}%. Given that a randomly selected item is defective, use Bayes' formula to find the probability that it came from Machine 1.`, a: rnd(pM1D,4), tol:0.005,
     sol:`<p>\\(P(M_1\\mid D) = \\dfrac{P(M_1)P(D\\mid M_1)}{P(D)} = \\dfrac{(${s2.w1/100})(${s2.d1})}{${rnd(s2.pD,5)}} \\approx ${rnd(pM1D,4)}\\).</p>`});
+  let prev=rf(0.01,0.08,3), sens=rf(0.9,0.99,3), spec=rf(0.9,0.99,3);
+  let pPos = prev*sens + (1-prev)*(1-spec);
+  probs.push({q:`A disease affects ${(prev*100).toFixed(1)}% of a population. A test has sensitivity ${(sens*100).toFixed(1)}% and specificity ${(spec*100).toFixed(1)}%. Find the probability a randomly selected person tests positive.`, a: rnd(pPos,4), tol:0.001,
+    sol:`<p>\\(P(+) = P(D)P(+|D) + P(D')P(+|D') = (${prev})(${sens}) + (1-${prev})(1-${spec}) = ${rnd(pPos,4)}\\).</p>`});
   return probs;
 }
 
@@ -965,6 +897,10 @@ function gen5(){
   let pBin = nCr(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k);
   probs.push({q:`X follows a Binomial(n=${n}, p=${p}) distribution. Find \\(P(X = ${k})\\).`, a: rnd(pBin,4), tol:0.001,
     sol:`<p>\\(P(X{=}k) = \\binom{n}{k}p^k(1-p)^{n-k} = ${nCr(n,k)} \\times ${rnd(Math.pow(p,k),6)} \\times ${rnd(Math.pow(1-p,n-k),6)} \\approx ${rnd(pBin,4)}\\).</p>`});
+  let pg=rf(0.15,0.5,2), kg=ri(2,6);
+  let pGeo = Math.pow(1-pg,kg-1)*pg;
+  probs.push({q:`The probability of success on each trial is p=${pg}. Let X be the trial number of the first success. Find \\(P(X = ${kg})\\).`, a: rnd(pGeo,4), tol:0.001,
+    sol:`<p>\\(P(X{=}k) = (1-p)^{k-1}p = (1-${pg})^{${kg}-1}(${pg}) \\approx ${rnd(pGeo,4)}\\).</p>`});
   return probs;
 }
 
@@ -988,6 +924,9 @@ function gen6(){
   }
   probs.push({q:`X follows a Normal distribution with mean \\(\\mu = ${mu}\\) and SD \\(\\sigma = ${sigma}\\). Find \\(P(X < ${x})\\).`, a: rnd(normCdf(z),4), tol:0.005,
     sol:`<p>\\(z = \\dfrac{x-\\mu}{\\sigma} = \\dfrac{${x}-${mu}}{${sigma}} = ${rnd(z,4)}\\). \\(P(Z<${rnd(z,4)}) \\approx ${rnd(normCdf(z),4)}\\).</p>`});
+  let lam=rf(0.1,0.5,2), t=ri(2,8);
+  probs.push({q:`X follows an Exponential distribution with rate \\(\\lambda = ${lam}\\). Find \\(P(X > ${t})\\).`, a: rnd(Math.exp(-lam*t),4), tol:0.005,
+    sol:`<p>\\(P(X>t) = e^{-\\lambda t} = e^{-${lam*${t}}} \\approx ${rnd(Math.exp(-lam*t),4)}\\).</p>`});
   return probs;
 }
 
@@ -1003,8 +942,14 @@ function gen7(){
   }
   let p=buildTable();
   let pX1=p[2]+p[3];
+  let EX=pX1;
   probs.push({q:`Joint PMF: \\(P(0,0){=}${p[0]}\\), \\(P(0,1){=}${p[1]}\\), \\(P(1,0){=}${p[2]}\\), \\(P(1,1){=}${p[3]}\\). Find \\(P(X=1)\\).`, a: rnd(pX1,4), tol:0.005,
     sol:`<p>\\(P(X{=}1) = P(1,0)+P(1,1) = ${p[2]}+${p[3]} = ${rnd(pX1,4)}\\).</p>`});
+  let p2=buildTable();
+  let pX1_2 = p2[2]+p2[3];
+  let EX_2 = pX1_2;
+  probs.push({q:`Joint PMF: \\(P(0,0){=}${p2[0]}\\), \\(P(0,1){=}${p2[1]}\\), \\(P(1,0){=}${p2[2]}\\), \\(P(1,1){=}${p2[3]}\\). Find \\(E(X)\\).`, a: rnd(EX_2,4), tol:0.01,
+    sol:`<p>\\(E(X)=P(X=1)=${rnd(EX_2,4)}\\).</p>`});
   return probs;
 }
 
@@ -1018,6 +963,9 @@ function gen8(){
   let d1=dataset();
   probs.push({q:`A sample of ${d1.length} measurements is: {${d1.join(', ')}}. Find the sample mean.`, a: rnd(mean(d1),4), tol:0.05,
     sol:`<p>\\(\\bar{x} = \\dfrac{\\sum x_i}{n} = \\dfrac{${d1.reduce((a,b)=>a+b,0)}}{${d1.length}} = ${rnd(mean(d1),4)}\\).</p>`});
+  let d2=dataset();
+  probs.push({q:`A sample of ${d2.length} measurements is: {${d2.join(', ')}}. Find the sample standard deviation.`, a: rnd(sampleSD(d2),4), tol:0.05,
+    sol:`<p>\\(s = \\sqrt{\\dfrac{\\sum (x_i-\\bar{x})^2}{n-1}} \\approx ${rnd(sampleSD(d2),4)}\\).</p>`});
   return probs;
 }
 
@@ -1027,6 +975,12 @@ function gen9(){
   let phat=x/n;
   probs.push({q:`In a random sample of \\(n = ${n}\\) items, \\(x = ${x}\\) have a characteristic. Find the sample proportion \\(\\hat{p}\\).`, a: rnd(phat,4), tol:0.002,
     sol:`<p>\\(\\hat{p} = \\dfrac{x}{n} = \\dfrac{${x}}{${n}} = ${rnd(phat,4)}\\).</p>`});
+  let n2=ri(80,300), x2=ri(Math.round(n2*0.2),Math.round(n2*0.7));
+  let phat2=x2/n2, cl2=pick([0.90,0.95,0.99]);
+  let z2=zForCL(cl2);
+  let E2 = z2*Math.sqrt(phat2*(1-phat2)/n2);
+  probs.push({q:`In a sample of n=${n2}, x=${x2} have the characteristic. Find the margin of error for a ${cl2*100}% CI.`, a: rnd(E2,4), tol:0.003,
+    sol:`<p>\\(E = z\\sqrt{\\hat{p}(1-\\hat{p})/n} = ${rnd(z2,3)}\\sqrt{${rnd(phat2,4)}(${rnd(1-phat2,4)})/${n2}} \\approx ${rnd(E2,4)}\\).</p>`});
   return probs;
 }
 
@@ -1036,6 +990,10 @@ function gen10(){
   let s1=samp(), s2=samp();
   probs.push({q:`Sample 1: n1=${s1.n}, x1=${s1.x}. Sample 2: n2=${s2.n}, x2=${s2.x}. Find \\(\\hat{p}_1 - \\hat{p}_2\\).`, a: rnd(s1.p-s2.p,4), tol:0.003,
     sol:`<p>\\(\\hat{p}_1 = ${rnd(s1.p,4)}\\), \\(\\hat{p}_2 = ${rnd(s2.p,4)}\\). Difference = ${rnd(s1.p-s2.p,4)}\\).</p>`});
+  let s3=samp(), s4=samp();
+  let SE34 = Math.sqrt(s3.p*(1-s3.p)/s3.n + s4.p*(1-s4.p)/s4.n);
+  probs.push({q:`Sample 1: n1=${s3.n}, x1=${s3.x}. Sample 2: n2=${s4.n}, x2=${s4.x}. Find the SE of \\(\\hat{p}_1-\\hat{p}_2\\).`, a: rnd(SE34,4), tol:0.003,
+    sol:`<p>\\(SE = \\sqrt{\\hat{p}_1(1-\\hat{p}_1)/n_1 + \\hat{p}_2(1-\\hat{p}_2)/n_2} \\approx ${rnd(SE34,4)}\\).</p>`});
   return probs;
 }
 
@@ -1045,15 +1003,28 @@ function gen11(){
   let s1=samp();
   probs.push({q:`A sample has \\(\\bar{x} = ${s1.xbar}\\), \\(s = ${s1.s}\\), \\(n = ${s1.n}\\). Find the standard error \\(SE = s/\\sqrt{n}\\).`, a: rnd(s1.s/Math.sqrt(s1.n),4), tol:0.02,
     sol:`<p>\\(SE = \\dfrac{s}{\\sqrt{n}} = \\dfrac{${s1.s}}{\\sqrt{${s1.n}}} \\approx ${rnd(s1.s/Math.sqrt(s1.n),4)}\\).</p>`});
+  let s2=samp(), cl2=pick([0.90,0.95,0.99]);
+  let df2=s2.n-1, tcrit2=jStat.studentt.inv(1-(1-cl2)/2,df2);
+  probs.push({q:`A sample has n=${s2.n} (df=${df2}). Find the t-critical value for a ${cl2*100}% CI.`, a: rnd(tcrit2,4), tol:0.03,
+    sol:`<p>\\(t_{${rnd((1-cl2)/2,3)},${df2}} \\approx ${rnd(tcrit2,4)}\\).</p>`});
   return probs;
 }
 
 function gen12(){
   const probs=[];
   function samp(){ return {xbar: ri(40,100), s: ri(5,20), n: ri(10,35)}; }
+  function welchDf(s1,s2){
+    let num = Math.pow(s1.s*s1.s/s1.n + s2.s*s2.s/s2.n, 2);
+    let den = Math.pow(s1.s*s1.s/s1.n,2)/(s1.n-1) + Math.pow(s2.s*s2.s/s2.n,2)/(s2.n-1);
+    return num/den;
+  }
   let a1=samp(), b1=samp();
   probs.push({q:`Sample 1: \\(\\bar{x}_1=${a1.xbar}\\), \\(s_1=${a1.s}\\), \\(n_1=${a1.n}\\). Sample 2: \\(\\bar{x}_2=${b1.xbar}\\), \\(s_2=${b1.s}\\), \\(n_2=${b1.n}\\). Find \\(\\bar{x}_1 - \\bar{x}_2\\).`, a: rnd(a1.xbar-b1.xbar,4), tol:0.05,
     sol:`<p>\\(\\bar{x}_1-\\bar{x}_2 = ${a1.xbar} - ${b1.xbar} = ${rnd(a1.xbar-b1.xbar,4)}\\).</p>`});
+  let a2=samp(), b2=samp();
+  let SE2 = Math.sqrt(a2.s*a2.s/a2.n + b2.s*b2.s/b2.n);
+  probs.push({q:`Sample 1: s1=${a2.s}, n1=${a2.n}. Sample 2: s2=${b2.s}, n2=${b2.n}. Find the Welch SE.`, a: rnd(SE2,4), tol:0.02,
+    sol:`<p>\\(SE = \\sqrt{s_1^2/n_1 + s_2^2/n_2} \\approx ${rnd(SE2,4)}\\).</p>`});
   return probs;
 }
 
@@ -1070,6 +1041,22 @@ function gen13(){
   let g1=gofSet();
   probs.push({q:`A GOF test has observed counts: {${g1.obs.join(', ')}}. Expected counts are {${g1.exp.map(e=>rnd(e,2)).join(', ')}}. Find \\(\\chi^2 = \\sum (O-E)^2/E\\).`, a: rnd(g1.chi2,4), tol:0.05,
     sol:`<p>\\(\\chi^2 = ${g1.obs.map((o,i)=>`(${o}-${rnd(g1.exp[i],2)})^2/${rnd(g1.exp[i],2)}`).join(' + ')} = ${rnd(g1.chi2,4)}\\).</p>`});
+  function indTable(){
+    let r=2, c=pick([2,3]);
+    let rowTot=[], colTot=[];
+    let table=[];
+    for(let i=0;i<r;i++){ table.push([]); }
+    for(let i=0;i<r;i++) for(let j=0;j<c;j++) table[i][j]=ri(10,40);
+    for(let i=0;i<r;i++) rowTot.push(table[i].reduce((a,b)=>a+b,0));
+    for(let j=0;j<c;j++){ let s=0; for(let i=0;i<r;i++) s+=table[i][j]; colTot.push(s); }
+    let grand = rowTot.reduce((a,b)=>a+b,0);
+    return {r,c,table,rowTot,colTot,grand};
+  }
+  let it3=indTable();
+  let ci=ri(0,it3.r-1), cj=ri(0,it3.c-1);
+  let expCell = (it3.rowTot[ci]*it3.colTot[cj])/it3.grand;
+  probs.push({q:`A ${it3.r}x${it3.c} table has row ${ci+1} total=${it3.rowTot[ci]}, column ${cj+1} total=${it3.colTot[cj]}, grand total=${it3.grand}. Find the expected count for this cell.`, a: rnd(expCell,4), tol:0.05,
+    sol:`<p>\\(E = \\dfrac{\\text{row total}\\times\\text{col total}}{\\text{grand total}} = \\dfrac{${it3.rowTot[ci]}\\times${it3.colTot[cj]}}{${it3.grand}} \\approx ${rnd(expCell,4)}\\).</p>`});
   return probs;
 }
 
@@ -1083,6 +1070,14 @@ function gen14(){
     `df(treatment)=${n-k}, df(error)=${dfT}`
   ], correct:0,
     sol:`<p>\\(df(\\text{treatment}) = k-1 = ${dfT}\\). \\(df(\\text{error}) = n-k = ${dfE}\\).</p>`});
+  let SST=ri(150,400), SSE=ri(50,SST-30);
+  let SSTr=SST-SSE;
+  probs.push({q:`In a one-way ANOVA, SST=${SST} and SSE=${SSE}. Find SSTr.`, choices:[
+    `SSTr = ${SSTr}`,
+    `SSTr = ${SST+SSE}`,
+    `SSTr = ${SSE-SST}`
+  ], correct:0,
+    sol:`<p>\\(SSTr = SST - SSE = ${SST} - ${SSE} = ${SSTr}\\).</p>`});
   return probs;
 }
 
@@ -1096,6 +1091,14 @@ function gen15(){
     `\\(\\hat{y} = ${rnd(b1+b0*x0,2)}\\)`
   ], correct:0,
     sol:`<p>\\(\\hat{y} = ${b0} + ${b1}(${x0}) = ${b0} + ${rnd(b1*x0,2)} = ${yhat}\\).</p>`});
+  let r2=rf(0.4,0.95,2);
+  let pct=rnd(r2*100,1);
+  probs.push({q:`A regression model has \\(R^2 = ${r2}\\). What does this mean?`, choices:[
+    `${pct}% of the variability in y is explained by the model`,
+    `${pct}% of data points fall on the regression line`,
+    `The correlation is ${pct}`
+  ], correct:0,
+    sol:`<p>\\(R^2\\) is the proportion of variability in y explained by the model: ${r2*100}%.</p>`});
   return probs;
 }
 
@@ -1111,6 +1114,16 @@ function gen16(){
     `UCL = ${rnd(xbarbar+Rbar,3)}`
   ], correct:0,
     sol:`<p>\\(UCL = \\bar{\\bar{x}} + A_2\\bar{R} = ${xbarbar} + (${A2})(${Rbar}) = ${UCL}\\).</p>`});
+  let n4=ri(80,200), pbar=rf(0.02,0.12,3);
+  let sigp=Math.sqrt(pbar*(1-pbar)/n4);
+  let UCLp=rnd(Math.min(1,pbar+3*sigp),4);
+  let LCLp=rnd(Math.max(0,pbar-3*sigp),4);
+  probs.push({q:`For a p-chart with n=${n4}, \\(\\bar{p}=${pbar}\\). Find UCL and LCL.`, choices:[
+    `UCL=${UCLp}, LCL=${LCLp}`,
+    `UCL=${rnd(pbar+2*sigp,4)}, LCL=${rnd(pbar-2*sigp,4)}`,
+    `UCL=${rnd(1-pbar,4)}, LCL=${rnd(pbar,4)}`
+  ], correct:0,
+    sol:`<p>\\(UCL/LCL = \\bar{p} \\pm 3\\sqrt{\\bar{p}(1-\\bar{p})/n} = ${UCLp}, ${LCLp}\\).</p>`});
   return probs;
 }
 
