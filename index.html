@@ -756,6 +756,9 @@ function initChat() {
   inputEl.addEventListener("keydown", (e) => {
     if (e.key === "Enter") handleSend();
   });
+
+  // Simple greeting - no template literals with complex expressions
+  outputEl.textContent = "I'm your AI tutor! Ask me a question about the course material! 🙈";
 }
 
 /* =========================================================================
