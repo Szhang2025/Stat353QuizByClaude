@@ -429,29 +429,29 @@
     line-height: 1.7;
   }
   
-  #chat-output h1 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--ink);
-    margin: 0.6em 0 0.3em 0;
-    font-family: 'Fraunces', serif;
-  }
-  
-  #chat-output h2 {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: var(--ink);
-    margin: 0.6em 0 0.3em 0;
-    font-family: 'Fraunces', serif;
-  }
-  
-  #chat-output h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--accent);
-    margin: 0.5em 0 0.2em 0;
-    font-family: 'Fraunces', serif;
-  }
+#chat-output h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0.6em 0 0.3em 0;
+  font-family: 'Fraunces', serif;
+}
+
+#chat-output h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0.6em 0 0.3em 0;
+  font-family: 'Fraunces', serif;
+}
+
+#chat-output h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0.5em 0 0.2em 0;
+  font-family: 'Fraunces', serif;
+}
   
   #chat-output p {
     margin: 0.4em 0;
@@ -470,12 +470,15 @@
   }
   
   #chat-output blockquote {
-    border-left: 4px solid var(--accent);
-    padding-left: 1em;
-    margin: 0.6em 0;
-    color: var(--ink-soft);
-    font-style: italic;
-  }
+  border-left: 4px solid var(--accent);
+  padding-left: 1em;
+  margin: 0.6em 0;
+  color: var(--ink-soft);
+  font-style: italic;
+  background: var(--paper);
+  padding: 0.5em 1em;
+  border-radius: 4px;
+}
   
   #chat-output code {
     font-family: 'IBM Plex Mono', monospace;
@@ -496,10 +499,10 @@
   }
   
   #chat-output hr {
-    border: none;
-    border-top: 2px solid var(--line);
-    margin: 1.2em 0;
-  }
+  border: none;
+  border-top: 2px solid var(--line);
+  margin: 1.2em 0;
+}
   
   #chat-output strong {
     font-weight: 600;
@@ -1620,22 +1623,49 @@ function initApp(){
   let conversationHistory = [];
 
   function formatResponse(text) {
-    let html = text;
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    html = html.replace(/\n\n/g, '</p><p>');
-    html = html.replace(/\n/g, '<br>');
-    if (!html.startsWith('<p>')) {
-      html = '<p>' + html + '</p>';
-    }
-    html = html.replace(/<p><\/p>/g, '');
-    html = html.replace(/\\\(/g, '\\(');
-    html = html.replace(/\\\)/g, '\\)');
-    html = html.replace(/\\\[/g, '\\[');
-    html = html.replace(/\\\]/g, '\\]');
-    html = html.replace(/\$\$(.*?)\$\$/g, '\\[$1\\]');
-    return html;
+  let html = text;
+  
+  // Bold: **text** -> <strong>text</strong>
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  
+  // Italic: *text* -> <em>text</em>
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  
+  // Headers: ## text -> <h2>text</h2>
+  html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+  
+  // Blockquotes: > text -> <blockquote>text</blockquote>
+  html = html.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
+  
+  // Horizontal rules: --- -> <hr>
+  html = html.replace(/^---$/gm, '<hr>');
+  
+  // Line breaks: double newline -> paragraph break
+  html = html.replace(/\n\n/g, '</p><p>');
+  html = html.replace(/\n/g, '<br>');
+  
+  // Wrap in paragraph if not already
+  if (!html.startsWith('<p>') && !html.startsWith('<h1>') && !html.startsWith('<h2>') && !html.startsWith('<h3>') && !html.startsWith('<blockquote>') && !html.startsWith('<hr>')) {
+    html = '<p>' + html + '</p>';
   }
+  
+  // Fix empty paragraphs
+  html = html.replace(/<p><\/p>/g, '');
+  
+  // Fix consecutive blockquotes
+  html = html.replace(/<\/blockquote><blockquote>/g, '<br>');
+  
+  // Preserve LaTeX for MathJax
+  html = html.replace(/\\\(/g, '\\(');
+  html = html.replace(/\\\)/g, '\\)');
+  html = html.replace(/\\\[/g, '\\[');
+  html = html.replace(/\\\]/g, '\\]');
+  html = html.replace(/\$\$(.*?)\$\$/g, '\\[$1\\]');
+  
+  return html;
+}
 
 async function sendToTutor(studentMessage, studentId) {
   try {
