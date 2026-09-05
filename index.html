@@ -408,6 +408,55 @@
   .solution-box p:last-child{margin-bottom:0;}
   .solution-box strong{color:var(--ink);}
 
+  /* ---------- Chat UI styles ---------- */
+  #tutor-chat {
+    max-width: 500px;
+    margin: 2rem auto;
+    font-family: 'Inter', sans-serif;
+  }
+  #chat-output {
+    min-height: 100px;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    white-space: pre-wrap;
+    background: var(--paper-card);
+    color: var(--ink);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  #tutor-chat .chat-input-row {
+    display: flex;
+    gap: 0.5rem;
+  }
+  #chat-input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1.5px solid var(--line);
+    border-radius: 7px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+  }
+  #chat-input:focus {
+    border-color: var(--accent);
+  }
+  #chat-send {
+    padding: 0.5rem 1.5rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  #chat-send:hover {
+    background: var(--accent-dark);
+  }
+
   footer.appfoot{
     text-align:center;
     color:var(--ink-soft);
@@ -421,6 +470,7 @@
     nav.topics{flex-direction:row; flex-wrap:wrap;}
     .topic-btn{width:auto;}
     main{padding:22px 18px;}
+    #tutor-chat{max-width:100%; margin:1.5rem auto;}
   }
 </style>
 </head>
@@ -434,7 +484,6 @@
     <input type="password" id="pwInput" placeholder="Password" autocomplete="off">
     <button class="btn btn-full" id="pwSubmit">Unlock</button>
     <div id="pwError"></div>
-  
   </div>
 </div>
 
@@ -447,71 +496,6 @@
       </div>
       <nav class="topics" id="topicNav"></nav>
     </aside>
-
-
-<!-- Drop this whole block into your existing HTML file, right before </body> -->
-
-<!-- 1. The visible chat UI -->
-<div id="tutor-chat" style="max-width: 500px; margin: 2rem auto; font-family: sans-serif;">
-  <div id="chat-output" style="min-height: 100px; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 0.5rem; white-space: pre-wrap;">
-    Ask me a question about the course material!
-  </div>
-  <div style="display: flex; gap: 0.5rem;">
-    <input id="chat-input" type="text" placeholder="Type your question..." style="flex: 1; padding: 0.5rem;" />
-    <button id="chat-send">Send</button>
-  </div>
-</div>
-    
-  <!-- 2. The logic that talks to your Apps Script backend -->
-<script>
-  const PROXY_URL = "https://script.google.com/macros/s/AKfycbxSRD8ayq-zRW4mFOtxYvwNAibpQDLHdh4_1xEl1Xs9HL7qUhIW4t8Y1yL9zi1BZF-L/exec";
-  let conversationHistory = []; // {role: "user"|"assistant", content: "..."}
-
-  async function sendToTutor(studentMessage, studentId) {
-    conversationHistory.push({ role: "user", content: studentMessage });
-
-    const response = await fetch(PROXY_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain" }, // Apps Script quirk: avoid CORS preflight
-      body: JSON.stringify({
-        message: studentMessage,
-        history: conversationHistory.slice(0, -1), // history before this turn
-        studentId: studentId || "anonymous"
-      })
-    });
-
-    const data = await response.json();
-    if (data.error) {
-      console.error("Tutor error:", data.error);
-      return "Sorry, something went wrong — please try again.";
-    }
-
-    conversationHistory.push({ role: "assistant", content: data.reply });
-    return data.reply;
-  }
-
-  // 3. Wiring the UI to the logic above
-  const outputEl = document.getElementById("chat-output");
-  const inputEl = document.getElementById("chat-input");
-  const sendBtn = document.getElementById("chat-send");
-
-  async function handleSend() {
-    const message = inputEl.value.trim();
-    if (!message) return;
-
-    inputEl.value = "";
-    outputEl.innerText = "Thinking...";
-
-    const reply = await sendToTutor(message);
-    outputEl.innerText = reply;
-  }
-
-  sendBtn.addEventListener("click", handleSend);
-  inputEl.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") handleSend();
-  });
-</script>
-    
     <main>
       <div class="topic-header">
         <div class="eyebrow" id="topicEyebrow">Topic</div>
@@ -526,11 +510,20 @@
         <button class="btn btn-secondary btn-sm" id="regenBtn">New problem set &#8635;</button>
       </div>
       <div id="problemsBox"></div>
+
+      <!-- ===== CHAT UI - NOW INSIDE #app ===== -->
+      <div id="tutor-chat">
+        <div id="chat-output">
+          Ask me a question about the course material!
+        </div>
+        <div class="chat-input-row">
+          <input id="chat-input" type="text" placeholder="Type your question..." />
+          <button id="chat-send">Send</button>
+        </div>
+      </div>
+
     </main>
-
-
-</div>
-  
+  </div>
   <footer class="appfoot">Feedback sent to the instructor: szhang@stcloudstate.edu</footer>
 </div>
 
@@ -1783,6 +1776,55 @@ function initApp(){
     if(e.key === 'Escape') closeExamplesModal();
   });
   selectTopic(currentTopicId);
+  
+  // ===== CHAT LOGIC - Initialize after app is visible =====
+  const PROXY_URL = "https://script.google.com/macros/s/AKfycbxSRD8ayq-zRW4mFOtxYvwNAibpQDLHdh4_1xEl1Xs9HL7qUhIW4t8Y1yL9zi1BZF-L/exec";
+  let conversationHistory = [];
+
+  async function sendToTutor(studentMessage, studentId) {
+    conversationHistory.push({ role: "user", content: studentMessage });
+
+    const response = await fetch(PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({
+        message: studentMessage,
+        history: conversationHistory.slice(0, -1),
+        studentId: studentId || "anonymous"
+      })
+    });
+
+    const data = await response.json();
+    if (data.error) {
+      console.error("Tutor error:", data.error);
+      return "Sorry, something went wrong — please try again.";
+    }
+
+    conversationHistory.push({ role: "assistant", content: data.reply });
+    return data.reply;
+  }
+
+  const outputEl = document.getElementById("chat-output");
+  const inputEl = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("chat-send");
+
+  async function handleSend() {
+    const message = inputEl.value.trim();
+    if (!message) return;
+
+    inputEl.value = "";
+    outputEl.innerText = "Thinking...";
+
+    const reply = await sendToTutor(message);
+    outputEl.innerText = reply;
+  }
+
+  if (sendBtn && inputEl) {
+    sendBtn.addEventListener("click", handleSend);
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleSend();
+    });
+  }
 }
 
 function typesetMath(el){
@@ -1901,9 +1943,5 @@ function checkCalcAnswer(idx, problem){
 
 </script>
 
-
-  
 </body>
 </html>
-
-
