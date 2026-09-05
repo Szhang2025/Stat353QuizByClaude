@@ -542,10 +542,13 @@
   }
   
   #chat-output mjx-container {
-    margin: 0.5em 0 !important;
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
+  display: inline-block !important;
+  margin: 0 0.1em !important;
+}
+
+#chat-output .MathJax {
+  font-size: 1.05em !important;
+}
   
   #tutor-chat .chat-input-row {
     display: flex;
@@ -1652,94 +1655,103 @@ function initApp(){
 
   // ===== FORMAT RESPONSE =====
   function formatResponse(text) {
-    let html = text;
-    
-    // Headers
-    html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
-    html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
-    html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
-    
-    // Bold & Italic
-    html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    
-    // Blockquotes
-    html = html.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
-    html = html.replace(/<\/blockquote>\s*<blockquote>/g, '<br>');
-    
-    // Horizontal rules
-    html = html.replace(/^---$/gm, '<hr>');
-    html = html.replace(/^___$/gm, '<hr>');
-    
-    // Tables
-    const tableRegex = /\|(.+)\|\s*\n\|[-: |]+\|\s*\n((?:\|.+\|\s*\n)+)/gm;
-    html = html.replace(tableRegex, function(match, headerRow, dataRows) {
-      const headers = headerRow.split('|').filter(cell => cell.trim() !== '');
-      let tableHtml = '<table><thead><tr>';
-      headers.forEach(h => {
-        tableHtml += `<th>${h.trim()}</th>`;
-      });
-      tableHtml += '</tr></thead><tbody>';
-      
-      const rows = dataRows.trim().split('\n');
-      rows.forEach(row => {
-        const cells = row.split('|').filter(cell => cell.trim() !== '');
-        if (cells.length > 0) {
-          tableHtml += '<tr>';
-          cells.forEach(cell => {
-            tableHtml += `<td>${cell.trim()}</td>`;
-          });
-          tableHtml += '</tr>';
-        }
-      });
-      tableHtml += '</tbody></table>';
-      return tableHtml;
+  let html = text;
+  
+  // ===== FIRST: Protect LaTeX from being modified =====
+  // Replace LaTeX delimiters with placeholders
+  html = html.replace(/\\\(/g, 'MATHJAX_INLINE_START');
+  html = html.replace(/\\\)/g, 'MATHJAX_INLINE_END');
+  html = html.replace(/\\\[/g, 'MATHJAX_DISPLAY_START');
+  html = html.replace(/\\\]/g, 'MATHJAX_DISPLAY_END');
+  html = html.replace(/\$\$(.*?)\$\$/g, 'MATHJAX_DISPLAY_START$1MATHJAX_DISPLAY_END');
+  
+  // ===== HEADERS =====
+  html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+  
+  // ===== BOLD & ITALIC =====
+  html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  
+  // ===== BLOCKQUOTES =====
+  html = html.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
+  html = html.replace(/<\/blockquote>\s*<blockquote>/g, '<br>');
+  
+  // ===== HORIZONTAL RULES =====
+  html = html.replace(/^---$/gm, '<hr>');
+  html = html.replace(/^___$/gm, '<hr>');
+  
+  // ===== TABLES =====
+  const tableRegex = /\|(.+)\|\s*\n\|[-: |]+\|\s*\n((?:\|.+\|\s*\n)+)/gm;
+  html = html.replace(tableRegex, function(match, headerRow, dataRows) {
+    const headers = headerRow.split('|').filter(cell => cell.trim() !== '');
+    let tableHtml = '<table><thead><tr>';
+    headers.forEach(h => {
+      tableHtml += `<th>${h.trim()}</th>`;
     });
+    tableHtml += '</tr></thead><tbody>';
     
-    // Lists
-    html = html.replace(/^[\*\-] (.*$)/gm, '<li>$1</li>');
-    html = html.replace(/((?:<li>.*<\/li>\s*)+)/g, '<ul>$1</ul>');
-    
-    html = html.replace(/^\d+\. (.*$)/gm, '<li>$1</li>');
-    html = html.replace(/((?:<li>.*<\/li>\s*)+)/g, '<ol>$1</ol>');
-    
-    // Inline code
-    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-    
-    // Line breaks
-    html = html.replace(/\n\n/g, '</p><p>');
-    html = html.replace(/\n/g, '<br>');
-    
-    // Wrap in paragraphs
-    const blockTags = ['<h1>', '<h2>', '<h3>', '<h4>', '<blockquote>', '<hr>', '<ul>', '<ol>', '<table>', '<pre>'];
-    let startsWithBlock = false;
-    for (const tag of blockTags) {
-      if (html.trim().startsWith(tag)) {
-        startsWithBlock = true;
-        break;
+    const rows = dataRows.trim().split('\n');
+    rows.forEach(row => {
+      const cells = row.split('|').filter(cell => cell.trim() !== '');
+      if (cells.length > 0) {
+        tableHtml += '<tr>';
+        cells.forEach(cell => {
+          tableHtml += `<td>${cell.trim()}</td>`;
+        });
+        tableHtml += '</tr>';
       }
+    });
+    tableHtml += '</tbody></table>';
+    return tableHtml;
+  });
+  
+  // ===== LISTS =====
+  html = html.replace(/^[\*\-] (.*$)/gm, '<li>$1</li>');
+  html = html.replace(/((?:<li>.*<\/li>\s*)+)/g, '<ul>$1</ul>');
+  
+  html = html.replace(/^\d+\. (.*$)/gm, '<li>$1</li>');
+  html = html.replace(/((?:<li>.*<\/li>\s*)+)/g, '<ol>$1</ol>');
+  
+  // ===== INLINE CODE =====
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  
+  // ===== LINE BREAKS =====
+  html = html.replace(/\n\n/g, '</p><p>');
+  html = html.replace(/\n/g, '<br>');
+  
+  // ===== WRAP IN PARAGRAPHS =====
+  const blockTags = ['<h1>', '<h2>', '<h3>', '<h4>', '<blockquote>', '<hr>', '<ul>', '<ol>', '<table>', '<pre>'];
+  let startsWithBlock = false;
+  for (const tag of blockTags) {
+    if (html.trim().startsWith(tag)) {
+      startsWithBlock = true;
+      break;
     }
-    
-    if (!startsWithBlock && html.trim() !== '') {
-      html = '<p>' + html + '</p>';
-    }
-    
-    // Clean up
-    html = html.replace(/<p><\/p>/g, '');
-    html = html.replace(/<li><\/li>/g, '');
-    html = html.replace(/<br><\/li>/g, '</li>');
-    html = html.replace(/<blockquote><\/blockquote>/g, '');
-    
-    // Preserve LaTeX
-    html = html.replace(/\\\(/g, '\\(');
-    html = html.replace(/\\\)/g, '\\)');
-    html = html.replace(/\\\[/g, '\\[');
-    html = html.replace(/\\\]/g, '\\]');
-    html = html.replace(/\$\$(.*?)\$\$/g, '\\[$1\\]');
-    
-    return html;
   }
+  
+  if (!startsWithBlock && html.trim() !== '') {
+    html = '<p>' + html + '</p>';
+  }
+  
+  // ===== CLEAN UP =====
+  html = html.replace(/<p><\/p>/g, '');
+  html = html.replace(/<li><\/li>/g, '');
+  html = html.replace(/<br><\/li>/g, '</li>');
+  html = html.replace(/<blockquote><\/blockquote>/g, '');
+  
+  // ===== RESTORE LATEX =====
+  html = html.replace(/MATHJAX_INLINE_START/g, '\\(');
+  html = html.replace(/MATHJAX_INLINE_END/g, '\\)');
+  html = html.replace(/MATHJAX_DISPLAY_START/g, '\\[');
+  html = html.replace(/MATHJAX_DISPLAY_END/g, '\\]');
+  
+  return html;
+}
+    
+
 
   async function sendToTutor(studentMessage, studentId) {
     try {
