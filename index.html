@@ -1643,8 +1643,9 @@ async function sendToTutor(studentMessage, studentId) {
 
     const response = await fetch(PROXY_URL, {
       method: "POST",
+      mode: "cors",  // Add this
       headers: { 
-        "Content-Type": "text/plain"  // Changed from application/json
+        "Content-Type": "text/plain"  // Use text/plain to avoid preflight
       },
       body: JSON.stringify({
         message: studentMessage,
@@ -1667,7 +1668,6 @@ async function sendToTutor(studentMessage, studentId) {
     return "Error connecting to tutor service. Please try again.";
   }
 }
-
   const outputEl = document.getElementById("chat-output");
   const inputEl = document.getElementById("chat-input");
   const sendBtn = document.getElementById("chat-send");
