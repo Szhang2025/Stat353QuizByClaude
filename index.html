@@ -905,7 +905,7 @@ function gen5(){
     sol:`<p>For a linear function of X, use \\(E(aX+b) = aE(X)+b\\) rather than rebuilding a whole new PMF.</p>
 <p>From the previous problem, \\(E(X) = ${rnd(EX,4)}\\). So \\(E(${a2}X+${b2}) = ${a2}(${rnd(EX,4)}) + ${b2} = ${rnd(a2*EX,4)} + ${b2} = ${rnd(EgX,4)}\\).</p>`});
 
-  // P3: binomial
+  // P3: 
   let n=ri(6,12), p=rf(0.2,0.6,2), k=ri(1,n-1);
   let pBin = nCr(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k);
   probs.push({q:`X follows a \\(\\text{Binomial}(n{=}${n}, p{=}${p})\\) distribution. Find \\(P(X = ${k})\\).`, a: rnd(pBin,4), tol:0.001,
@@ -1564,11 +1564,11 @@ const TOPICS = [
 
 { id:5, title:"5. Discrete Random Variables", type:"calc", gen:gen5, review:`
 <p>A <strong>discrete random variable</strong> \\(X\\) takes on a countable set of values, each with a probability given by its probability mass function (<strong>PMF</strong>) \\(p(x) = P(X=x)\\), where \\(\\sum p(x) = 1\\). The cumulative distribution function (<strong>CDF</strong>) is \\(F(x) = P(X \\le x)\\).</p>
-<p><strong>Since a random variable takes values with uncertainty, what would be the average of those possible values? This average is called the <strong>mean</strong> (or expected value), denoted by </strong> \\(E(X) = \\sum x\\,p(x)\\). To describe the concentration of those possible values, we use the <strong>Variance:</strong> \\(\\operatorname{Var}(X) = E(X^2) - [E(X)]^2\\), and \\(SD(X) = \\sqrt{\\operatorname{Var}(X)}\\).</p>
-<p><strong>The function of \\(X\\) is a new random variable and its mean is calculated this way:</strong> \\(E(g(X)) = \\sum g(x)\\,p(x)\\); for a linear function, \\(E(aX+b) = aE(X) + b\\).</p>
+<p><strong>Since a random variable takes values with uncertainty, what would be the average of those possible values? This average is called the <strong>mean</strong> (or expected value), denoted by <strong> \\(E(X) = \\sum x\\,p(x)\\)</strong>. To describe the concentration of those possible values, we use the <strong>Variance</strong>: \\(\\operatorname{Var}(X) = E(X^2) - [E(X)]^2\\), and the <strong>Standard Deviation</strong>: \\(SD(X) = \\sqrt{\\operatorname{Var}(X)}\\).</p>
+<p><strong>The function of \\(X\\) is a new random variable and its mean is calculated this way:<strong> \\(E(g(X)) = \\sum g(x)\\,p(x)\\)</strong>; for a linear function, \\(E(aX+b) = aE(X) + b\\).</p>
 <p><strong>Special discrete distributions:</strong></p>
 <ul>
-<li><strong>Let \\(X\\) denote the number of heads when a coin is flipped \\(n\\) times. \\(X\\) can be described by the <strong>binomial</strong> distribution, denoted by Binomial\\((n,p)\\), with PMF </strong> \\(p(k) = P(X=k) = \\dbinom{n}{k} p^k(1-p)^{n-k}\\), with mean = \\(n\\dot p\\).</li>
+<li><strong>Let \\(X\\) denote the number of heads when a coin is flipped \\(n\\) times. \\(X\\) can be described by the <strong>binomial</strong> distribution, denoted by Binomial\\((n,p)\\), with PMF </strong> \\(p(k) = P(X=k) = \\dbinom{n}{k} p^k(1-p)^{n-k}\\), with mean = \\(n\\dot{p}\\).</li>
 <li><strong>Let \\(X\\) denote the number of flips needed in order to observe \\(k\\) a head. \\(X\\) can be described by the <strong>geometric</strong> distribution, denoted by Geometric\\((p)\\), with PMF </strong> \\(p(k) = P(X=k) = (1-p)^{k-1}p\\), with mean =  \\(\\frac{1}{p}\\).</li>
 <li><strong>Let \\(X\\) denote the number of rare events in a fixed time interval or a region. \\(X\\) can be described by the <strong>Poisson</strong> distribution, denoted by Poisson\\((\\lambda)\\), with PMF </strong> \\(p(k) = P(X=k) = \\dfrac{e^{-\\lambda}\\lambda^k}{k!}\\), with mean = variance = \\(\\lambda\\).</li>
 </ul>` },
