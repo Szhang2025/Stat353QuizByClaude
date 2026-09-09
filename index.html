@@ -894,7 +894,7 @@ function gen5(){
   let sum3=ps[0]+ps[1]+ps[2];
   ps[3]=rnd(1-sum3,4);
   let EX = xs.reduce((s,x,i)=>s+x*ps[i],0);
-  probs.push({q:`A discrete random variable X has the following PMF: \\(P(X{=}0){=}${ps[0]}\\), \\(P(X{=}1){=}${ps[1]}\\), \\(P(X{=}2){=}${ps[2]}\\), \\(P(X{=}3){=}${ps[3]}\\). Find \\(E(X)\\), the mean of X.`, a: rnd(EX,4), tol:0.01,
+  probs.push({q:`A discrete random variable X can be described by its probability mass function (PMF): \\(P(X{=}0){=}${ps[0]}\\), \\(P(X{=}1){=}${ps[1]}\\), \\(P(X{=}2){=}${ps[2]}\\), \\(P(X{=}3){=}${ps[3]}\\). Find \\(E(X)\\), the mean of X.`, a: rnd(EX,4), tol:0.01,
     sol:`<p>The mean of a discrete RV is \\(E(X) = \\sum x\\,p(x)\\): multiply each value by its probability and add.</p>
 <p>\\(E(X) = 0(${ps[0]}) + 1(${ps[1]}) + 2(${ps[2]}) + 3(${ps[3]}) = ${rnd(0*ps[0],4)} + ${rnd(1*ps[1],4)} + ${rnd(2*ps[2],4)} + ${rnd(3*ps[3],4)} = ${rnd(EX,4)}\\).</p>`});
 
@@ -1563,7 +1563,7 @@ const TOPICS = [
 <p>Classic applications: which machine produced a defective part, or whether a positive diagnostic test really indicates disease (accounting for prevalence, sensitivity, and specificity).</p>` },
 
 { id:5, title:"5. Discrete Random Variables", type:"calc", gen:gen5, review:`
-<p>A <strong>discrete random variable</strong> \\(X\\) takes on a countable set of values, each with a probability given by its <strong>PMF</strong> \\(p(x) = P(X=x)\\), where \\(\\sum p(x) = 1\\). The <strong>CDF</strong> is \\(F(x) = P(X \\le x)\\).</p>
+<p>A <strong>discrete random variable</strong> \\(X\\) takes on a countable set of values, each with a probability given by its probability mass function (<strong>PMF</strong>) \\(p(x) = P(X=x)\\), where \\(\\sum p(x) = 1\\). The cumulative distribution function (<strong>CDF</strong>) is \\(F(x) = P(X \\le x)\\).</p>
 <p><strong>Mean (expected value):</strong> \\(E(X) = \\sum x\\,p(x)\\). <strong>Variance:</strong> \\(\\operatorname{Var}(X) = E(X^2) - [E(X)]^2\\), and \\(SD(X) = \\sqrt{\\operatorname{Var}(X)}\\).</p>
 <p><strong>Mean of a function:</strong> \\(E(g(X)) = \\sum g(x)\\,p(x)\\); for a linear function, \\(E(aX+b) = aE(X) + b\\).</p>
 <p><strong>Special discrete distributions:</strong></p>
