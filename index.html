@@ -1574,16 +1574,16 @@ const TOPICS = [
 </ul>` },
 
 { id:6, title:"6. Continuous Random Variables", type:"calc", gen:gen6, review:`
-<p>A <strong>continuous random variable</strong> has a <strong>density function</strong> \\(f(x)\\) with \\(P(a < X < b) = \\displaystyle\\int_a^b f(x)\\,dx\\) (the area under the curve), and \\(P(X=x)=0\\) for any single point.</p>
-<p><strong>Uniform\\((a,b)\\):</strong> \\(f(x) = \\dfrac{1}{b-a}\\) on \\([a,b]\\); mean \\(= \\dfrac{a+b}{2}\\); \\(SD = \\dfrac{b-a}{\\sqrt{12}}\\); probability of any subinterval is proportional to its length.</p>
-<p><strong>Exponential\\((\\lambda)\\):</strong> models waiting times; \\(P(X>t) = e^{-\\lambda t}\\); mean \\(= 1/\\lambda\\).</p>
-<p><strong>Normal\\((\\mu,\\sigma)\\):</strong> the bell curve; standardize with \\(z = \\dfrac{x-\\mu}{\\sigma}\\) and use the standard normal table/CDF to find probabilities.</p>` },
+<p>A <strong>continuous random variable</strong> is described by its <strong>probability density function (pdf)</strong> \\(f(x)\\), which is the derivative of its CDF. A pdf is always non-negative, with \\(P(a < X < b) = \\displaystyle\\int_a^b f(x)\\,dx\\) (the area under the curve), and \\(P(X=x)=0\\) for any single point.</p>
+<p>\\(X\\) is <strong> Uniform\\((a,b)\\)</strong>c, if \\(f(x) = \\dfrac{1}{b-a}\\) on \\([a,b]\\); mean \\(= \\dfrac{a+b}{2}\\); \\(SD = \\dfrac{b-a}{\\sqrt{12}}\\); probability of any subinterval is proportional to its length.</p>
+<p>\\(X\\) is <strong>\\(X\\) is Exponential\\((\\lambda)\\)</strong>, if \\(f(x) = \\lambda e^{-\\lambda t}\\); mean \\(= 1/\\lambda\\).</p>
+<p>\\(X\\) is <strong>\\(X\\) is Normal\\((\\mu,\\sigma)\\)</strong>, if \\(f(x) = \\frac{1}{\\sqrt{2\\pi}\\cdot \\sigma}\\cdot e^{-\\frac{(x-\\mu)^2}{2\\sigma^2}}\\); mean \\(= \\mu\\) and SD \\(= \\sigma\\).</p>
 
 { id:7, title:"7. Joint Distributions of Two Discrete RVs", type:"calc", gen:gen7, review:`
 <p>A <strong>joint PMF</strong> \\(p(x,y) = P(X=x, Y=y)\\) gives the probability of every \\((x,y)\\) pair, with all values summing to 1.</p>
-<p><strong>Marginal distributions:</strong> \\(P(X=x) = \\sum_y p(x,y)\\); \\(P(Y=y) = \\sum_x p(x,y)\\).</p>
-<p><strong>Covariance:</strong> \\(\\operatorname{Cov}(X,Y) = E(XY) - E(X)E(Y)\\), where \\(E(XY) = \\sum_x\\sum_y xy\\,p(x,y)\\).</p>
-<p><strong>Correlation:</strong> \\(\\rho = \\dfrac{\\operatorname{Cov}(X,Y)}{SD(X)\\cdot SD(Y)}\\), always between \\(-1\\) and \\(1\\). \\(\\operatorname{Cov}=0\\) (equivalently \\(\\rho = 0\\)) when \\(X\\) and \\(Y\\) are uncorrelated; independent variables always have \\(\\operatorname{Cov}=0\\) (the converse isn't always true).</p>` },
+<p><strong>Marginal distributions refer to the distribution of each individual random variable.</p>
+<p>The <strong>Covariance</strong> defined by \\(\\operatorname{Cov}(X,Y) = E(XY) - E(X)E(Y)\\), where \\(E(XY) = \\sum_x\\sum_y xy\\,p(x,y)\\), describes how the random variables are linearly associated, with a positive value indicating a positive linear relationship and negative value indicating a negative linear relationship.</p>
+<p>The <strong>Correlation, defined by </strong> \\(\\rho = \\dfrac{\\operatorname{Cov}(X,Y)}{SD(X)\\cdot SD(Y)}\\), always between \\(-1\\) and \\(1\\), is unitless and measures the strength of linearity as well. \\(\\operatorname{Cov}=0\\) (equivalently \\(\\rho = 0\\)) when \\(X\\) and \\(Y\\) are uncorrelated; independent variables always have \\(\\operatorname{Cov}=0\\) (the converse isn't always true).</p>` },
 
 { id:8, title:"8. Descriptive Statistics", type:"calc", gen:gen8, review:`
 <p><strong>Population</strong> vs. <strong>sample</strong>: the population is the entire group of interest; a sample is a subset actually observed. A <strong>parameter</strong> describes the population (e.g. \\(\\mu\\)); a <strong>statistic</strong> is computed from a sample (e.g. \\(\\bar{x}\\)) and estimates the parameter.</p>
