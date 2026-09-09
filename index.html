@@ -1564,8 +1564,8 @@ const TOPICS = [
 
 { id:5, title:"5. Discrete Random Variables", type:"calc", gen:gen5, review:`
 <p>A <strong>discrete random variable</strong> \\(X\\) takes on a countable set of values, each with a probability given by its probability mass function (<strong>PMF</strong>) \\(p(x) = P(X=x)\\), where \\(\\sum p(x) = 1\\). The cumulative distribution function (<strong>CDF</strong>) is \\(F(x) = P(X \\le x)\\).</p>
-<p><strong>Since a random variable takes values with uncertainty, what would be the average of those possible values? This average is called the <strong>mean</strong> (or expected value), denoted by <strong> \\(E(X) = \\sum x\\,p(x)\\)</strong>. To describe the concentration of those possible values, we use the <strong>Variance</strong>: \\(\\operatorname{Var}(X) = E(X^2) - [E(X)]^2\\), and the <strong>Standard Deviation</strong>: \\(SD(X) = \\sqrt{\\operatorname{Var}(X)}\\).</p>
-<p><strong>The function of \\(X\\) is a new random variable and its mean is calculated this way:<strong> \\(E(g(X)) = \\sum g(x)\\,p(x)\\)</strong>; for a linear function, \\(E(aX+b) = aE(X) + b\\).</p>
+<p>Since a random variable takes values with uncertainty, what would be the average of those possible values? This average is called the <strong>mean</strong> (or expected value), denoted by <strong> \\(E(X) = \\sum x\\,p(x)\\)</strong>. To describe the concentration of those possible values, we use the <strong>Variance</strong>: \\(\\operatorname{Var}(X) = E(X^2) - [E(X)]^2\\), and the <strong>Standard Deviation</strong>: \\(SD(X) = \\sqrt{\\operatorname{Var}(X)}\\).</p>
+<p>The function of \\(X\\) is a new random variable and its mean is calculated this way:<strong> \\(E(g(X)) = \\sum g(x)\\,p(x)\\)</strong>; for a linear function, \\(E(aX+b) = aE(X) + b\\).</p>
 <p><strong>Special discrete distributions:</strong></p>
 <ul>
 <li><strong>Let \\(X\\) denote the number of heads when a coin is flipped \\(n\\) times. \\(X\\) can be described by the <strong>binomial</strong> distribution, denoted by Binomial\\((n,p)\\), with PMF </strong> \\(p(k) = P(X=k) = \\dbinom{n}{k} p^k(1-p)^{n-k}\\), with mean = \\(n\\cdot p\\).</li>
