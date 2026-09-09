@@ -1565,12 +1565,12 @@ const TOPICS = [
 { id:5, title:"5. Discrete Random Variables", type:"calc", gen:gen5, review:`
 <p>A <strong>discrete random variable</strong> \\(X\\) takes on a countable set of values, each with a probability given by its probability mass function (<strong>PMF</strong>) \\(p(x) = P(X=x)\\), where \\(\\sum p(x) = 1\\). The cumulative distribution function (<strong>CDF</strong>) is \\(F(x) = P(X \\le x)\\).</p>
 <p>Since a random variable takes values with uncertainty, what would be the average of those possible values? This average is called the <strong>mean</strong> (or expected value), denoted by <strong> \\(E(X) = \\sum x\\,p(x)\\)</strong>. To describe the concentration of those possible values, we use the <strong>Variance</strong>: \\(\\operatorname{Var}(X) = E(X^2) - [E(X)]^2\\), and the <strong>Standard Deviation</strong>: \\(SD(X) = \\sqrt{\\operatorname{Var}(X)}\\).</p>
-<p>The function of \\(X\\) is a new random variable and its mean is calculated this way:<strong> \\(E(g(X)) = \\sum g(x)\\,p(x)\\)</strong>; for a linear function, \\(E(aX+b) = aE(X) + b\\).</p>
+<p>The function of \\(X\\), \\(g(X)\\), is a new random variable and its mean is calculated this way:<strong> \\(E(g(X)) = \\sum g(x)\\,p(x)\\)</strong>; for a linear function, \\(E(aX+b) = aE(X) + b\\).</p>
 <p><strong>Special discrete distributions:</strong></p>
 <ul>
-<li><strong>Let \\(X\\) denote the number of heads when a coin is flipped \\(n\\) times. \\(X\\) can be described by the <strong>binomial</strong> distribution, denoted by Binomial\\((n,p)\\), with PMF </strong> \\(p(k) = P(X=k) = \\dbinom{n}{k} p^k(1-p)^{n-k}\\), with mean = \\(n\\cdot p\\).</li>
-<li><strong>Let \\(X\\) denote the number of flips needed in order to observe \\(k\\) a head. \\(X\\) can be described by the <strong>geometric</strong> distribution, denoted by Geometric\\((p)\\), with PMF </strong> \\(p(k) = P(X=k) = (1-p)^{k-1}p\\), with mean =  \\(\\frac{1}{p}\\).</li>
-<li><strong>Let \\(X\\) denote the number of rare events in a fixed time interval or a region. \\(X\\) can be described by the <strong>Poisson</strong> distribution, denoted by Poisson\\((\\lambda)\\), with PMF </strong> \\(p(k) = P(X=k) = \\dfrac{e^{-\\lambda}\\lambda^k}{k!}\\), with mean = variance = \\(\\lambda\\).</li>
+<li>Let \\(X\\) denote the number of heads when a coin is flipped \\(n\\) times. \\(X\\) can be described by the <strong>binomial</strong> distribution, denoted by Binomial\\((n,p)\\), with PMF </strong> \\(p(k) = P(X=k) = \\dbinom{n}{k} p^k(1-p)^{n-k}\\), with mean = \\(n\\cdot p\\).</li>
+<li>Let \\(X\\) denote the number of flips needed in order to observe \\(k\\) a head. \\(X\\) can be described by the <strong>geometric</strong> distribution, denoted by Geometric\\((p)\\), with PMF </strong> \\(p(k) = P(X=k) = (1-p)^{k-1}p\\), with mean =  \\(\\frac{1}{p}\\).</li>
+<li>Let \\(X\\) denote the number of rare events in a fixed time interval or a region. \\(X\\) can be described by the <strong>Poisson</strong> distribution, denoted by Poisson\\((\\lambda)\\), with PMF </strong> \\(p(k) = P(X=k) = \\dfrac{e^{-\\lambda}\\lambda^k}{k!}\\), with mean = variance = \\(\\lambda\\).</li>
 </ul>` },
 
 { id:6, title:"6. Continuous Random Variables", type:"calc", gen:gen6, review:`
