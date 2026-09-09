@@ -9,7 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jstat/1.9.4/jstat.min.js"></script>
 <script>
   window.MathJax = {
-    tex: {
+    tex: {F
       inlineMath: [['\\(', '\\)']],
       displayMath: [['\\[', '\\]']]
     },
@@ -1568,9 +1568,9 @@ const TOPICS = [
 <p><strong>The function of \\(X\\) is a new random variable and its mean is calculated this way:</strong> \\(E(g(X)) = \\sum g(x)\\,p(x)\\); for a linear function, \\(E(aX+b) = aE(X) + b\\).</p>
 <p><strong>Special discrete distributions:</strong></p>
 <ul>
-<li><strong>Binomial\\((n,p)\\):</strong> \\(P(X=k) = \\dbinom{n}{k} p^k(1-p)^{n-k}\\); counts successes in \\(n\\) independent trials.</li>
-<li><strong>Geometric\\((p)\\):</strong> \\(P(X=k) = (1-p)^{k-1}p\\); the trial number of the first success.</li>
-<li><strong>Poisson\\((\\lambda)\\):</strong> \\(P(X=k) = \\dfrac{e^{-\\lambda}\\lambda^k}{k!}\\); counts rare events in a fixed interval, with mean = variance = \\(\\lambda\\).</li>
+<li><strong>Let \\(X\\) denote the number of heads when a coin is flipped \\(n\\) times. \\(X\\) can be described by the <strong>binomial</strong> distribution, denoted by Binomial\\((n,p)\\), with PMF </strong> \\(p(k) = P(X=k) = \\dbinom{n}{k} p^k(1-p)^{n-k}\\), with mean = \\(n\\dot p\\).</li>
+<li><strong>Let \\(X\\) denote the number of flips needed in order to observe \\(k\\) a head. \\(X\\) can be described by the <strong>geometric</strong> distribution, denoted by Geometric\\((p)\\), with PMF </strong> \\(p(k) = P(X=k) = (1-p)^{k-1}p\\), with mean =  \\(\\frac{1}{p}\\).</li>
+<li><strong>Let \\(X\\) denote the number of rare events in a fixed time interval or a region. \\(X\\) can be described by the <strong>Poisson</strong> distribution, denoted by Poisson\\((\\lambda)\\), with PMF </strong> \\(p(k) = P(X=k) = \\dfrac{e^{-\\lambda}\\lambda^k}{k!}\\), with mean = variance = \\(\\lambda\\).</li>
 </ul>` },
 
 { id:6, title:"6. Continuous Random Variables", type:"calc", gen:gen6, review:`
