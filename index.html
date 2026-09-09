@@ -1557,7 +1557,7 @@ const TOPICS = [
 
 { id:4, title:"4. Total Probability & Bayes' Formula", type:"calc", gen:gen4, review:`
 <p><strong>Law of total probability:</strong> if \\(B_1, B_2, \\ldots, B_k\\) partition the sample space, then for any event \\(A\\):</p>
-<p>\\[ P(A) = \\sum_i P(B_i)\\,P(A \\mid B_i) \\]</p>
+<p>\\[ P(A) = \\sum_i P(B_i)\\,P(A \\mid B_i) \\]</p>, where \\(P(A \\mid B)\\) is call a conditional probability, which is calculated by \\(P(A \\mid B)=\\frac{P(A\\cap B)}{P(B)}\\).
 <p><strong>Bayes' formula</strong> reverses the conditioning \u2014 it finds \\(P(B_j \\mid A)\\) from the \\(P(A \\mid B_i)\\)'s:</p>
 <p>\\[ P(B_j \\mid A) = \\frac{P(B_j)\\,P(A \\mid B_j)}{\\sum_i P(B_i)\\,P(A \\mid B_i)} \\]</p>
 <p>Classic applications: which machine produced a defective part, or whether a positive diagnostic test really indicates disease (accounting for prevalence, sensitivity, and specificity).</p>` },
