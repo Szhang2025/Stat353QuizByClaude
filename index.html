@@ -9,7 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jstat/1.9.4/jstat.min.js"></script>
 <script>
   window.MathJax = {
-    tex: {F
+    tex: {
       inlineMath: [['\\(', '\\)']],
       displayMath: [['\\[', '\\]']]
     },
@@ -42,6 +42,12 @@
     font-size:16px;
   }
   *{box-sizing:border-box;}
+  /* MathJax's CHTML output (fractions, binomial coefficients, radicals, etc.)
+     relies on its own internal box measurements. The universal border-box
+     reset above breaks that layout — fraction bars disappear and
+     stacked numbers (e.g. in \binom{}{}) stop centering. Excluding
+     MathJax's own elements from the reset fixes both. */
+  mjx-container, mjx-container *{box-sizing:content-box;}
   html,body{margin:0;padding:0;}
   body{
     font-family:'Inter',system-ui,sans-serif;
@@ -838,18 +844,22 @@ function gen4(){
     let pD = (w1*d1+w2*d2+w3*d3)/100;
     return {w1,w2,w3,d1,d2,d3,pD};
   }
+  // Problems 1 & 2 share one machine scenario: problem 1 finds the total
+  // probability, problem 2 reuses that same value to find a Bayes' posterior.
   let s1=machineScenario();
   probs.push({q:`A factory has three machines producing ${s1.w1}%, ${s1.w2}%, and ${s1.w3}% of its daily output, respectively. Their defect rates are ${rnd(s1.d1*100,1)}%, ${rnd(s1.d2*100,1)}%, and ${rnd(s1.d3*100,1)}% respectively. Using the total probability formula, find the overall probability that a randomly selected item is defective.`, a: rnd(s1.pD,4), tol:0.001,
     sol:`<p>The three machines partition all output. Weight each machine's defect rate by the fraction of output it produces, then add: \\(P(D) = \\sum_i P(M_i)P(D\\mid M_i)\\).</p>
 <p>\\(P(D) = (${s1.w1/100})(${s1.d1}) + (${s1.w2/100})(${s1.d2}) + (${s1.w3/100})(${s1.d3})\\)</p>
 <p>\\(= ${rnd(s1.w1/100*s1.d1,5)} + ${rnd(s1.w2/100*s1.d2,5)} + ${rnd(s1.w3/100*s1.d3,5)} = ${rnd(s1.pD,4)}\\).</p>`});
 
-  let s2=machineScenario();
-  let pM1D = (s2.w1/100*s2.d1)/s2.pD;
-  probs.push({q:`A factory has three machines producing ${s2.w1}%, ${s2.w2}%, and ${s2.w3}% of its daily output, respectively, with defect rates ${rnd(s2.d1*100,1)}%, ${rnd(s2.d2*100,1)}%, and ${rnd(s2.d3*100,1)}%. Given that a randomly selected item is defective, use Bayes' formula to find the probability that it came from Machine 1.`, a: rnd(pM1D,4), tol:0.005,
-    sol:`<p><strong>Step 1 \u2014 total probability (denominator):</strong> \\(P(D) = (${s2.w1/100})(${s2.d1})+(${s2.w2/100})(${s2.d2})+(${s2.w3/100})(${s2.d3}) = ${rnd(s2.pD,5)}\\).</p>
-<p><strong>Step 2 \u2014 Bayes' formula (numerator uses only Machine 1):</strong> \\(P(M_1\\mid D) = \\dfrac{P(M_1)P(D\\mid M_1)}{P(D)} = \\dfrac{(${s2.w1/100})(${s2.d1})}{${rnd(s2.pD,5)}} = \\dfrac{${rnd(s2.w1/100*s2.d1,5)}}{${rnd(s2.pD,5)}} \\approx ${rnd(pM1D,4)}\\).</p>`});
+  let pM1D = (s1.w1/100*s1.d1)/s1.pD;
+  probs.push({q:`Using the same factory as above (Machine 1: ${s1.w1}% of output, ${rnd(s1.d1*100,1)}% defect rate; Machine 2: ${s1.w2}%, ${rnd(s1.d2*100,1)}%; Machine 3: ${s1.w3}%, ${rnd(s1.d3*100,1)}%), a randomly selected item is found to be defective. Use Bayes' formula to find the probability that it came from Machine 1.`, a: rnd(pM1D,4), tol:0.005,
+    sol:`<p>The denominator of Bayes' formula is exactly the total probability \\(P(D)\\) found in the previous problem, so there is no need to recompute it: \\(P(D) = ${rnd(s1.pD,5)}\\).</p>
+<p>The numerator uses only Machine 1's contribution: \\(P(M_1)P(D\\mid M_1) = (${s1.w1/100})(${s1.d1}) = ${rnd(s1.w1/100*s1.d1,5)}\\).</p>
+<p>\\(P(M_1\\mid D) = \\dfrac{P(M_1)P(D\\mid M_1)}{P(D)} = \\dfrac{${rnd(s1.w1/100*s1.d1,5)}}{${rnd(s1.pD,5)}} \\approx ${rnd(pM1D,4)}\\).</p>`});
 
+  // Problems 3 & 4 share one disease-testing scenario: problem 3 finds the
+  // total probability of testing positive, problem 4 reuses it for Bayes.
   let prev = rf(0.01,0.08,3);
   let sens = rf(0.9,0.99,3);
   let spec = rf(0.9,0.99,3);
@@ -859,17 +869,13 @@ function gen4(){
 <p>\\(P(\\text{Diseased}) = ${prev}\\), \\(P(+\\mid \\text{Diseased}) = ${sens}\\) (sensitivity). \\(P(\\text{Healthy}) = 1-${prev} = ${rnd(1-prev,3)}\\), \\(P(+\\mid \\text{Healthy}) = 1-${spec} = ${rnd(1-spec,3)}\\) (1 \u2212 specificity, since a healthy person tests positive only when the test is wrong).</p>
 <p>\\(P(+) = (${prev})(${sens}) + (${rnd(1-prev,3)})(${rnd(1-spec,3)}) = ${rnd(prev*sens,5)} + ${rnd((1-prev)*(1-spec),5)} = ${rnd(pPos,4)}\\).</p>`});
 
-  let prev2 = rf(0.01,0.08,3);
-  let sens2 = rf(0.9,0.99,3);
-  let spec2 = rf(0.9,0.99,3);
-  let pPos2 = prev2*sens2 + (1-prev2)*(1-spec2);
-  let pDisPos = (prev2*sens2)/pPos2;
-  probs.push({q:`A disease affects ${(prev2*100).toFixed(1)}% of a population. A diagnostic test has sensitivity ${(sens2*100).toFixed(1)}% and specificity ${(spec2*100).toFixed(1)}%. Given that a randomly selected person tests positive, use Bayes' formula to find the probability that the person actually has the disease.`, a: rnd(pDisPos,4), tol:0.005,
-    sol:`<p><strong>Step 1 \u2014 total probability of testing positive:</strong> \\(P(+) = (${prev2})(${sens2}) + (1-${prev2})(1-${spec2}) = ${rnd(prev2*sens2,5)} + ${rnd((1-prev2)*(1-spec2),5)} = ${rnd(pPos2,5)}\\).</p>
-<p><strong>Step 2 \u2014 Bayes' formula:</strong> \\(P(\\text{Diseased}\\mid +) = \\dfrac{P(\\text{Diseased})P(+\\mid\\text{Diseased})}{P(+)} = \\dfrac{${rnd(prev2*sens2,5)}}{${rnd(pPos2,5)}} \\approx ${rnd(pDisPos,4)}\\).</p>
+  let pDisPos = (prev*sens)/pPos;
+  probs.push({q:`Using the same test as above (${(prev*100).toFixed(1)}% prevalence, ${(sens*100).toFixed(1)}% sensitivity, ${(spec*100).toFixed(1)}% specificity), a randomly selected person tests positive. Use Bayes' formula to find the probability that the person actually has the disease.`, a: rnd(pDisPos,4), tol:0.005,
+    sol:`<p>The denominator is the total probability of testing positive found above: \\(P(+) = ${rnd(pPos,5)}\\).</p>
+<p>The numerator uses only the "diseased" branch: \\(P(\\text{Diseased})P(+\\mid\\text{Diseased}) = (${prev})(${sens}) = ${rnd(prev*sens,5)}\\).</p>
+<p>\\(P(\\text{Diseased}\\mid +) = \\dfrac{P(\\text{Diseased})P(+\\mid\\text{Diseased})}{P(+)} = \\dfrac{${rnd(prev*sens,5)}}{${rnd(pPos,5)}} \\approx ${rnd(pDisPos,4)}\\).</p>
 <p>Notice this is much smaller than the sensitivity itself \u2014 with a low disease prevalence, most positive tests are still false positives, which is the classic lesson of this type of problem.</p>`});
 
-  let boxes = [ri(30,50), ri(30,50)];
   let redFrac = [rf(0.2,0.4,2), rf(0.5,0.7,2)];
   let boxChoice = ri(0,1);
   let pRedTotal = 0.5*redFrac[0]+0.5*redFrac[1];
@@ -894,7 +900,7 @@ function gen5(){
   let sum3=ps[0]+ps[1]+ps[2];
   ps[3]=rnd(1-sum3,4);
   let EX = xs.reduce((s,x,i)=>s+x*ps[i],0);
-  probs.push({q:`A discrete random variable X can be described by its probability mass function (PMF): \\(P(X{=}0){=}${ps[0]}\\), \\(P(X{=}1){=}${ps[1]}\\), \\(P(X{=}2){=}${ps[2]}\\), \\(P(X{=}3){=}${ps[3]}\\). Find \\(E(X)\\), the mean of X.`, a: rnd(EX,4), tol:0.01,
+  probs.push({q:`A discrete random variable X has the following PMF: \\(P(X{=}0){=}${ps[0]}\\), \\(P(X{=}1){=}${ps[1]}\\), \\(P(X{=}2){=}${ps[2]}\\), \\(P(X{=}3){=}${ps[3]}\\). Find \\(E(X)\\), the mean of X.`, a: rnd(EX,4), tol:0.01,
     sol:`<p>The mean of a discrete RV is \\(E(X) = \\sum x\\,p(x)\\): multiply each value by its probability and add.</p>
 <p>\\(E(X) = 0(${ps[0]}) + 1(${ps[1]}) + 2(${ps[2]}) + 3(${ps[3]}) = ${rnd(0*ps[0],4)} + ${rnd(1*ps[1],4)} + ${rnd(2*ps[2],4)} + ${rnd(3*ps[3],4)} = ${rnd(EX,4)}\\).</p>`});
 
@@ -905,7 +911,7 @@ function gen5(){
     sol:`<p>For a linear function of X, use \\(E(aX+b) = aE(X)+b\\) rather than rebuilding a whole new PMF.</p>
 <p>From the previous problem, \\(E(X) = ${rnd(EX,4)}\\). So \\(E(${a2}X+${b2}) = ${a2}(${rnd(EX,4)}) + ${b2} = ${rnd(a2*EX,4)} + ${b2} = ${rnd(EgX,4)}\\).</p>`});
 
-  // P3: 
+  // P3: binomial
   let n=ri(6,12), p=rf(0.2,0.6,2), k=ri(1,n-1);
   let pBin = nCr(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k);
   probs.push({q:`X follows a \\(\\text{Binomial}(n{=}${n}, p{=}${p})\\) distribution. Find \\(P(X = ${k})\\).`, a: rnd(pBin,4), tol:0.001,
@@ -992,7 +998,9 @@ function gen6(){
 // ===== Topic 7: Joint distributions of two discrete RVs, marginals, covariance, correlation =====
 function gen7(){
   const probs=[];
-  // build a 2x2 joint pmf table for X in {0,1}, Y in {0,1}
+  // Build ONE 2x2 joint pmf table for X in {0,1}, Y in {0,1}, shared by all
+  // five problems below so the topic reads as one worked example that
+  // builds up piece by piece, rather than five disconnected tables.
   function buildTable(){
     let raw=[ri(1,5),ri(1,5),ri(1,5),ri(1,5)];
     let tot=raw.reduce((a,b)=>a+b,0);
@@ -1016,29 +1024,23 @@ function gen7(){
   probs.push({q:`${tableTxt} Find the marginal probability \\(P(X=1)\\).`, a: rnd(pX1,4), tol:0.005,
     sol:`<p>The marginal \\(P(X{=}1)\\) sums the joint probabilities over every value of Y where \\(X{=}1\\): the cells \\((1,0)\\) and \\((1,1)\\).</p>
 <p>\\(P(X{=}1) = P(X{=}1,Y{=}0) + P(X{=}1,Y{=}1) = ${p[2]} + ${p[3]} = ${rnd(pX1,4)}\\).</p>`});
-  let p2=buildTable();
-  const t2 = `Joint PMF table: \\(P(X{=}0,Y{=}0){=}${p2[0]}\\), \\(P(X{=}0,Y{=}1){=}${p2[1]}\\), \\(P(X{=}1,Y{=}0){=}${p2[2]}\\), \\(P(X{=}1,Y{=}1){=}${p2[3]}\\).`;
-  let pX1_2 = p2[2]+p2[3];
-  let EX_2 = 0*(p2[0]+p2[1])+1*pX1_2;
-  probs.push({q:`${t2} Find \\(E(X)\\).`, a: rnd(EX_2,4), tol:0.01,
-    sol:`<p><strong>Step 1 \u2014 find the marginal of X:</strong> \\(P(X{=}0) = ${p2[0]}+${p2[1]} = ${rnd(p2[0]+p2[1],4)}\\); \\(P(X{=}1) = ${p2[2]}+${p2[3]} = ${rnd(pX1_2,4)}\\).</p>
-<p><strong>Step 2 \u2014 apply \\(E(X)=\\sum x\\,p(x)\\):</strong> \\(E(X) = 0(${rnd(p2[0]+p2[1],4)}) + 1(${rnd(pX1_2,4)}) = ${rnd(EX_2,4)}\\).</p>`});
 
-  let p3=buildTable();
-  const t3 = `Joint PMF table: \\(P(X{=}0,Y{=}0){=}${p3[0]}\\), \\(P(X{=}0,Y{=}1){=}${p3[1]}\\), \\(P(X{=}1,Y{=}0){=}${p3[2]}\\), \\(P(X{=}1,Y{=}1){=}${p3[3]}\\).`;
-  let EXY_3 = p3[3]; // only X=1,Y=1 term nonzero
-  probs.push({q:`${t3} Find \\(E(XY)\\).`, a: rnd(EXY_3,4), tol:0.01,
+  probs.push({q:`Using the same joint PMF table above, find \\(E(X)\\).`, a: rnd(EX,4), tol:0.01,
+    sol:`<p>\\(P(X{=}1) = ${rnd(pX1,4)}\\) was already found in the previous problem, so \\(P(X{=}0) = 1-${rnd(pX1,4)} = ${rnd(pX0,4)}\\) follows immediately.</p>
+<p>Apply \\(E(X)=\\sum x\\,p(x)\\): \\(E(X) = 0(${rnd(pX0,4)}) + 1(${rnd(pX1,4)}) = ${rnd(EX,4)}\\).</p>`});
+
+  probs.push({q:`Using the same joint PMF table above, find \\(E(XY)\\).`, a: rnd(EXY,4), tol:0.01,
     sol:`<p>\\(E(XY) = \\sum_x\\sum_y xy\\,p(x,y)\\). Since \\(X\\) or \\(Y\\) equal to 0 makes the \\(xy\\) product 0, only the \\((1,1)\\) cell contributes.</p>
-<p>\\(E(XY) = (0)(0)p(0,0) + (0)(1)p(0,1) + (1)(0)p(1,0) + (1)(1)p(1,1) = ${p3[3]}\\).</p>`});
+<p>\\(E(XY) = (0)(0)p(0,0) + (0)(1)p(0,1) + (1)(0)p(1,0) + (1)(1)p(1,1) = ${p[3]}\\).</p>`});
 
   probs.push({q:`${tableTxt} Find \\(\\operatorname{Cov}(X, Y) = E(XY) - E(X)E(Y)\\).`, a: rnd(cov,4), tol:0.01,
-    sol:`<p><strong>Step 1 \u2014 marginals:</strong> \\(P(X{=}1) = ${p[2]}+${p[3]} = ${rnd(pX1,4)}\\); \\(P(Y{=}1) = ${p[1]}+${p[3]} = ${rnd(pY1,4)}\\). So \\(E(X)=${rnd(EX,4)}\\), \\(E(Y)=${rnd(EY,4)}\\).</p>
-<p><strong>Step 2 \u2014 \\(E(XY)\\):</strong> only the \\((1,1)\\) cell contributes since otherwise \\(xy=0\\): \\(E(XY) = p(1,1) = ${p[3]}\\).</p>
-<p><strong>Step 3 \u2014 covariance:</strong> \\(\\operatorname{Cov}(X,Y) = E(XY)-E(X)E(Y) = ${p[3]} - (${rnd(EX,4)})(${rnd(EY,4)}) = ${p[3]} - ${rnd(EX*EY,4)} = ${rnd(cov,4)}\\).</p>`});
+    sol:`<p>The two previous problems already found \\(E(X) = ${rnd(EX,4)}\\) and \\(E(XY) = ${p[3]}\\). By the same marginal calculation, \\(P(Y{=}1) = ${p[1]}+${p[3]} = ${rnd(pY1,4)}\\), so \\(E(Y) = ${rnd(EY,4)}\\).</p>
+<p>\\(\\operatorname{Cov}(X,Y) = E(XY)-E(X)E(Y) = ${p[3]} - (${rnd(EX,4)})(${rnd(EY,4)}) = ${p[3]} - ${rnd(EX*EY,4)} = ${rnd(cov,4)}\\).</p>`});
+
   probs.push({q:`${tableTxt} Find the correlation coefficient \\(\\rho\\) between X and Y (using \\(\\operatorname{Cov}(X,Y)\\) and the standard deviations of X and Y).`, a: rnd(corr,4), tol:0.02,
-    sol:`<p><strong>Step 1 \u2014 covariance</strong> (as above): \\(\\operatorname{Cov}(X,Y) = ${rnd(cov,4)}\\).</p>
-<p><strong>Step 2 \u2014 variances:</strong> \\(\\operatorname{Var}(X) = E(X^2)-[E(X)]^2\\). Since \\(X\\) only takes values 0/1, \\(E(X^2)=E(X)\\), so \\(\\operatorname{Var}(X) = ${rnd(EX,4)}-${rnd(EX,4)}^2 = ${rnd(varX,4)}\\). Similarly \\(\\operatorname{Var}(Y) = ${rnd(EY,4)}-${rnd(EY,4)}^2 = ${rnd(varY,4)}\\).</p>
-<p><strong>Step 3 \u2014 correlation:</strong> \\(\\rho = \\dfrac{\\operatorname{Cov}(X,Y)}{\\sqrt{\\operatorname{Var}(X)\\operatorname{Var}(Y)}} = \\dfrac{${rnd(cov,4)}}{\\sqrt{${rnd(varX,4)}\\times${rnd(varY,4)}}} \\approx ${rnd(corr,4)}\\).</p>`});
+    sol:`<p>The covariance was already found above: \\(\\operatorname{Cov}(X,Y) = ${rnd(cov,4)}\\).</p>
+<p>Since \\(X\\) and \\(Y\\) only take values 0 and 1, \\(E(X^2)=E(X)\\) and \\(E(Y^2)=E(Y)\\), so \\(\\operatorname{Var}(X) = ${rnd(EX,4)}-${rnd(EX,4)}^2 = ${rnd(varX,4)}\\) and \\(\\operatorname{Var}(Y) = ${rnd(EY,4)}-${rnd(EY,4)}^2 = ${rnd(varY,4)}\\).</p>
+<p>\\(\\rho = \\dfrac{\\operatorname{Cov}(X,Y)}{\\sqrt{\\operatorname{Var}(X)\\operatorname{Var}(Y)}} = \\dfrac{${rnd(cov,4)}}{\\sqrt{${rnd(varX,4)}\\times${rnd(varY,4)}}} \\approx ${rnd(corr,4)}\\).</p>`});
 
   return probs;
 }
@@ -1046,53 +1048,49 @@ function gen7(){
 // ===== Topic 8: Population, sample, descriptive stats =====
 function gen8(){
   const probs=[];
-  function dataset(nMin=6,nMax=8,lo=10,hi=60){
-    let n=ri(nMin,nMax);
-    let d=[];
-    for(let i=0;i<n;i++) d.push(ri(lo,hi));
-    return d;
-  }
-  let d1=dataset();
-  probs.push({q:`A sample of ${d1.length} measurements is: {${d1.join(', ')}}. Find the sample mean.`, a: rnd(mean(d1),4), tol:0.05,
+  // One shared dataset for all five problems below, so the topic reads as
+  // a single worked example examined from several angles rather than five
+  // unrelated datasets.
+  let n=ri(7,9);
+  let d=[];
+  for(let i=0;i<n;i++) d.push(ri(10,60));
+  let sorted=[...d].sort((a,b)=>a-b);
+  let m = mean(d);
+  let med = median(d);
+  let sd = sampleSD(d);
+  let qs = quartiles(d);
+  let iqr = qs.q3-qs.q1;
+  let mid=Math.floor(sorted.length/2);
+  let lowerHalf = sorted.slice(0,mid);
+  let upperHalf = sorted.length%2===0 ? sorted.slice(mid) : sorted.slice(mid+1);
+
+  probs.push({q:`A sample of ${d.length} measurements is: {${d.join(', ')}}. Find the sample mean.`, a: rnd(m,4), tol:0.05,
     sol:`<p>The sample mean adds all values and divides by \\(n\\): \\(\\bar{x} = \\dfrac{\\sum x_i}{n}\\).</p>
-<p>\\(\\bar{x} = \\dfrac{${d1.join('+')}}{${d1.length}} = \\dfrac{${d1.reduce((a,b)=>a+b,0)}}{${d1.length}} = ${rnd(mean(d1),4)}\\).</p>`});
+<p>\\(\\bar{x} = \\dfrac{${d.join('+')}}{${d.length}} = \\dfrac{${d.reduce((a,b)=>a+b,0)}}{${d.length}} = ${rnd(m,4)}\\).</p>`});
 
-  let d2=dataset();
-  let sorted2=[...d2].sort((a,b)=>a-b);
-  probs.push({q:`A sample of ${d2.length} measurements is: {${d2.join(', ')}}. Find the median.`, a: rnd(median(d2),4), tol:0.05,
-    sol:`<p><strong>Step 1 \u2014 sort the data:</strong> {${sorted2.join(', ')}}.</p>
-<p><strong>Step 2 \u2014 locate the middle:</strong> with \\(n=${d2.length}\\) values, ${d2.length%2===0? `this is even, so the median is the average of the two middle values (positions ${d2.length/2} and ${d2.length/2+1}): \\((${sorted2[d2.length/2-1]}+${sorted2[d2.length/2]})/2 = ${rnd(median(d2),4)}\\).` : `this is odd, so the median is the single middle value (position ${(d2.length+1)/2}): \\(${sorted2[(d2.length-1)/2]}\\).`}</p>`});
+  probs.push({q:`Using the same sample above, find the median.`, a: rnd(med,4), tol:0.05,
+    sol:`<p><strong>Step 1 \u2014 sort the data:</strong> {${sorted.join(', ')}}.</p>
+<p><strong>Step 2 \u2014 locate the middle:</strong> with \\(n=${d.length}\\) values, ${d.length%2===0? `this is even, so the median is the average of the two middle values (positions ${d.length/2} and ${d.length/2+1}): \\((${sorted[d.length/2-1]}+${sorted[d.length/2]})/2 = ${rnd(med,4)}\\).` : `this is odd, so the median is the single middle value (position ${(d.length+1)/2}): \\(${sorted[(d.length-1)/2]}\\).`}</p>`});
 
-  let d3=dataset(7,9);
-  let m3 = mean(d3);
-  let sq3 = d3.map(x=>rnd(Math.pow(x-m3,2),3));
-  let ss3 = sq3.reduce((a,b)=>a+b,0);
-  probs.push({q:`A sample of ${d3.length} measurements is: {${d3.join(', ')}}. Find the sample standard deviation (using n\u22121 in the denominator).`, a: rnd(sampleSD(d3),4), tol:0.05,
-    sol:`<p><strong>Step 1 \u2014 mean:</strong> \\(\\bar{x} = ${rnd(m3,4)}\\).</p>
-<p><strong>Step 2 \u2014 squared deviations \\((x_i-\\bar{x})^2\\):</strong> ${sq3.join(', ')}; sum \\(=${rnd(ss3,3)}\\).</p>
-<p><strong>Step 3 \u2014 divide by \\(n-1=${d3.length-1}\\) and take the square root:</strong> \\(s = \\sqrt{\\dfrac{${rnd(ss3,3)}}{${d3.length-1}}} = \\sqrt{${rnd(ss3/(d3.length-1),4)}} \\approx ${rnd(sampleSD(d3),4)}\\).</p>`});
+  let sq = d.map(x=>rnd(Math.pow(x-m,2),3));
+  let ss = sq.reduce((a,b)=>a+b,0);
+  probs.push({q:`Using the same sample above, find the sample standard deviation (using n\u22121 in the denominator).`, a: rnd(sd,4), tol:0.05,
+    sol:`<p><strong>Step 1 \u2014 mean:</strong> \\(\\bar{x} = ${rnd(m,4)}\\) (found in the first problem).</p>
+<p><strong>Step 2 \u2014 squared deviations \\((x_i-\\bar{x})^2\\):</strong> ${sq.join(', ')}; sum \\(=${rnd(ss,3)}\\).</p>
+<p><strong>Step 3 \u2014 divide by \\(n-1=${d.length-1}\\) and take the square root:</strong> \\(s = \\sqrt{\\dfrac{${rnd(ss,3)}}{${d.length-1}}} = \\sqrt{${rnd(ss/(d.length-1),4)}} \\approx ${rnd(sd,4)}\\).</p>`});
 
-  let d4=dataset(7,9);
-  let qs=quartiles(d4);
-  let sorted4=[...d4].sort((a,b)=>a-b);
-  let mid4=Math.floor(sorted4.length/2);
-  let lower4 = sorted4.length%2===0 ? sorted4.slice(0,mid4) : sorted4.slice(0,mid4);
-  probs.push({q:`A sample of ${d4.length} measurements is: {${d4.join(', ')}}. As part of the five-number summary, find Q1 (the first quartile / median of the lower half).`, a: rnd(qs.q1,4), tol:0.5,
-    sol:`<p><strong>Step 1 \u2014 sort the data:</strong> {${sorted4.join(', ')}}.</p>
-<p><strong>Step 2 \u2014 take the lower half</strong> (values below the overall median): {${lower4.join(', ')}}.</p>
+  probs.push({q:`Using the same sample above, find Q1 (the first quartile / median of the lower half) as part of the five-number summary.`, a: rnd(qs.q1,4), tol:0.5,
+    sol:`<p><strong>Step 1 \u2014 sort the data</strong> (as in the median problem above): {${sorted.join(', ')}}.</p>
+<p><strong>Step 2 \u2014 take the lower half</strong> (values below the overall median): {${lowerHalf.join(', ')}}.</p>
 <p><strong>Step 3 \u2014 \\(Q_1\\) is the median of that lower half:</strong> \\(Q_1 = ${rnd(qs.q1,4)}\\).</p>`});
 
-  let d5=dataset(7,9);
-  let qs5=quartiles(d5);
-  let iqr = qs5.q3-qs5.q1;
-  let sorted5=[...d5].sort((a,b)=>a-b);
-  probs.push({q:`A sample of ${d5.length} measurements is: {${d5.join(', ')}}. Find the interquartile range, \\(IQR = Q_3 - Q_1\\).`, a: rnd(iqr,4), tol:0.5,
-    sol:`<p><strong>Step 1 \u2014 sort the data:</strong> {${sorted5.join(', ')}}. Splitting into a lower and upper half gives \\(Q_1 = ${rnd(qs5.q1,4)}\\) (median of the lower half) and \\(Q_3 = ${rnd(qs5.q3,4)}\\) (median of the upper half).</p>
-<p><strong>Step 2:</strong> \\(IQR = Q_3-Q_1 = ${rnd(qs5.q3,4)} - ${rnd(qs5.q1,4)} = ${rnd(iqr,4)}\\).</p>`});
+  probs.push({q:`Using the same sample above, find the interquartile range, \\(IQR = Q_3 - Q_1\\).`, a: rnd(iqr,4), tol:0.5,
+    sol:`<p>\\(Q_1 = ${rnd(qs.q1,4)}\\) was already found above, from the lower half {${lowerHalf.join(', ')}}.</p>
+<p>\\(Q_3\\) is found the same way, but from the upper half {${upperHalf.join(', ')}}: \\(Q_3 = ${rnd(qs.q3,4)}\\).</p>
+<p>\\(IQR = Q_3-Q_1 = ${rnd(qs.q3,4)} - ${rnd(qs.q1,4)} = ${rnd(iqr,4)}\\).</p>`});
 
   return probs;
 }
-
 
 
 
@@ -1101,31 +1099,31 @@ function zForCL(cl){ return jStat.normal.inv(1-(1-cl)/2,0,1); }
 // ===== Topic 9: CI and hypothesis test for a population proportion =====
 function gen9(){
   const probs=[];
+  // Problems 1-3 share one sample: point estimate, then margin of error,
+  // then the CI upper bound, each building on the last.
   let n=ri(80,300), x=ri(Math.round(n*0.2),Math.round(n*0.7));
   let phat=x/n;
   probs.push({q:`In a random sample of \\(n = ${n}\\) items, \\(x = ${x}\\) have a certain characteristic. Find the sample proportion \\(\\hat{p} = x/n\\).`, a: rnd(phat,4), tol:0.002,
     sol:`<p>The sample proportion is simply the count with the characteristic divided by the sample size.</p>
 <p>\\(\\hat{p} = \\dfrac{x}{n} = \\dfrac{${x}}{${n}} = ${rnd(phat,4)}\\).</p>`});
 
-  let n2=ri(80,300), x2=ri(Math.round(n2*0.2),Math.round(n2*0.7));
-  let phat2=x2/n2, cl2=pick([0.90,0.95,0.99]);
+  let cl2=pick([0.90,0.95,0.99]);
   let z2=zForCL(cl2);
-  let E2 = z2*Math.sqrt(phat2*(1-phat2)/n2);
-  probs.push({q:`In a random sample of \\(n = ${n2}\\), \\(x = ${x2}\\) have the characteristic of interest. Find the margin of error E for a ${cl2*100}% confidence interval for the population proportion p. \\((E = z\\sqrt{\\hat{p}(1-\\hat{p})/n})\\)`, a: rnd(E2,4), tol:0.003,
-    sol:`<p><strong>Step 1:</strong> \\(\\hat{p} = x/n = ${x2}/${n2} = ${rnd(phat2,4)}\\).</p>
-<p><strong>Step 2:</strong> the z-critical value for ${cl2*100}% confidence is \\(z \\approx ${rnd(z2,3)}\\).</p>
-<p><strong>Step 3:</strong> \\(E = z\\sqrt{\\dfrac{\\hat{p}(1-\\hat{p})}{n}} = ${rnd(z2,3)}\\sqrt{\\dfrac{${rnd(phat2,4)}(${rnd(1-phat2,4)})}{${n2}}} = ${rnd(z2,3)}\\times ${rnd(Math.sqrt(phat2*(1-phat2)/n2),5)} \\approx ${rnd(E2,4)}\\).</p>`});
+  let E2 = z2*Math.sqrt(phat*(1-phat)/n);
+  probs.push({q:`Using the same sample above (\\(n = ${n}\\), \\(x = ${x}\\)), find the margin of error E for a ${cl2*100}% confidence interval for the population proportion p. \\((E = z\\sqrt{\\hat{p}(1-\\hat{p})/n})\\)`, a: rnd(E2,4), tol:0.003,
+    sol:`<p>\\(\\hat{p} = ${rnd(phat,4)}\\) was already found in the previous problem. The z-critical value for ${cl2*100}% confidence is \\(z \\approx ${rnd(z2,3)}\\).</p>
+<p>\\(E = z\\sqrt{\\dfrac{\\hat{p}(1-\\hat{p})}{n}} = ${rnd(z2,3)}\\sqrt{\\dfrac{${rnd(phat,4)}(${rnd(1-phat,4)})}{${n}}} = ${rnd(z2,3)}\\times ${rnd(Math.sqrt(phat*(1-phat)/n),5)} \\approx ${rnd(E2,4)}\\).</p>`});
 
-  let n3=ri(80,300), x3=ri(Math.round(n3*0.2),Math.round(n3*0.7));
-  let phat3=x3/n3, cl3=pick([0.90,0.95,0.99]);
+  let cl3=pick([0.90,0.95,0.99]);
   let z3=zForCL(cl3);
-  let E3 = z3*Math.sqrt(phat3*(1-phat3)/n3);
-  let upper3 = phat3+E3;
-  probs.push({q:`In a random sample of \\(n = ${n3}\\), \\(x = ${x3}\\) have the characteristic of interest. Find the upper bound of the ${cl3*100}% confidence interval for the population proportion p.`, a: rnd(upper3,4), tol:0.003,
-    sol:`<p><strong>Step 1:</strong> \\(\\hat{p} = ${x3}/${n3} = ${rnd(phat3,4)}\\).</p>
-<p><strong>Step 2:</strong> margin of error \\(E = z\\sqrt{\\hat{p}(1-\\hat{p})/n}\\) with \\(z\\approx${rnd(z3,3)}\\) for ${cl3*100}% confidence: \\(E = ${rnd(z3,3)}\\sqrt{${rnd(phat3,4)}(${rnd(1-phat3,4)})/${n3}} \\approx ${rnd(E3,4)}\\).</p>
-<p><strong>Step 3:</strong> the CI is \\(\\hat{p}\\pm E\\), so the <strong>upper bound</strong> is \\(\\hat{p}+E = ${rnd(phat3,4)}+${rnd(E3,4)} = ${rnd(upper3,4)}\\).</p>`});
+  let E3 = z3*Math.sqrt(phat*(1-phat)/n);
+  let upper3 = phat+E3;
+  probs.push({q:`Using the same sample above, find the upper bound of the ${cl3*100}% confidence interval for the population proportion p.`, a: rnd(upper3,4), tol:0.003,
+    sol:`<p>\\(\\hat{p} = ${rnd(phat,4)}\\) again, but this time at ${cl3*100}% confidence: \\(z\\approx${rnd(z3,3)}\\), so \\(E = ${rnd(z3,3)}\\sqrt{${rnd(phat,4)}(${rnd(1-phat,4)})/${n}} \\approx ${rnd(E3,4)}\\).</p>
+<p>The CI is \\(\\hat{p}\\pm E\\), so the <strong>upper bound</strong> is \\(\\hat{p}+E = ${rnd(phat,4)}+${rnd(E3,4)} = ${rnd(upper3,4)}\\).</p>`});
 
+  // Problems 4-5 share one hypothesis-testing sample: the test statistic,
+  // then the p-value that follows directly from it.
   let n4=ri(120,300); let p0=rf(0.3,0.55,2); let x4=ri(Math.round(n4*(p0-0.08)),Math.round(n4*(p0+0.08)));
   let phat4=x4/n4;
   let z4 = (phat4-p0)/Math.sqrt(p0*(1-p0)/n4);
@@ -1134,14 +1132,10 @@ function gen9(){
 <p><strong>Step 2:</strong> under \\(H_0\\), the standard error uses \\(p_0=${p0}\\) (not \\(\\hat p\\)): \\(SE_0 = \\sqrt{\\dfrac{${p0}(${rnd(1-p0,2)})}{${n4}}} = ${rnd(Math.sqrt(p0*(1-p0)/n4),5)}\\).</p>
 <p><strong>Step 3:</strong> \\(z = \\dfrac{\\hat{p}-p_0}{SE_0} = \\dfrac{${rnd(phat4,4)}-${p0}}{${rnd(Math.sqrt(p0*(1-p0)/n4),5)}} \\approx ${rnd(z4,4)}\\).</p>`});
 
-  let n5=ri(120,300); let p05=rf(0.3,0.55,2); let x5=ri(Math.round(n5*(p05-0.08)),Math.round(n5*(p05+0.08)));
-  let phat5=x5/n5;
-  let z5 = (phat5-p05)/Math.sqrt(p05*(1-p05)/n5);
-  let pval5 = 2*(1-jStat.normal.cdf(Math.abs(z5),0,1));
-  probs.push({q:`A researcher tests \\(H_0: p = ${p05}\\) vs \\(H_1: p \\ne ${p05}\\) (two-sided). In a random sample of \\(n = ${n5}\\), \\(x = ${x5}\\) have the characteristic. Find the p-value of the test.`, a: rnd(pval5,4), tol:0.01,
-    sol:`<p><strong>Step 1:</strong> \\(\\hat{p} = ${x5}/${n5} = ${rnd(phat5,4)}\\).</p>
-<p><strong>Step 2 \u2014 test statistic:</strong> \\(z = \\dfrac{\\hat{p}-p_0}{\\sqrt{p_0(1-p_0)/n}} = \\dfrac{${rnd(phat5,4)}-${p05}}{\\sqrt{${p05}(${rnd(1-p05,2)})/${n5}}} \\approx ${rnd(z5,4)}\\).</p>
-<p><strong>Step 3 \u2014 two-sided p-value:</strong> since \\(H_1\\) is \\(\\ne\\), double the tail area beyond \\(|z|\\): \\(p\\text{-value} = 2P(Z>|${rnd(z5,4)}|) \\approx ${rnd(pval5,4)}\\).</p>`});
+  let pval5 = 2*(1-jStat.normal.cdf(Math.abs(z4),0,1));
+  probs.push({q:`Using the same test as above (\\(H_0: p = ${p0}\\) vs \\(H_1: p \\ne ${p0}\\), \\(n = ${n4}\\), \\(x = ${x4}\\)), find the p-value of the test.`, a: rnd(pval5,4), tol:0.01,
+    sol:`<p>The test statistic was already found above: \\(z \\approx ${rnd(z4,4)}\\).</p>
+<p>Since \\(H_1\\) is \\(\\ne\\), the p-value doubles the tail area beyond \\(|z|\\): \\(p\\text{-value} = 2P(Z>|${rnd(z4,4)}|) \\approx ${rnd(pval5,4)}\\).</p>`});
 
   return probs;
 }
@@ -1151,41 +1145,40 @@ function gen10(){
   const probs=[];
   function samp(){ let n=ri(80,250); let x=ri(Math.round(n*0.2),Math.round(n*0.7)); return {n,x,p:x/n}; }
 
+  // Problems 1-3 share one pair of samples: the difference, then its
+  // standard error, then a CI upper bound built from that same SE.
   let s1=samp(), s2=samp();
   probs.push({q:`Sample 1: \\(n_1 = ${s1.n}\\), \\(x_1 = ${s1.x}\\). Sample 2: \\(n_2 = ${s2.n}\\), \\(x_2 = ${s2.x}\\). Find the difference in sample proportions, \\(\\hat{p}_1 - \\hat{p}_2\\).`, a: rnd(s1.p-s2.p,4), tol:0.003,
     sol:`<p>Compute each sample proportion, then subtract.</p>
 <p>\\(\\hat{p}_1 = ${s1.x}/${s1.n} = ${rnd(s1.p,4)}\\); \\(\\hat{p}_2 = ${s2.x}/${s2.n} = ${rnd(s2.p,4)}\\).</p>
 <p>\\(\\hat{p}_1-\\hat{p}_2 = ${rnd(s1.p,4)} - ${rnd(s2.p,4)} = ${rnd(s1.p-s2.p,4)}\\).</p>`});
 
-  let s3=samp(), s4=samp(), cl=pick([0.90,0.95,0.99]);
-  let SE34 = Math.sqrt(s3.p*(1-s3.p)/s3.n + s4.p*(1-s4.p)/s4.n);
-  probs.push({q:`Sample 1: \\(n_1 = ${s3.n}\\), \\(x_1 = ${s3.x}\\). Sample 2: \\(n_2 = ${s4.n}\\), \\(x_2 = ${s4.x}\\). Find the standard error of \\(\\hat{p}_1 - \\hat{p}_2\\) used for a ${cl*100}% confidence interval: \\(SE = \\sqrt{\\dfrac{\\hat{p}_1(1-\\hat{p}_1)}{n_1} + \\dfrac{\\hat{p}_2(1-\\hat{p}_2)}{n_2}}\\).`, a: rnd(SE34,4), tol:0.003,
-    sol:`<p>\\(\\hat{p}_1 = ${s3.x}/${s3.n} = ${rnd(s3.p,4)}\\); \\(\\hat{p}_2 = ${s4.x}/${s4.n} = ${rnd(s4.p,4)}\\). This is a <em>confidence-interval</em> SE, so each sample's own proportion is used (unpooled).</p>
-<p>\\(SE = \\sqrt{\\dfrac{${rnd(s3.p,4)}(${rnd(1-s3.p,4)})}{${s3.n}} + \\dfrac{${rnd(s4.p,4)}(${rnd(1-s4.p,4)})}{${s4.n}}} = \\sqrt{${rnd(s3.p*(1-s3.p)/s3.n,6)} + ${rnd(s4.p*(1-s4.p)/s4.n,6)}} \\approx ${rnd(SE34,4)}\\).</p>`});
+  let cl=pick([0.90,0.95,0.99]);
+  let SE34 = Math.sqrt(s1.p*(1-s1.p)/s1.n + s2.p*(1-s2.p)/s2.n);
+  probs.push({q:`Using the same two samples above, find the standard error of \\(\\hat{p}_1 - \\hat{p}_2\\) used for a ${cl*100}% confidence interval: \\(SE = \\sqrt{\\dfrac{\\hat{p}_1(1-\\hat{p}_1)}{n_1} + \\dfrac{\\hat{p}_2(1-\\hat{p}_2)}{n_2}}\\).`, a: rnd(SE34,4), tol:0.003,
+    sol:`<p>\\(\\hat{p}_1 = ${rnd(s1.p,4)}\\) and \\(\\hat{p}_2 = ${rnd(s2.p,4)}\\) were already found above. This is a <em>confidence-interval</em> SE, so each sample's own proportion is used (unpooled).</p>
+<p>\\(SE = \\sqrt{\\dfrac{${rnd(s1.p,4)}(${rnd(1-s1.p,4)})}{${s1.n}} + \\dfrac{${rnd(s2.p,4)}(${rnd(1-s2.p,4)})}{${s2.n}}} = \\sqrt{${rnd(s1.p*(1-s1.p)/s1.n,6)} + ${rnd(s2.p*(1-s2.p)/s2.n,6)}} \\approx ${rnd(SE34,4)}\\).</p>`});
 
-  let s5=samp(), s6=samp(), cl2=pick([0.90,0.95,0.99]);
-  let SE56 = Math.sqrt(s5.p*(1-s5.p)/s5.n + s6.p*(1-s6.p)/s6.n);
+  let cl2=pick([0.90,0.95,0.99]);
   let z56 = zForCL(cl2);
-  let upper56 = (s5.p-s6.p) + z56*SE56;
-  probs.push({q:`Sample 1: \\(n_1 = ${s5.n}\\), \\(x_1 = ${s5.x}\\). Sample 2: \\(n_2 = ${s6.n}\\), \\(x_2 = ${s6.x}\\). Find the upper bound of the ${cl2*100}% confidence interval for \\(p_1 - p_2\\).`, a: rnd(upper56,4), tol:0.004,
-    sol:`<p><strong>Step 1:</strong> \\(\\hat{p}_1=${rnd(s5.p,4)}\\), \\(\\hat{p}_2=${rnd(s6.p,4)}\\), so the point estimate is \\(${rnd(s5.p-s6.p,4)}\\).</p>
-<p><strong>Step 2 \u2014 unpooled SE:</strong> \\(SE = \\sqrt{\\dfrac{${rnd(s5.p,4)}(${rnd(1-s5.p,4)})}{${s5.n}}+\\dfrac{${rnd(s6.p,4)}(${rnd(1-s6.p,4)})}{${s6.n}}} \\approx ${rnd(SE56,4)}\\).</p>
-<p><strong>Step 3:</strong> with \\(z\\approx${rnd(z56,3)}\\) for ${cl2*100}% confidence, the upper bound is \\((\\hat{p}_1-\\hat{p}_2)+zSE = ${rnd(s5.p-s6.p,4)} + ${rnd(z56,3)}(${rnd(SE56,4)}) \\approx ${rnd(upper56,4)}\\).</p>`});
+  let upper56 = (s1.p-s2.p) + z56*SE34;
+  probs.push({q:`Using the same two samples above, find the upper bound of the ${cl2*100}% confidence interval for \\(p_1 - p_2\\).`, a: rnd(upper56,4), tol:0.004,
+    sol:`<p>The point estimate \\(\\hat{p}_1-\\hat{p}_2 = ${rnd(s1.p-s2.p,4)}\\) and the standard error \\(SE \\approx ${rnd(SE34,4)}\\) were already found above.</p>
+<p>With \\(z\\approx${rnd(z56,3)}\\) for ${cl2*100}% confidence, the upper bound is \\((\\hat{p}_1-\\hat{p}_2)+zSE = ${rnd(s1.p-s2.p,4)} + ${rnd(z56,3)}(${rnd(SE34,4)}) \\approx ${rnd(upper56,4)}\\).</p>`});
 
+  // Problems 4-5 share a second pair of samples: the pooled proportion
+  // used for a hypothesis test, then the test statistic built from it.
   let s7=samp(), s8=samp();
   let pPool78 = (s7.x+s8.x)/(s7.n+s8.n);
   probs.push({q:`Sample 1: \\(n_1 = ${s7.n}\\), \\(x_1 = ${s7.x}\\). Sample 2: \\(n_2 = ${s8.n}\\), \\(x_2 = ${s8.x}\\). For a test of \\(H_0: p_1 = p_2\\), find the pooled proportion \\(\\hat{p} = \\dfrac{x_1+x_2}{n_1+n_2}\\).`, a: rnd(pPool78,4), tol:0.003,
     sol:`<p>Under \\(H_0:p_1=p_2\\), both samples are assumed to come from the same population proportion, so we pool the counts and sample sizes together.</p>
 <p>\\(\\hat{p} = \\dfrac{x_1+x_2}{n_1+n_2} = \\dfrac{${s7.x}+${s8.x}}{${s7.n}+${s8.n}} = \\dfrac{${s7.x+s8.x}}{${s7.n+s8.n}} = ${rnd(pPool78,4)}\\).</p>`});
 
-  let s9=samp(), s10=samp();
-  let pPool910 = (s9.x+s10.x)/(s9.n+s10.n);
-  let SEpool = Math.sqrt(pPool910*(1-pPool910)*(1/s9.n+1/s10.n));
-  let z910 = (s9.p-s10.p)/SEpool;
-  probs.push({q:`Sample 1: \\(n_1 = ${s9.n}\\), \\(x_1 = ${s9.x}\\). Sample 2: \\(n_2 = ${s10.n}\\), \\(x_2 = ${s10.x}\\). For a test of \\(H_0: p_1 = p_2\\) vs \\(H_1: p_1 \\ne p_2\\), find the test statistic z using the pooled proportion.`, a: rnd(z910,4), tol:0.03,
-    sol:`<p><strong>Step 1 \u2014 pooled proportion:</strong> \\(\\hat{p} = \\dfrac{${s9.x}+${s10.x}}{${s9.n}+${s10.n}} = ${rnd(pPool910,4)}\\).</p>
-<p><strong>Step 2 \u2014 pooled SE:</strong> \\(SE_{pool} = \\sqrt{\\hat p(1-\\hat p)\\left(\\dfrac{1}{n_1}+\\dfrac{1}{n_2}\\right)} = \\sqrt{${rnd(pPool910,4)}(${rnd(1-pPool910,4)})\\left(\\dfrac{1}{${s9.n}}+\\dfrac{1}{${s10.n}}\\right)} \\approx ${rnd(SEpool,4)}\\).</p>
-<p><strong>Step 3:</strong> \\(\\hat{p}_1=${rnd(s9.p,4)}\\), \\(\\hat{p}_2=${rnd(s10.p,4)}\\); \\(z = \\dfrac{\\hat{p}_1-\\hat{p}_2}{SE_{pool}} = \\dfrac{${rnd(s9.p-s10.p,4)}}{${rnd(SEpool,4)}} \\approx ${rnd(z910,4)}\\).</p>`});
+  let SEpool = Math.sqrt(pPool78*(1-pPool78)*(1/s7.n+1/s8.n));
+  let z910 = (s7.p-s8.p)/SEpool;
+  probs.push({q:`Using the same two samples above, and the pooled proportion already found, find the test statistic z for \\(H_0: p_1 = p_2\\) vs \\(H_1: p_1 \\ne p_2\\).`, a: rnd(z910,4), tol:0.03,
+    sol:`<p>The pooled proportion \\(\\hat{p} = ${rnd(pPool78,4)}\\) was already found above, so only the pooled standard error remains: \\(SE_{pool} = \\sqrt{\\hat p(1-\\hat p)\\left(\\dfrac{1}{n_1}+\\dfrac{1}{n_2}\\right)} = \\sqrt{${rnd(pPool78,4)}(${rnd(1-pPool78,4)})\\left(\\dfrac{1}{${s7.n}}+\\dfrac{1}{${s8.n}}\\right)} \\approx ${rnd(SEpool,4)}\\).</p>
+<p>\\(\\hat{p}_1=${rnd(s7.p,4)}\\), \\(\\hat{p}_2=${rnd(s8.p,4)}\\); \\(z = \\dfrac{\\hat{p}_1-\\hat{p}_2}{SE_{pool}} = \\dfrac{${rnd(s7.p-s8.p,4)}}{${rnd(SEpool,4)}} \\approx ${rnd(z910,4)}\\).</p>`});
 
   return probs;
 }
@@ -1195,38 +1188,38 @@ function gen11(){
   const probs=[];
   function samp(){ return {xbar: ri(40,100), s: ri(5,20), n: ri(10,40)}; }
 
-  let s1=samp();
-  probs.push({q:`A sample has \\(\\bar{x} = ${s1.xbar}\\), \\(s = ${s1.s}\\), \\(n = ${s1.n}\\). Find the standard error of the mean, \\(SE = s/\\sqrt{n}\\).`, a: rnd(s1.s/Math.sqrt(s1.n),4), tol:0.02,
+  // Problems 1, 2, 3, 4 share ONE sample and chain together: SE, then a
+  // t-critical value, then margin of error (reusing the SE), then the CI
+  // upper bound (reusing the margin of error). Problem 5 reuses the same
+  // sample for a hypothesis test.
+  let s = samp();
+  let SE = s.s/Math.sqrt(s.n);
+  probs.push({q:`A sample has \\(\\bar{x} = ${s.xbar}\\), \\(s = ${s.s}\\), \\(n = ${s.n}\\). Find the standard error of the mean, \\(SE = s/\\sqrt{n}\\).`, a: rnd(SE,4), tol:0.02,
     sol:`<p>The standard error of the mean measures how much \\(\\bar{x}\\) varies from sample to sample; it divides the sample SD by \\(\\sqrt{n}\\).</p>
-<p>\\(SE = \\dfrac{s}{\\sqrt{n}} = \\dfrac{${s1.s}}{\\sqrt{${s1.n}}} = \\dfrac{${s1.s}}{${rnd(Math.sqrt(s1.n),4)}} \\approx ${rnd(s1.s/Math.sqrt(s1.n),4)}\\).</p>`});
+<p>\\(SE = \\dfrac{s}{\\sqrt{n}} = \\dfrac{${s.s}}{\\sqrt{${s.n}}} = \\dfrac{${s.s}}{${rnd(Math.sqrt(s.n),4)}} \\approx ${rnd(SE,4)}\\).</p>`});
 
-  let s2=samp(), cl2=pick([0.90,0.95,0.99]);
-  let df2=s2.n-1, tcrit2=jStat.studentt.inv(1-(1-cl2)/2,df2);
-  probs.push({q:`A sample has \\(n = ${s2.n}\\) (so \\(df = ${df2}\\)). Find the t critical value for a ${cl2*100}% confidence interval (two-sided).`, a: rnd(tcrit2,4), tol:0.03,
-    sol:`<p>For a two-sided ${cl2*100}% CI, we need the value that cuts off \\(\\dfrac{1-${cl2}}{2}=${rnd((1-cl2)/2,3)}\\) in each tail of the t-distribution with \\(df=n-1=${df2}\\).</p>
-<p>Looking this up (or computing it): \\(t_{${rnd((1-cl2)/2,3)},${df2}} \\approx ${rnd(tcrit2,4)}\\).</p>`});
+  let df=s.n-1, cl2=pick([0.90,0.95,0.99]);
+  let tcrit2=jStat.studentt.inv(1-(1-cl2)/2,df);
+  probs.push({q:`Using the same sample above (\\(n = ${s.n}\\), so \\(df = ${df}\\)), find the t critical value for a ${cl2*100}% confidence interval (two-sided).`, a: rnd(tcrit2,4), tol:0.03,
+    sol:`<p>For a two-sided ${cl2*100}% CI, we need the value that cuts off \\(\\dfrac{1-${cl2}}{2}=${rnd((1-cl2)/2,3)}\\) in each tail of the t-distribution with \\(df=n-1=${df}\\).</p>
+<p>Looking this up (or computing it): \\(t_{${rnd((1-cl2)/2,3)},${df}} \\approx ${rnd(tcrit2,4)}\\).</p>`});
 
-  let s3=samp(), cl3=pick([0.90,0.95,0.99]);
-  let df3=s3.n-1, tcrit3=jStat.studentt.inv(1-(1-cl3)/2,df3);
-  let ME3 = tcrit3*s3.s/Math.sqrt(s3.n);
-  probs.push({q:`A sample has \\(\\bar{x} = ${s3.xbar}\\), \\(s = ${s3.s}\\), \\(n = ${s3.n}\\). Find the margin of error for a ${cl3*100}% confidence interval for \\(\\mu\\). \\((ME = t\\cdot s/\\sqrt{n})\\)`, a: rnd(ME3,4), tol:0.05,
-    sol:`<p><strong>Step 1:</strong> \\(df = n-1 = ${df3}\\); the t-critical value for ${cl3*100}% confidence is \\(t\\approx${rnd(tcrit3,4)}\\).</p>
-<p><strong>Step 2:</strong> \\(ME = t\\cdot\\dfrac{s}{\\sqrt{n}} = ${rnd(tcrit3,4)}\\times\\dfrac{${s3.s}}{\\sqrt{${s3.n}}} = ${rnd(tcrit3,4)}\\times ${rnd(s3.s/Math.sqrt(s3.n),4)} \\approx ${rnd(ME3,4)}\\).</p>`});
+  let cl3=pick([0.90,0.95,0.99]);
+  let tcrit3=jStat.studentt.inv(1-(1-cl3)/2,df);
+  let ME3 = tcrit3*SE;
+  probs.push({q:`Using the same sample above, find the margin of error for a ${cl3*100}% confidence interval for \\(\\mu\\). \\((ME = t\\cdot s/\\sqrt{n})\\)`, a: rnd(ME3,4), tol:0.05,
+    sol:`<p>The standard error \\(SE \\approx ${rnd(SE,4)}\\) was already found above. The t-critical value for ${cl3*100}% confidence with \\(df=${df}\\) is \\(t\\approx${rnd(tcrit3,4)}\\).</p>
+<p>\\(ME = t\\cdot SE = ${rnd(tcrit3,4)}\\times ${rnd(SE,4)} \\approx ${rnd(ME3,4)}\\).</p>`});
 
-  let s4=samp(), cl4=pick([0.90,0.95,0.99]);
-  let df4=s4.n-1, tcrit4=jStat.studentt.inv(1-(1-cl4)/2,df4);
-  let ME4 = tcrit4*s4.s/Math.sqrt(s4.n);
-  let upper4 = s4.xbar+ME4;
-  probs.push({q:`A sample has \\(\\bar{x} = ${s4.xbar}\\), \\(s = ${s4.s}\\), \\(n = ${s4.n}\\). Find the upper bound of the ${cl4*100}% confidence interval for \\(\\mu\\).`, a: rnd(upper4,4), tol:0.05,
-    sol:`<p><strong>Step 1:</strong> \\(df=${df4}\\); \\(t_{crit}\\approx${rnd(tcrit4,4)}\\) for ${cl4*100}% confidence.</p>
-<p><strong>Step 2:</strong> \\(ME = t\\cdot s/\\sqrt{n} = ${rnd(tcrit4,4)}\\times ${s4.s}/\\sqrt{${s4.n}} \\approx ${rnd(ME4,4)}\\).</p>
-<p><strong>Step 3:</strong> the CI is \\(\\bar{x}\\pm ME\\), so the upper bound is \\(\\bar{x}+ME = ${s4.xbar} + ${rnd(ME4,4)} \\approx ${rnd(upper4,4)}\\).</p>`});
+  let upper4 = s.xbar+ME3;
+  probs.push({q:`Using the same sample above and the ${cl3*100}% margin of error just found, find the upper bound of that confidence interval for \\(\\mu\\).`, a: rnd(upper4,4), tol:0.05,
+    sol:`<p>The margin of error \\(ME \\approx ${rnd(ME3,4)}\\) was already found above. The CI is \\(\\bar{x}\\pm ME\\), so the upper bound is \\(\\bar{x}+ME = ${s.xbar} + ${rnd(ME3,4)} \\approx ${rnd(upper4,4)}\\).</p>`});
 
-  let s5=samp(), mu0=s5.xbar+pick([-1,1])*ri(2,6);
-  let t5 = (s5.xbar-mu0)/(s5.s/Math.sqrt(s5.n));
-  probs.push({q:`A sample has \\(\\bar{x} = ${s5.xbar}\\), \\(s = ${s5.s}\\), \\(n = ${s5.n}\\). Test \\(H_0: \\mu = ${mu0}\\) vs \\(H_1: \\mu \\ne ${mu0}\\). Find the test statistic \\(t = \\dfrac{\\bar{x} - \\mu_0}{s/\\sqrt{n}}\\).`, a: rnd(t5,4), tol:0.03,
-    sol:`<p>Plug \\(\\bar{x}\\), \\(\\mu_0\\), \\(s\\), and \\(n\\) directly into the formula.</p>
-<p>\\(t = \\dfrac{${s5.xbar}-${mu0}}{${s5.s}/\\sqrt{${s5.n}}} = \\dfrac{${s5.xbar-mu0}}{${rnd(s5.s/Math.sqrt(s5.n),4)}} \\approx ${rnd(t5,4)}\\), with \\(df=n-1=${s5.n-1}\\).</p>`});
+  let mu0=s.xbar+pick([-1,1])*ri(2,6);
+  let t5 = (s.xbar-mu0)/SE;
+  probs.push({q:`Using the same sample above, test \\(H_0: \\mu = ${mu0}\\) vs \\(H_1: \\mu \\ne ${mu0}\\). Find the test statistic \\(t = \\dfrac{\\bar{x} - \\mu_0}{s/\\sqrt{n}}\\).`, a: rnd(t5,4), tol:0.03,
+    sol:`<p>The standard error \\(SE \\approx ${rnd(SE,4)}\\) is the same one found in the first problem above, so it can be reused directly.</p>
+<p>\\(t = \\dfrac{\\bar{x}-\\mu_0}{SE} = \\dfrac{${s.xbar}-${mu0}}{${rnd(SE,4)}} = \\dfrac{${s.xbar-mu0}}{${rnd(SE,4)}} \\approx ${rnd(t5,4)}\\), with \\(df=n-1=${df}\\).</p>`});
 
   return probs;
 }
@@ -1241,41 +1234,38 @@ function gen12(){
     return num/den;
   }
 
-  let a1=samp(), b1=samp();
-  probs.push({q:`Sample 1: \\(\\bar{x}_1{=}${a1.xbar}\\), \\(s_1{=}${a1.s}\\), \\(n_1{=}${a1.n}\\). Sample 2: \\(\\bar{x}_2{=}${b1.xbar}\\), \\(s_2{=}${b1.s}\\), \\(n_2{=}${b1.n}\\). Find the difference in sample means, \\(\\bar{x}_1 - \\bar{x}_2\\).`, a: rnd(a1.xbar-b1.xbar,4), tol:0.05,
+  // All five problems below share the SAME two samples, so the topic
+  // reads as one flowing Welch two-sample analysis: difference, then SE,
+  // then df, then the test statistic, then a confidence interval \u2014 each
+  // step reusing the quantities already found in the steps before it.
+  let a=samp(), b=samp();
+
+  probs.push({q:`Sample 1: \\(\\bar{x}_1{=}${a.xbar}\\), \\(s_1{=}${a.s}\\), \\(n_1{=}${a.n}\\). Sample 2: \\(\\bar{x}_2{=}${b.xbar}\\), \\(s_2{=}${b.s}\\), \\(n_2{=}${b.n}\\). Find the difference in sample means, \\(\\bar{x}_1 - \\bar{x}_2\\).`, a: rnd(a.xbar-b.xbar,4), tol:0.05,
     sol:`<p>Simply subtract the two sample means.</p>
-<p>\\(\\bar{x}_1-\\bar{x}_2 = ${a1.xbar} - ${b1.xbar} = ${rnd(a1.xbar-b1.xbar,4)}\\).</p>`});
+<p>\\(\\bar{x}_1-\\bar{x}_2 = ${a.xbar} - ${b.xbar} = ${rnd(a.xbar-b.xbar,4)}\\).</p>`});
 
-  let a2=samp(), b2=samp();
-  let SE2 = Math.sqrt(a2.s*a2.s/a2.n + b2.s*b2.s/b2.n);
-  probs.push({q:`Sample 1: \\(s_1{=}${a2.s}\\), \\(n_1{=}${a2.n}\\). Sample 2: \\(s_2{=}${b2.s}\\), \\(n_2{=}${b2.n}\\). Find the (Welch, unpooled) standard error: \\(SE = \\sqrt{s_1^2/n_1 + s_2^2/n_2}\\).`, a: rnd(SE2,4), tol:0.02,
+  let SE = Math.sqrt(a.s*a.s/a.n + b.s*b.s/b.n);
+  probs.push({q:`Using the same two samples above, find the (Welch, unpooled) standard error: \\(SE = \\sqrt{s_1^2/n_1 + s_2^2/n_2}\\).`, a: rnd(SE,4), tol:0.02,
     sol:`<p>Each sample contributes its own variance-over-n term; we don't assume the population variances are equal, so nothing is pooled.</p>
-<p>\\(SE = \\sqrt{\\dfrac{${a2.s}^2}{${a2.n}} + \\dfrac{${b2.s}^2}{${b2.n}}} = \\sqrt{${rnd(a2.s*a2.s/a2.n,4)} + ${rnd(b2.s*b2.s/b2.n,4)}} = \\sqrt{${rnd(a2.s*a2.s/a2.n+b2.s*b2.s/b2.n,4)}} \\approx ${rnd(SE2,4)}\\).</p>`});
+<p>\\(SE = \\sqrt{\\dfrac{${a.s}^2}{${a.n}} + \\dfrac{${b.s}^2}{${b.n}}} = \\sqrt{${rnd(a.s*a.s/a.n,4)} + ${rnd(b.s*b.s/b.n,4)}} = \\sqrt{${rnd(a.s*a.s/a.n+b.s*b.s/b.n,4)}} \\approx ${rnd(SE,4)}\\).</p>`});
 
-  let a3=samp(), b3=samp();
-  let df3 = welchDf(a3,b3);
-  let v1_3 = a3.s*a3.s/a3.n, v2_3 = b3.s*b3.s/b3.n;
-  probs.push({q:`Sample 1: \\(s_1{=}${a3.s}\\), \\(n_1{=}${a3.n}\\). Sample 2: \\(s_2{=}${b3.s}\\), \\(n_2{=}${b3.n}\\). Find the Welch\u2013Satterthwaite degrees of freedom (round to the nearest whole number).`, a: Math.round(df3), tol:1,
-    sol:`<p><strong>Step 1</strong> \u2014 compute \\(v_1=s_1^2/n_1 = ${a3.s}^2/${a3.n} = ${rnd(v1_3,4)}\\) and \\(v_2=s_2^2/n_2 = ${b3.s}^2/${b3.n} = ${rnd(v2_3,4)}\\).</p>
-<p><strong>Step 2</strong> \u2014 apply the Welch\u2013Satterthwaite formula: \\(df = \\dfrac{(v_1+v_2)^2}{\\dfrac{v_1^2}{n_1-1}+\\dfrac{v_2^2}{n_2-1}} = \\dfrac{(${rnd(v1_3,4)}+${rnd(v2_3,4)})^2}{\\dfrac{${rnd(v1_3,4)}^2}{${a3.n-1}}+\\dfrac{${rnd(v2_3,4)}^2}{${b3.n-1}}} \\approx ${rnd(df3,2)}\\), which rounds to <strong>${Math.round(df3)}</strong>.</p>`});
+  let df = welchDf(a,b);
+  let v1 = a.s*a.s/a.n, v2 = b.s*b.s/b.n;
+  probs.push({q:`Using the same two samples above, find the Welch\u2013Satterthwaite degrees of freedom (round to the nearest whole number).`, a: Math.round(df), tol:1,
+    sol:`<p>The two variance-over-n terms \\(v_1=s_1^2/n_1 = ${rnd(v1,4)}\\) and \\(v_2=s_2^2/n_2 = ${rnd(v2,4)}\\) are exactly the two pieces already added together inside the square root for \\(SE\\) above.</p>
+<p>Apply the Welch\u2013Satterthwaite formula: \\(df = \\dfrac{(v_1+v_2)^2}{\\dfrac{v_1^2}{n_1-1}+\\dfrac{v_2^2}{n_2-1}} = \\dfrac{(${rnd(v1,4)}+${rnd(v2,4)})^2}{\\dfrac{${rnd(v1,4)}^2}{${a.n-1}}+\\dfrac{${rnd(v2,4)}^2}{${b.n-1}}} \\approx ${rnd(df,2)}\\), which rounds to <strong>${Math.round(df)}</strong>.</p>`});
 
-  let a4=samp(), b4=samp();
-  let SE4 = Math.sqrt(a4.s*a4.s/a4.n + b4.s*b4.s/b4.n);
-  let t4 = (a4.xbar-b4.xbar)/SE4;
-  probs.push({q:`Sample 1: \\(\\bar{x}_1{=}${a4.xbar}\\), \\(s_1{=}${a4.s}\\), \\(n_1{=}${a4.n}\\). Sample 2: \\(\\bar{x}_2{=}${b4.xbar}\\), \\(s_2{=}${b4.s}\\), \\(n_2{=}${b4.n}\\). Test \\(H_0: \\mu_1 = \\mu_2\\) vs \\(H_1: \\mu_1 \\ne \\mu_2\\). Find the Welch test statistic \\(t = (\\bar{x}_1-\\bar{x}_2)/SE\\).`, a: rnd(t4,4), tol:0.04,
-    sol:`<p><strong>Step 1 \u2014 SE:</strong> \\(SE = \\sqrt{${a4.s}^2/${a4.n} + ${b4.s}^2/${b4.n}} \\approx ${rnd(SE4,4)}\\).</p>
-<p><strong>Step 2 \u2014 test statistic:</strong> \\(t = \\dfrac{\\bar{x}_1-\\bar{x}_2}{SE} = \\dfrac{${a4.xbar}-${b4.xbar}}{${rnd(SE4,4)}} = \\dfrac{${rnd(a4.xbar-b4.xbar,4)}}{${rnd(SE4,4)}} \\approx ${rnd(t4,4)}\\).</p>`});
+  let t4 = (a.xbar-b.xbar)/SE;
+  probs.push({q:`Using the same two samples above, test \\(H_0: \\mu_1 = \\mu_2\\) vs \\(H_1: \\mu_1 \\ne \\mu_2\\). Find the Welch test statistic \\(t = (\\bar{x}_1-\\bar{x}_2)/SE\\).`, a: rnd(t4,4), tol:0.04,
+    sol:`<p>Both pieces needed here were already found above: the difference in means \\(\\bar{x}_1-\\bar{x}_2 = ${rnd(a.xbar-b.xbar,4)}\\) (problem 1) and the standard error \\(SE \\approx ${rnd(SE,4)}\\) (problem 2).</p>
+<p>\\(t = \\dfrac{\\bar{x}_1-\\bar{x}_2}{SE} = \\dfrac{${rnd(a.xbar-b.xbar,4)}}{${rnd(SE,4)}} \\approx ${rnd(t4,4)}\\).</p>`});
 
-  let a5=samp(), b5=samp(), cl5=pick([0.90,0.95,0.99]);
-  let SE5 = Math.sqrt(a5.s*a5.s/a5.n + b5.s*b5.s/b5.n);
-  let df5 = welchDf(a5,b5);
-  let tcrit5 = jStat.studentt.inv(1-(1-cl5)/2, df5);
-  let ME5 = tcrit5*SE5;
-  probs.push({q:`Sample 1: \\(\\bar{x}_1{=}${a5.xbar}\\), \\(s_1{=}${a5.s}\\), \\(n_1{=}${a5.n}\\). Sample 2: \\(\\bar{x}_2{=}${b5.xbar}\\), \\(s_2{=}${b5.s}\\), \\(n_2{=}${b5.n}\\). Using the Welch\u2013Satterthwaite df (rounded to the nearest whole number), find the margin of error for a ${cl5*100}% confidence interval for \\(\\mu_1-\\mu_2\\).`, a: rnd(ME5,4), tol:0.15,
-    sol:`<p><strong>Step 1 \u2014 SE:</strong> \\(SE = \\sqrt{${a5.s}^2/${a5.n}+${b5.s}^2/${b5.n}} \\approx ${rnd(SE5,4)}\\).</p>
-<p><strong>Step 2 \u2014 Welch df:</strong> \\(df \\approx ${rnd(df5,2)}\\), which rounds to ${Math.round(df5)}.</p>
-<p><strong>Step 3 \u2014 t-critical:</strong> for ${cl5*100}% confidence with \\(df=${Math.round(df5)}\\), \\(t\\approx${rnd(tcrit5,4)}\\).</p>
-<p><strong>Step 4 \u2014 margin of error:</strong> \\(ME = t\\times SE = ${rnd(tcrit5,4)}\\times${rnd(SE5,4)} \\approx ${rnd(ME5,4)}\\).</p>`});
+  let cl5=pick([0.90,0.95,0.99]);
+  let tcrit5 = jStat.studentt.inv(1-(1-cl5)/2, df);
+  let ME5 = tcrit5*SE;
+  probs.push({q:`Using the same two samples above, and the Welch\u2013Satterthwaite df already found (rounded to the nearest whole number), find the margin of error for a ${cl5*100}% confidence interval for \\(\\mu_1-\\mu_2\\).`, a: rnd(ME5,4), tol:0.15,
+    sol:`<p>The standard error \\(SE \\approx ${rnd(SE,4)}\\) (problem 2) and the Welch df, \\(${Math.round(df)}\\) (problem 3), were both already found above \u2014 only the t-critical value is new.</p>
+<p>For ${cl5*100}% confidence with \\(df=${Math.round(df)}\\): \\(t\\approx${rnd(tcrit5,4)}\\), so \\(ME = t\\times SE = ${rnd(tcrit5,4)}\\times${rnd(SE,4)} \\approx ${rnd(ME5,4)}\\).</p>`});
 
   return probs;
 }
@@ -1283,66 +1273,63 @@ function gen12(){
 // ===== Topic 13: Chi-square GOF and independence =====
 function gen13(){
   const probs=[];
-  // P1: GOF chi-square statistic
+  // Problems 1 & 2 share one goodness-of-fit scenario: problem 1 computes
+  // the chi-square statistic, problem 2 reuses the same categories for df.
   function gofSet(){
     let k=ri(3,5);
     let obs=[]; for(let i=0;i<k;i++) obs.push(ri(15,60));
     let total=obs.reduce((a,b)=>a+b,0);
-    // expected under equal proportions
     let exp=obs.map(()=>total/k);
     let chi2=obs.reduce((s,o,i)=>s+Math.pow(o-exp[i],2)/exp[i],0);
     return {k,obs,exp,total,chi2};
   }
-  let g1=gofSet();
-  let terms1 = g1.obs.map((o,i)=>rnd(Math.pow(o-g1.exp[i],2)/g1.exp[i],4));
-  probs.push({q:`A die-fairness style test has observed counts across ${g1.k} categories: {${g1.obs.join(', ')}} (total \\(n = ${g1.total}\\)). Under \\(H_0\\), the categories are equally likely, so each expected count is \\(n/${g1.k} = ${rnd(g1.total/g1.k,2)}\\). Find the chi-square goodness-of-fit statistic \\(\\chi^2 = \\sum (O-E)^2/E\\).`, a: rnd(g1.chi2,4), tol:0.05,
-    sol:`<p>Each category's expected count is \\(E = ${rnd(g1.total/g1.k,2)}\\). For each category, compute \\((O-E)^2/E\\):</p>
-<p>${g1.obs.map((o,i)=>`\\(\\dfrac{(${o}-${rnd(g1.exp[i],2)})^2}{${rnd(g1.exp[i],2)}} = ${terms1[i]}\\)`).join('; ')}.</p>
-<p>Sum these terms: \\(\\chi^2 = ${terms1.join(' + ')} = ${rnd(g1.chi2,4)}\\).</p>`});
+  let g=gofSet();
+  let terms1 = g.obs.map((o,i)=>rnd(Math.pow(o-g.exp[i],2)/g.exp[i],4));
+  probs.push({q:`A die-fairness style test has observed counts across ${g.k} categories: {${g.obs.join(', ')}} (total \\(n = ${g.total}\\)). Under \\(H_0\\), the categories are equally likely, so each expected count is \\(n/${g.k} = ${rnd(g.total/g.k,2)}\\). Find the chi-square goodness-of-fit statistic \\(\\chi^2 = \\sum (O-E)^2/E\\).`, a: rnd(g.chi2,4), tol:0.05,
+    sol:`<p>Each category's expected count is \\(E = ${rnd(g.total/g.k,2)}\\). For each category, compute \\((O-E)^2/E\\):</p>
+<p>${g.obs.map((o,i)=>`\\(\\dfrac{(${o}-${rnd(g.exp[i],2)})^2}{${rnd(g.exp[i],2)}} = ${terms1[i]}\\)`).join('; ')}.</p>
+<p>Sum these terms: \\(\\chi^2 = ${terms1.join(' + ')} = ${rnd(g.chi2,4)}\\).</p>`});
 
-  let g2=gofSet();
-  probs.push({q:`A goodness-of-fit test uses ${g2.k} categories. Find the degrees of freedom for the test.`, a: g2.k-1, tol:0.4,
+  probs.push({q:`Using the same test above with ${g.k} categories, find the degrees of freedom for the test.`, a: g.k-1, tol:0.4,
     sol:`<p>A GOF test has \\(df = (\\text{number of categories}) - 1\\) (one degree of freedom is "used up" because the expected counts must add up to the same total \\(n\\) as the observed counts).</p>
-<p>\\(df = ${g2.k} - 1 = ${g2.k-1}\\).</p>`});
+<p>\\(df = ${g.k} - 1 = ${g.k-1}\\).</p>`});
 
-  // P3/P4: independence table 2x3 or 2x2, expected count for a cell
+  // Problems 3, 4 & 5 share one contingency table: problem 3 finds a single
+  // expected cell, problem 4 finds the full chi-square statistic (reusing
+  // that cell), and problem 5 finds df from the same table's dimensions.
   function indTable(){
     let r=2, c=pick([2,3]);
     let rowTot=[], colTot=[];
     let table=[];
     for(let i=0;i<r;i++){ table.push([]); }
-    // generate random table then compute totals
     for(let i=0;i<r;i++) for(let j=0;j<c;j++) table[i][j]=ri(10,40);
     for(let i=0;i<r;i++) rowTot.push(table[i].reduce((a,b)=>a+b,0));
     for(let j=0;j<c;j++){ let s=0; for(let i=0;i<r;i++) s+=table[i][j]; colTot.push(s); }
     let grand = rowTot.reduce((a,b)=>a+b,0);
     return {r,c,table,rowTot,colTot,grand};
   }
-  let it3=indTable();
-  let ci=ri(0,it3.r-1), cj=ri(0,it3.c-1);
-  let expCell = (it3.rowTot[ci]*it3.colTot[cj])/it3.grand;
-  let tableTxt3 = it3.table.map((row,i)=>`Row ${i+1}: {${row.join(', ')}}`).join('; ');
-  probs.push({q:`A \\(${it3.r}\\times${it3.c}\\) contingency table has observed counts \u2014 ${tableTxt3} (row totals: {${it3.rowTot.join(', ')}}; column totals: {${it3.colTot.join(', ')}}; grand total = ${it3.grand}). For a chi-square test of independence, find the expected count for the cell in row ${ci+1}, column ${cj+1}. \\((E = \\text{row total} \\times \\text{column total} / \\text{grand total})\\)`, a: rnd(expCell,4), tol:0.05,
+  let it=indTable();
+  let ci=ri(0,it.r-1), cj=ri(0,it.c-1);
+  let expCell = (it.rowTot[ci]*it.colTot[cj])/it.grand;
+  let tableTxt = it.table.map((row,i)=>`Row ${i+1}: {${row.join(', ')}}`).join('; ');
+  const tableDesc = `A \\(${it.r}\\times${it.c}\\) contingency table has observed counts \u2014 ${tableTxt} (row totals: {${it.rowTot.join(', ')}}; column totals: {${it.colTot.join(', ')}}; grand total = ${it.grand}).`;
+  probs.push({q:`${tableDesc} For a chi-square test of independence, find the expected count for the cell in row ${ci+1}, column ${cj+1}. \\((E = \\text{row total} \\times \\text{column total} / \\text{grand total})\\)`, a: rnd(expCell,4), tol:0.05,
     sol:`<p>Under \\(H_0\\) (independence), the expected count for a cell is proportional to its row and column totals.</p>
-<p>\\(E_{${ci+1},${cj+1}} = \\dfrac{\\text{row ${ci+1} total} \\times \\text{column ${cj+1} total}}{\\text{grand total}} = \\dfrac{${it3.rowTot[ci]}\\times${it3.colTot[cj]}}{${it3.grand}} = \\dfrac{${it3.rowTot[ci]*it3.colTot[cj]}}{${it3.grand}} \\approx ${rnd(expCell,4)}\\).</p>`});
+<p>\\(E_{${ci+1},${cj+1}} = \\dfrac{\\text{row ${ci+1} total} \\times \\text{column ${cj+1} total}}{\\text{grand total}} = \\dfrac{${it.rowTot[ci]}\\times${it.colTot[cj]}}{${it.grand}} = \\dfrac{${it.rowTot[ci]*it.colTot[cj]}}{${it.grand}} \\approx ${rnd(expCell,4)}\\).</p>`});
 
-  let it4=indTable();
-  // compute full chi-square statistic
   let chi2ind=0;
   let expTable=[];
   let cellTerms=[];
-  for(let i=0;i<it4.r;i++){ expTable.push([]); for(let j=0;j<it4.c;j++){ let e=(it4.rowTot[i]*it4.colTot[j])/it4.grand; expTable[i].push(rnd(e,3)); let term=rnd(Math.pow(it4.table[i][j]-e,2)/e,4); cellTerms.push(term); chi2ind += Math.pow(it4.table[i][j]-e,2)/e; } }
-  let tableTxt4 = it4.table.map((row,i)=>`Row ${i+1}: {${row.join(', ')}}`).join('; ');
-  let expTxt4 = expTable.map((row,i)=>`Row ${i+1}: {${row.join(', ')}}`).join('; ');
-  probs.push({q:`A \\(${it4.r}\\times${it4.c}\\) contingency table has observed counts \u2014 ${tableTxt4} (row totals: {${it4.rowTot.join(', ')}}; column totals: {${it4.colTot.join(', ')}}; grand total = ${it4.grand}). Find the chi-square test statistic for independence, \\(\\chi^2 = \\sum (O-E)^2/E\\).`, a: rnd(chi2ind,4), tol:0.1,
-    sol:`<p><strong>Step 1 \u2014 expected counts</strong> (row total \\(\\times\\) column total \\(/\\) grand total) for every cell: ${expTxt4}.</p>
-<p><strong>Step 2 \u2014</strong> compute \\((O-E)^2/E\\) for each of the ${it4.r*it4.c} cells and sum them: ${cellTerms.join(' + ')} = ${rnd(chi2ind,4)}.</p>
-<p>\\(\\chi^2 \\approx ${rnd(chi2ind,4)}\\), with \\(df=(${it4.r}-1)(${it4.c}-1)=${(it4.r-1)*(it4.c-1)}\\).</p>`});
+  for(let i=0;i<it.r;i++){ expTable.push([]); for(let j=0;j<it.c;j++){ let e=(it.rowTot[i]*it.colTot[j])/it.grand; expTable[i].push(rnd(e,3)); let term=rnd(Math.pow(it.table[i][j]-e,2)/e,4); cellTerms.push(term); chi2ind += Math.pow(it.table[i][j]-e,2)/e; } }
+  let expTxt = expTable.map((row,i)=>`Row ${i+1}: {${row.join(', ')}}`).join('; ');
+  probs.push({q:`Using the same table above, find the chi-square test statistic for independence, \\(\\chi^2 = \\sum (O-E)^2/E\\).`, a: rnd(chi2ind,4), tol:0.1,
+    sol:`<p>The cell in row ${ci+1}, column ${cj+1} was already found above (\\(E \\approx ${rnd(expCell,4)}\\)); the same formula gives every other cell's expected count: ${expTxt}.</p>
+<p>Compute \\((O-E)^2/E\\) for each of the ${it.r*it.c} cells and sum them: ${cellTerms.join(' + ')} = ${rnd(chi2ind,4)}.</p>
+<p>\\(\\chi^2 \\approx ${rnd(chi2ind,4)}\\), with \\(df=(${it.r}-1)(${it.c}-1)=${(it.r-1)*(it.c-1)}\\).</p>`});
 
-  let it5=indTable();
-  probs.push({q:`For a chi-square test of independence on a \\(${it5.r}\\times${it5.c}\\) contingency table, find the degrees of freedom, \\(df = (r-1)(c-1)\\).`, a: (it5.r-1)*(it5.c-1), tol:0.4,
-    sol:`<p>Substitute the number of rows and columns into the formula.</p>
-<p>\\(df = (r-1)(c-1) = (${it5.r}-1)(${it5.c}-1) = ${it5.r-1}\\times${it5.c-1} = ${(it5.r-1)*(it5.c-1)}\\).</p>`});
+  probs.push({q:`For the same \\(${it.r}\\times${it.c}\\) contingency table above, find the degrees of freedom, \\(df = (r-1)(c-1)\\), for the chi-square test of independence.`, a: (it.r-1)*(it.c-1), tol:0.4,
+    sol:`<p>The table above has \\(r=${it.r}\\) rows and \\(c=${it.c}\\) columns, so substitute directly into the formula.</p>
+<p>\\(df = (r-1)(c-1) = (${it.r}-1)(${it.c}-1) = ${it.r-1}\\times${it.c-1} = ${(it.r-1)*(it.c-1)}\\).</p>`});
 
   return probs;
 }
@@ -1536,107 +1523,69 @@ function gen16(){
    ========================================================================= */
 const TOPICS = [
 { id:1, title:"1. Sample Space, Events & Counting", type:"calc", gen:gen1, review:`
-<p><strong>Experiment / Sample space / Event:</strong> A <em>random experiment</em> is a process with an uncertain outcome. The <em>sample space</em> \\(S\\) is the set of all possible outcomes. An <em>event</em> is any subset of the sample space (a collection of outcomes we care about). We use capital letters such as \\(A\\) and \\(B\\) to denote events, use \\(A \\cup B\\) to denote the event that \\(A\\) or \\(B\\) occurs, and use \\(A \\cap B\\) to denote the event that they occur simultaneously.</p>
-<p><strong>Multiplicative counting principle:</strong> If a task consists of \\(k\\) steps, and step 1 can be done in \\(n_1\\) ways, step 2 in \\(n_2\\) ways, \\(\\ldots\\), step \\(k\\) in \\(n_k\\) ways, then the whole task can be done in \\(n_1 \\times n_2 \\times \\cdots \\times n_k\\) ways.</p>
-<p><strong>Permutations</strong> (order matters, no repeats): arranging all \\(n\\) distinct items \\(\\to n!\\) ways; choosing and ordering \\(r\\) of \\(n\\) items \\(\\to\\ P(n,r) = \\dfrac{n!}{(n-r)!}\\).</p>
-<p><strong>Combinations</strong> (order doesn't matter): choosing \\(r\\) of \\(n\\) distinct items \\(\\to\\ C(n,r) = \\dbinom{n}{r} = \\dfrac{n!}{r!\\,(n-r)!}\\).</p>` },
+<p>A <strong>random experiment</strong> is any process whose outcome cannot be predicted with certainty. The <strong>sample space</strong>, denoted \\(S\\), is the set of all possible outcomes of a random experiment. An <strong>event</strong>, typically denoted with a capital letter such as \\(A\\) or \\(B\\), is any subset of the sample space \u2014 that is, any collection of outcomes we are interested in. Given two events \\(A\\) and \\(B\\), the <strong>union</strong> \\(A \\cup B\\) is the event that \\(A\\) occurs, or \\(B\\) occurs, or both; the <strong>intersection</strong> \\(A \\cap B\\) is the event that both \\(A\\) and \\(B\\) occur simultaneously.</p>
+<p>Many experiments involve counting how many outcomes are possible, and three counting rules cover most cases. The <strong>multiplicative counting principle</strong> says that if a task consists of \\(k\\) steps, and step 1 can be completed in \\(n_1\\) ways, step 2 in \\(n_2\\) ways, and so on through step \\(k\\) in \\(n_k\\) ways, then the entire task can be completed in \\(n_1 \\times n_2 \\times \\cdots \\times n_k\\) ways. A <strong>permutation</strong> counts the number of ways to arrange or select items when order matters and no item is repeated: arranging all \\(n\\) distinct items in a row can be done in \\(n!\\) (\u201c\\(n\\) factorial,\u201d meaning \\(n \\times (n-1) \\times \\cdots \\times 2 \\times 1\\)) ways, and choosing and ordering \\(r\\) of \\(n\\) distinct items can be done in \\(P(n,r) = \\dfrac{n!}{(n-r)!}\\) ways. A <strong>combination</strong> counts the number of ways to choose \\(r\\) of \\(n\\) distinct items when order does <em>not</em> matter, given by \\(C(n,r) = \\dbinom{n}{r} = \\dfrac{n!}{r!\\,(n-r)!}\\).</p>` },
 
 { id:2, title:"2. Probability of an Event", type:"calc", gen:gen2, review:`
-<p>When outcomes in a finite sample space are <strong>equally likely</strong>, \\( P(\\text{event}) = \\dfrac{\\#\\text{ outcomes in the event}}{\\#\\text{ outcomes in } S} \\).</p>
-<p><strong>Basic probability rules: let \\(A\\) denote an event and \\(P(A)\\) its probability </strong></p>
-<ul>
-<li>\\(0 \\le P(A) \\le 1\\), and \\(P(S) = 1\\)</li>
-<li><strong>Complement rule:</strong> \\(P(A') = 1 - P(A)\\)</li>
-<li><strong>Addition rule (general):</strong> \\(P(A \\cup B) = P(A) + P(B) - P(A \\cap B)\\)</li>
-</ul>` },
+<p>The <strong>probability</strong> of an event \\(A\\), written \\(P(A)\\), is a number between 0 and 1 that measures how likely \\(A\\) is to occur; the probability of the entire sample space is \\(P(S) = 1\\). When a sample space consists of a finite number of <strong>equally likely</strong> outcomes, the probability of an event \\(A\\) is the number of outcomes in \\(A\\) divided by the total number of outcomes in \\(S\\): \\(P(A) = \\dfrac{\\#\\text{ outcomes in } A}{\\#\\text{ outcomes in } S}\\).</p>
+<p>Every event \\(A\\) has a <strong>complement</strong>, denoted \\(A'\\), consisting of all outcomes not in \\(A\\); since \\(A\\) and \\(A'\\) together account for every outcome, the <strong>complement rule</strong> states \\(P(A') = 1 - P(A)\\). For two events \\(A\\) and \\(B\\), the <strong>general addition rule</strong> gives the probability that at least one of them occurs: \\(P(A \\cup B) = P(A) + P(B) - P(A \\cap B)\\); the term \\(P(A \\cap B)\\) is subtracted because it would otherwise be counted twice, once in each of \\(P(A)\\) and \\(P(B)\\).</p>` },
 
 { id:3, title:"3. Disjoint & Independent Events", type:"calc", gen:gen3, review:`
-<p><strong>Disjoint (mutually exclusive) events</strong> cannot happen at the same time: \\(P(A \\cap B) = 0\\), so \\(P(A \\cup B) = P(A) + P(B)\\).</p>
-<p><strong>Independent events</strong>: the occurrence of one does not affect the probability of the other. \\(A\\) and \\(B\\) are independent exactly when \\(P(A \\cap B) = P(A)\\cdot P(B)\\). For independent events, \\(P(A \\cup B) = P(A) + P(B) - P(A)P(B)\\), and \\(P(\\text{neither}) = (1-P(A))(1-P(B))\\).</p>
-<p>Note: disjoint events with nonzero probability are <em>never</em> independent (if one occurs the other cannot).</p>` },
+<p>Two events \\(A\\) and \\(B\\) are <strong>disjoint</strong>, or mutually exclusive, if they cannot both occur at the same time \u2014 that is, if \\(A \\cap B = \\varnothing\\) (the empty set), so \\(P(A \\cap B) = 0\\). For disjoint events, the general addition rule simplifies to \\(P(A \\cup B) = P(A) + P(B)\\).</p>
+<p>Two events \\(A\\) and \\(B\\) are <strong>independent</strong> if the occurrence of one does not change the probability of the other; formally, \\(A\\) and \\(B\\) are independent exactly when \\(P(A \\cap B) = P(A) \\cdot P(B)\\). For independent events, the addition rule becomes \\(P(A \\cup B) = P(A) + P(B) - P(A)P(B)\\), and the probability that neither event occurs is \\(P(A' \\cap B') = (1-P(A))(1-P(B))\\), since the complements of independent events are themselves independent. It is worth noting that disjoint events with nonzero probability are <em>never</em> independent, because if \\(A\\) occurs, \\(B\\) is guaranteed not to occur (and vice versa) \u2014 the exact opposite of independence.</p>` },
 
 { id:4, title:"4. Total Probability & Bayes' Formula", type:"calc", gen:gen4, review:`
-<p><strong>Law of total probability:</strong> if \\(B_1, B_2, \\ldots, B_k\\) partition the sample space, then for any event \\(A\\):</p>
-<p>\\[ P(A) = \\sum_i P(B_i)\\,P(A \\mid B_i) \\]</p>, where \\(P(A \\mid B)\\) is call a conditional probability, which is calculated by \\(P(A \\mid B)=\\frac{P(A\\cap B)}{P(B)}\\).
-<p><strong>Bayes' formula</strong> reverses the conditioning \u2014 it finds \\(P(B_j \\mid A)\\) from the \\(P(A \\mid B_i)\\)'s:</p>
-<p>\\[ P(B_j \\mid A) = \\frac{P(B_j)\\,P(A \\mid B_j)}{\\sum_i P(B_i)\\,P(A \\mid B_i)} \\]</p>
-<p>Classic applications: which machine produced a defective part, or whether a positive diagnostic test really indicates disease (accounting for prevalence, sensitivity, and specificity).</p>` },
+<p>For two events \\(A\\) and \\(B\\) with \\(P(B) > 0\\), the <strong>conditional probability</strong> of \\(A\\) given \\(B\\), written \\(P(A \\mid B)\\), is the probability that \\(A\\) occurs given that \\(B\\) is known to have occurred; this notation is used throughout this topic. A collection of events \\(B_1, B_2, \\ldots, B_k\\) is said to <strong>partition</strong> the sample space if the events are pairwise disjoint and their union is the entire sample space \\(S\\) \u2014 that is, exactly one of them must occur.</p>
+<p>Given such a partition, the <strong>law of total probability</strong> expresses the probability of any event \\(A\\) by weighting each conditional probability \\(P(A \\mid B_i)\\) by \\(P(B_i)\\) and summing over all \\(i\\): \\[ P(A) = \\sum_i P(B_i)\\,P(A \\mid B_i). \\] <strong>Bayes' formula</strong> reverses the direction of conditioning: given that \\(A\\) has occurred, it finds the probability that a particular \\(B_j\\) was the cause, reusing the same conditional probabilities from the law of total probability: \\[ P(B_j \\mid A) = \\frac{P(B_j)\\,P(A \\mid B_j)}{\\sum_i P(B_i)\\,P(A \\mid B_i)}. \\] Classic applications include identifying which of several machines most likely produced a defective item, or determining how likely a positive diagnostic test result is to indicate an actual disease once the disease's prevalence, and the test's sensitivity and specificity, are taken into account.</p>` },
 
 { id:5, title:"5. Discrete Random Variables", type:"calc", gen:gen5, review:`
-<p>A <strong>discrete random variable</strong> \\(X\\) takes on a countable set of values, each with a probability given by its probability mass function (<strong>PMF</strong>) \\(p(x) = P(X=x)\\), where \\(\\sum p(x) = 1\\). The cumulative distribution function (<strong>CDF</strong>) is \\(F(x) = P(X \\le x)\\).</p>
-<p>Since a random variable takes values with uncertainty, what would be the average of those possible values? This average is called the <strong>mean</strong> (or expected value), denoted by <strong> \\(E(X) = \\sum x\\,p(x)\\)</strong>. To describe the concentration of those possible values, we use the <strong>Variance</strong>: \\(\\operatorname{Var}(X) = E(X^2) - [E(X)]^2\\), and the <strong>Standard Deviation</strong>: \\(SD(X) = \\sqrt{\\operatorname{Var}(X)}\\).</p>
-<p>The function of \\(X\\), \\(g(X)\\), is a new random variable and its mean is calculated this way:<strong> \\(E(g(X)) = \\sum g(x)\\,p(x)\\)</strong>; for a linear function, \\(E(aX+b) = aE(X) + b\\).</p>
-<p><strong>Special discrete distributions:</strong></p>
-<ul>
-<li>Let \\(X\\) denote the number of heads when a coin is flipped \\(n\\) times. \\(X\\) can be described by the <strong>binomial</strong> distribution, denoted by Binomial\\((n,p)\\), with PMF </strong> \\(p(k) = P(X=k) = \\dbinom{n}{k} p^k(1-p)^{n-k}\\), with mean = \\(n\\cdot p\\).</li>
-<li>Let \\(X\\) denote the number of flips needed in order to observe \\(k\\) a head. \\(X\\) can be described by the <strong>geometric</strong> distribution, denoted by Geometric\\((p)\\), with PMF </strong> \\(p(k) = P(X=k) = (1-p)^{k-1}p\\), with mean =  \\(\\frac{1}{p}\\).</li>
-<li>Let \\(X\\) denote the number of rare events in a fixed time interval or a region. \\(X\\) can be described by the <strong>Poisson</strong> distribution, denoted by Poisson\\((\\lambda)\\), with PMF </strong> \\(p(k) = P(X=k) = \\dfrac{e^{-\\lambda}\\lambda^k}{k!}\\), with mean = variance = \\(\\lambda\\).</li>
-</ul>` },
+<p>A <strong>random variable</strong> is a numerical quantity whose value is determined by the outcome of a random experiment. A <strong>discrete random variable</strong> \\(X\\) takes on a countable set of values, and its <strong>probability mass function (PMF)</strong>, written \\(p(x) = P(X=x)\\), gives the probability of each possible value; the PMF values must sum to 1 across all possible \\(x\\). The <strong>cumulative distribution function (CDF)</strong>, \\(F(x) = P(X \\le x)\\), gives the probability that \\(X\\) is at most \\(x\\).</p>
+<p>The <strong>mean</strong>, or expected value, of \\(X\\) is \\(E(X) = \\sum x\\,p(x)\\), a weighted average of the possible values using their probabilities as weights; the <strong>variance</strong> is \\(\\operatorname{Var}(X) = E(X^2) - [E(X)]^2\\), and the <strong>standard deviation</strong> is \\(SD(X) = \\sqrt{\\operatorname{Var}(X)}\\). More generally, the expected value of any function \\(g(X)\\) of \\(X\\) is \\(E(g(X)) = \\sum g(x)\\,p(x)\\); when \\(g\\) is linear, this simplifies to \\(E(aX+b) = aE(X) + b\\) for constants \\(a\\) and \\(b\\).</p>
+<p>Three named discrete distributions appear frequently. A \\(\\text{Binomial}(n,p)\\) random variable counts the number of successes in \\(n\\) independent trials, each with success probability \\(p\\), and has PMF \\(P(X=k) = \\dbinom{n}{k} p^k(1-p)^{n-k}\\); its mean is \\(E(X) = np\\) and its variance is \\(\\operatorname{Var}(X) = np(1-p)\\). A \\(\\text{Geometric}(p)\\) random variable is the trial number of the first success in a sequence of independent trials with success probability \\(p\\), with PMF \\(P(X=k) = (1-p)^{k-1}p\\); its mean is \\(E(X) = 1/p\\) and its variance is \\(\\operatorname{Var}(X) = (1-p)/p^2\\). A \\(\\text{Poisson}(\\lambda)\\) random variable counts the number of rare events occurring in a fixed interval of time or space, given an average rate \\(\\lambda\\), with PMF \\(P(X=k) = \\dfrac{e^{-\\lambda}\\lambda^k}{k!}\\); for a Poisson random variable, the mean and variance are both equal to \\(\\lambda\\).</p>` },
 
 { id:6, title:"6. Continuous Random Variables", type:"calc", gen:gen6, review:`
-<p>A <strong>continuous random variable</strong> is described by its <strong>probability density function (pdf)</strong> \\(f(x)\\), which is the derivative of its CDF. A pdf is always non-negative, with \\(P(a < X < b) = \\displaystyle\\int_a^b f(x)\\,dx\\) (the area under the curve), and \\(P(X=x)=0\\) for any single point.</p>
-<p>\\(X\\) is <strong> Uniform\\((a,b)\\)</strong>c, if \\(f(x) = \\dfrac{1}{b-a}\\) on \\([a,b]\\); mean \\(= \\dfrac{a+b}{2}\\); \\(SD = \\dfrac{b-a}{\\sqrt{12}}\\); probability of any subinterval is proportional to its length.</p>
-<p>\\(X\\) is <strong>\\(X\\) is Exponential\\((\\lambda)\\)</strong>, if \\(f(x) = \\lambda e^{-\\lambda t}\\); mean \\(= 1/\\lambda\\).</p>
-<p>\\(X\\) is <strong>\\(X\\) is Normal\\((\\mu,\\sigma)\\)</strong>, if \\(f(x) = \\frac{1}{\\sqrt{2\\pi}\\cdot \\sigma}\\cdot e^{-\\frac{(x-\\mu)^2}{2\\sigma^2}}\\); mean \\(= \\mu\\) and SD \\(= \\sigma\\).</p>
+<p>A <strong>continuous random variable</strong> \\(X\\) takes values over an interval of real numbers rather than a countable set, and its behavior is described by a <strong>density function</strong> \\(f(x)\\) rather than a PMF. The probability that \\(X\\) falls between two values \\(a\\) and \\(b\\) equals the area under the density curve between them: \\(P(a < X < b) = \\displaystyle\\int_a^b f(x)\\,dx\\); because the area above a single point is zero, \\(P(X=x) = 0\\) for any specific value \\(x\\).</p>
+<p>A \\(\\text{Uniform}(a,b)\\) random variable has constant density \\(f(x) = \\dfrac{1}{b-a}\\) over the interval \\([a,b]\\), so the probability of any subinterval is proportional to its length; its mean is \\(E(X) = \\dfrac{a+b}{2}\\) and its standard deviation is \\(SD(X) = \\dfrac{b-a}{\\sqrt{12}}\\). An \\(\\text{Exponential}(\\lambda)\\) random variable, often used to model waiting times, has density \\(f(x) = \\lambda e^{-\\lambda x}\\) for \\(x \\ge 0\\), giving survival probability \\(P(X>t) = e^{-\\lambda t}\\); its mean is \\(E(X) = 1/\\lambda\\) and its variance is \\(\\operatorname{Var}(X) = 1/\\lambda^2\\). A \\(\\text{Normal}(\\mu,\\sigma)\\) random variable follows the familiar bell-shaped curve with density \\(f(x) = \\dfrac{1}{\\sigma\\sqrt{2\\pi}}\\,e^{-(x-\\mu)^2/(2\\sigma^2)}\\), mean \\(E(X) = \\mu\\), and variance \\(\\operatorname{Var}(X) = \\sigma^2\\); probabilities for a Normal random variable are found by standardizing to a <strong>z-score</strong>, \\(z = \\dfrac{x-\\mu}{\\sigma}\\), and then using the standard normal table or CDF.</p>` },
 
 { id:7, title:"7. Joint Distributions of Two Discrete RVs", type:"calc", gen:gen7, review:`
-<p>A <strong>joint PMF</strong> \\(p(x,y) = P(X=x, Y=y)\\) gives the probability of every \\((x,y)\\) pair, with all values summing to 1.</p>
-<p><strong>Marginal distributions refer to the distribution of each individual random variable.</p>
-<p>The <strong>Covariance</strong> defined by \\(\\operatorname{Cov}(X,Y) = E(XY) - E(X)E(Y)\\), where \\(E(XY) = \\sum_x\\sum_y xy\\,p(x,y)\\), describes how the random variables are linearly associated, with a positive value indicating a positive linear relationship and negative value indicating a negative linear relationship.</p>
-<p>The <strong>Correlation, defined by </strong> \\(\\rho = \\dfrac{\\operatorname{Cov}(X,Y)}{SD(X)\\cdot SD(Y)}\\), always between \\(-1\\) and \\(1\\), is unitless and measures the strength of linearity as well. \\(\\operatorname{Cov}=0\\) (equivalently \\(\\rho = 0\\)) when \\(X\\) and \\(Y\\) are uncorrelated; independent variables always have \\(\\operatorname{Cov}=0\\) (the converse isn't always true).</p>` },
+<p>When two discrete random variables \\(X\\) and \\(Y\\) are considered together, their <strong>joint probability mass function</strong> \\(p(x,y) = P(X=x, Y=y)\\) gives the probability of each pair of values, with all joint probabilities summing to 1. The <strong>marginal distribution</strong> of \\(X\\) alone is recovered by summing the joint PMF over all values of \\(Y\\): \\(P(X=x) = \\sum_y p(x,y)\\); the marginal of \\(Y\\) is found the same way by summing over \\(x\\).</p>
+<p>The <strong>covariance</strong> between \\(X\\) and \\(Y\\) measures how the two variables vary together, and is computed as \\(\\operatorname{Cov}(X,Y) = E(XY) - E(X)E(Y)\\), where \\(E(XY) = \\sum_x\\sum_y xy\\,p(x,y)\\). The <strong>correlation coefficient</strong> rescales the covariance so it always lies between \\(-1\\) and \\(1\\): \\(\\rho = \\dfrac{\\operatorname{Cov}(X,Y)}{SD(X)\\cdot SD(Y)}\\). A covariance (and hence correlation) of 0 means \\(X\\) and \\(Y\\) are <strong>uncorrelated</strong>; independent random variables are always uncorrelated, but the converse is not guaranteed \u2014 uncorrelated variables need not be independent.</p>` },
 
 { id:8, title:"8. Descriptive Statistics", type:"calc", gen:gen8, review:`
-<p><strong>Population</strong> vs. <strong>sample</strong>: the population is the entire group of interest; a sample is a subset actually observed. A <strong>parameter</strong> describes the population (e.g. \\(\\mu\\)); a <strong>statistic</strong> is computed from a sample (e.g. \\(\\bar{x}\\)) and estimates the parameter.</p>
-<p>An estimator is <strong>unbiased</strong> if its expected value equals the true parameter (e.g. the sample mean \\(\\bar{x}\\) is an unbiased estimator of \\(\\mu\\)); <strong>bias</strong> is the difference between the expected value of the estimator and the true parameter value.</p>
-<p><strong>Center:</strong> mean (average), median (middle value). <strong>Spread:</strong> standard deviation, range, interquartile range (IQR).</p>
-<p><strong>Five-number summary:</strong> minimum, \\(Q_1\\), median, \\(Q_3\\), maximum \u2014 visualized with a <strong>boxplot</strong>. Other common graphics: bar/pie charts (categorical data), histograms and density plots (shape of a distribution), scatterplots (relationship between two numeric variables).</p>` },
+<p>A <strong>population</strong> is the entire group of individuals or items of interest, while a <strong>sample</strong> is a subset of the population that is actually observed or measured. A number that describes the population is called a <strong>parameter</strong> (for example, the population mean \\(\\mu\\)), while a number computed from a sample is called a <strong>statistic</strong> (for example, the sample mean \\(\\bar{x}\\)), and a statistic is typically used to estimate the corresponding parameter. An estimator is called <strong>unbiased</strong> if its expected value equals the true parameter it is estimating \u2014 for instance, the sample mean \\(\\bar{x}\\) is an unbiased estimator of the population mean \\(\\mu\\) \u2014 and <strong>bias</strong> refers to the difference between an estimator's expected value and the true parameter value.</p>
+<p>Two properties describe the overall shape of a dataset: its center and its spread. The most common measures of <strong>center</strong> are the mean (the arithmetic average) and the median (the middle value when the data are sorted). The most common measures of <strong>spread</strong> are the standard deviation, the range (maximum minus minimum), and the interquartile range, or \\(IQR\\). The <strong>five-number summary</strong> of a dataset consists of the minimum, the first quartile \\(Q_1\\), the median, the third quartile \\(Q_3\\), and the maximum, and is often visualized with a <strong>boxplot</strong>. Other common graphics include bar and pie charts for categorical data, histograms and density plots for the shape of a numeric distribution, and scatterplots for the relationship between two numeric variables.</p>` },
 
 { id:9, title:"9. Inference for a Population Proportion", type:"calc", gen:gen9, review:`
-<p><strong>Point estimate:</strong> \\(\\hat{p} = x/n\\) (sample proportion with the characteristic).</p>
-<p><strong>Confidence interval:</strong> \\(\\hat{p} \\pm z\\sqrt{\\dfrac{\\hat{p}(1-\\hat{p})}{n}}\\), where \\(z\\) is the standard normal critical value for the desired confidence level (e.g. \\(z=1.96\\) for 95%).</p>
-<p><strong>Hypothesis test</strong> of \\(H_0: p = p_0\\) vs \\(H_1: p \\ne p_0\\) (or one-sided): test statistic \\(z = \\dfrac{\\hat{p} - p_0}{\\sqrt{p_0(1-p_0)/n}}\\); compare to a critical value or compute a p-value and compare to \\(\\alpha\\).</p>` },
+<p>When a random sample of size \\(n\\) is drawn and \\(x\\) of the individuals in it have some characteristic of interest, the <strong>sample proportion</strong> \\(\\hat{p} = x/n\\) serves as a point estimate of the unknown population proportion \\(p\\). A <strong>confidence interval</strong> gives a range of plausible values for \\(p\\), and takes the form \\(\\hat{p} \\pm z\\sqrt{\\dfrac{\\hat{p}(1-\\hat{p})}{n}}\\), where \\(z\\) is the standard normal critical value corresponding to the desired confidence level (for example, \\(z \\approx 1.96\\) for 95% confidence).</p>
+<p>A <strong>hypothesis test</strong> evaluates a claim about the population proportion by comparing sample evidence against a <strong>null hypothesis</strong>, denoted \\(H_0\\) (for example, \\(H_0: p = p_0\\) for some hypothesized value \\(p_0\\)), and an <strong>alternative hypothesis</strong>, denoted \\(H_1\\) (for example, \\(H_1: p \\ne p_0\\)). The test statistic for a proportion is \\(z = \\dfrac{\\hat{p} - p_0}{\\sqrt{p_0(1-p_0)/n}}\\); this value is then compared either to a critical value from the standard normal distribution or converted to a <strong>p-value</strong>, which is compared against a chosen significance level \\(\\alpha\\) (commonly 0.05) to decide whether to reject \\(H_0\\).</p>` },
 
 { id:10, title:"10. Inference for the Difference of Two Proportions", type:"calc", gen:gen10, review:`
-<p><strong>Point estimate:</strong> \\(\\hat{p}_1 - \\hat{p}_2\\).</p>
-<p><strong>Confidence interval</strong> (unpooled): \\((\\hat{p}_1 - \\hat{p}_2) \\pm z\\sqrt{\\dfrac{\\hat{p}_1(1-\\hat{p}_1)}{n_1} + \\dfrac{\\hat{p}_2(1-\\hat{p}_2)}{n_2}}\\).</p>
-<p><strong>Hypothesis test</strong> of \\(H_0: p_1 = p_2\\) uses the <strong>pooled</strong> proportion \\(\\hat{p} = \\dfrac{x_1+x_2}{n_1+n_2}\\) in the standard error: \\(z = \\dfrac{\\hat{p}_1-\\hat{p}_2}{\\sqrt{\\hat{p}(1-\\hat{p})\\left(\\frac{1}{n_1} + \\frac{1}{n_2}\\right)}}\\).</p>` },
+<p>When independent random samples are drawn from two populations, with sample proportions \\(\\hat{p}_1\\) and \\(\\hat{p}_2\\) respectively, the quantity \\(\\hat{p}_1 - \\hat{p}_2\\) serves as a point estimate of the true difference between the two population proportions, \\(p_1 - p_2\\). A <strong>confidence interval</strong> for this difference uses the <strong>unpooled</strong> standard error, since each sample proportion is estimated separately: \\((\\hat{p}_1 - \\hat{p}_2) \\pm z\\sqrt{\\dfrac{\\hat{p}_1(1-\\hat{p}_1)}{n_1} + \\dfrac{\\hat{p}_2(1-\\hat{p}_2)}{n_2}}\\).</p>
+<p>A <strong>hypothesis test</strong> of \\(H_0: p_1 = p_2\\) against \\(H_1: p_1 \\ne p_2\\) (or a one-sided alternative) instead uses a <strong>pooled</strong> proportion, \\(\\hat{p} = \\dfrac{x_1+x_2}{n_1+n_2}\\), which combines both samples under the assumption that \\(H_0\\) is true; the test statistic is then \\(z = \\dfrac{\\hat{p}_1-\\hat{p}_2}{\\sqrt{\\hat{p}(1-\\hat{p})\\left(\\frac{1}{n_1} + \\frac{1}{n_2}\\right)}}\\), compared to a critical value or converted to a p-value as in a one-sample proportion test.</p>` },
 
 { id:11, title:"11. Inference for a Population Mean", type:"calc", gen:gen11, review:`
-<p>When \\(\\sigma\\) is unknown (the usual case), we use the sample standard deviation \\(s\\) and the <strong>t-distribution</strong> with \\(df = n-1\\).</p>
-<p><strong>Confidence interval:</strong> \\(\\bar{x} \\pm t\\cdot\\dfrac{s}{\\sqrt{n}}\\), where \\(t\\) is the t-critical value for the desired confidence level and df.</p>
-<p><strong>Hypothesis test</strong> of \\(H_0: \\mu = \\mu_0\\): test statistic \\(t = \\dfrac{\\bar{x} - \\mu_0}{s/\\sqrt{n}}\\), compared to a t-critical value or used to find a p-value, both with \\(df = n-1\\).</p>` },
+<p>When the population standard deviation \\(\\sigma\\) is unknown, as is usually the case in practice, inference about a population mean \\(\\mu\\) is based on the sample mean \\(\\bar{x}\\), the sample standard deviation \\(s\\), and the <strong>t-distribution</strong> with \\(n-1\\) degrees of freedom, rather than the normal distribution. The <strong>standard error</strong> of the mean, \\(SE = s/\\sqrt{n}\\), measures how much \\(\\bar{x}\\) is expected to vary from sample to sample.</p>
+<p>A <strong>confidence interval</strong> for \\(\\mu\\) takes the form \\(\\bar{x} \\pm t\\cdot\\dfrac{s}{\\sqrt{n}}\\), where \\(t\\) is the critical value from the t-distribution with \\(n-1\\) degrees of freedom corresponding to the desired confidence level. A <strong>hypothesis test</strong> of \\(H_0: \\mu = \\mu_0\\) against \\(H_1: \\mu \\ne \\mu_0\\) (or a one-sided alternative) uses the test statistic \\(t = \\dfrac{\\bar{x} - \\mu_0}{s/\\sqrt{n}}\\), again with \\(n-1\\) degrees of freedom, compared to a t-critical value or converted to a p-value to decide whether to reject \\(H_0\\).</p>` },
 
 { id:12, title:"12. Inference for the Difference of Two Means", type:"calc", gen:gen12, review:`
-<p>For two independent samples with unknown, possibly unequal population variances, we use the <strong>Welch (unpooled) approach</strong>.</p>
-<p><strong>Standard error:</strong> \\(SE = \\sqrt{\\dfrac{s_1^2}{n_1} + \\dfrac{s_2^2}{n_2}}\\).</p>
-<p><strong>Welch\u2013Satterthwaite degrees of freedom</strong> (approximate, often rounded down or to the nearest integer):</p>
-<p>\\[ df = \\frac{\\left(\\dfrac{s_1^2}{n_1} + \\dfrac{s_2^2}{n_2}\\right)^2}{\\dfrac{(s_1^2/n_1)^2}{n_1-1} + \\dfrac{(s_2^2/n_2)^2}{n_2-1}} \\]</p>
-<p><strong>CI:</strong> \\((\\bar{x}_1-\\bar{x}_2) \\pm t\\cdot SE\\). <strong>Test statistic</strong> for \\(H_0: \\mu_1=\\mu_2\\): \\(t = \\dfrac{\\bar{x}_1-\\bar{x}_2}{SE}\\), with the Welch df above.</p>` },
+<p>When comparing the means of two independent populations, \\(\\mu_1\\) and \\(\\mu_2\\), based on independent samples with means \\(\\bar{x}_1, \\bar{x}_2\\), standard deviations \\(s_1, s_2\\), and sizes \\(n_1, n_2\\), and when the two population variances cannot be assumed equal, the <strong>Welch (unpooled)</strong> approach is used. The standard error of the difference in sample means is \\(SE = \\sqrt{\\dfrac{s_1^2}{n_1} + \\dfrac{s_2^2}{n_2}}\\). Because the two sample variances are not pooled, the appropriate degrees of freedom must be approximated using the <strong>Welch\u2013Satterthwaite formula</strong>: \\[ df = \\frac{\\left(\\dfrac{s_1^2}{n_1} + \\dfrac{s_2^2}{n_2}\\right)^2}{\\dfrac{(s_1^2/n_1)^2}{n_1-1} + \\dfrac{(s_2^2/n_2)^2}{n_2-1}}, \\] which typically is not a whole number and is rounded to the nearest integer.</p>
+<p>A <strong>confidence interval</strong> for \\(\\mu_1-\\mu_2\\) takes the form \\((\\bar{x}_1-\\bar{x}_2) \\pm t\\cdot SE\\), using the Welch degrees of freedom for the t-critical value. A <strong>hypothesis test</strong> of \\(H_0: \\mu_1=\\mu_2\\) against \\(H_1: \\mu_1 \\ne \\mu_2\\) uses the test statistic \\(t = \\dfrac{\\bar{x}_1-\\bar{x}_2}{SE}\\), again with the Welch degrees of freedom, compared to a critical value or converted to a p-value.</p>` },
 
 { id:13, title:"13. Chi-Square Tests: Goodness-of-Fit & Independence", type:"calc", gen:gen13, review:`
-<p><strong>Goodness-of-fit (GOF) test:</strong> compares observed category counts to those expected under a hypothesized distribution. Test statistic: \\(\\chi^2 = \\displaystyle\\sum \\dfrac{(O-E)^2}{E}\\), with \\(df = (\\text{number of categories}) - 1\\).</p>
-<p><strong>Test of independence:</strong> uses a contingency \\((r \\times c)\\) table to test whether two categorical variables are related. Expected count for a cell \\(= \\dfrac{\\text{row total} \\times \\text{column total}}{\\text{grand total}}\\). Test statistic: \\(\\chi^2 = \\displaystyle\\sum \\dfrac{(O-E)^2}{E}\\), with \\(df = (r-1)(c-1)\\).</p>
-<p>In both cases, a large \\(\\chi^2\\) (relative to the chi-square critical value) leads to rejecting \\(H_0\\).</p>` },
+<p>The <strong>chi-square goodness-of-fit test</strong> compares the observed counts in several categories against the counts that would be expected if a hypothesized distribution were true. For each category, let \\(O\\) denote the observed count and \\(E\\) the expected count under the null hypothesis; the test statistic is \\(\\chi^2 = \\displaystyle\\sum \\dfrac{(O-E)^2}{E}\\), summed over all categories, with degrees of freedom equal to the number of categories minus 1.</p>
+<p>The <strong>chi-square test of independence</strong> uses the same statistic to test whether two categorical variables are related, based on a contingency table with \\(r\\) rows and \\(c\\) columns. Under the null hypothesis that the two variables are independent, the expected count for the cell in a given row and column is \\(E = \\dfrac{\\text{row total} \\times \\text{column total}}{\\text{grand total}}\\); the test statistic is again \\(\\chi^2 = \\displaystyle\\sum \\dfrac{(O-E)^2}{E}\\), summed over all cells of the table, but now with degrees of freedom equal to \\((r-1)(c-1)\\). In both versions of the test, a large \\(\\chi^2\\) value relative to the chi-square critical value leads to rejecting the null hypothesis.</p>` },
 
 { id:14, title:"14. One-Way ANOVA", type:"mc", gen:gen14, review:`
-<p><strong>One-way ANOVA</strong> compares the means of \\(k \\ge 3\\) groups simultaneously. \\(H_0: \\mu_1 = \\mu_2 = \\cdots = \\mu_k\\) vs \\(H_1\\): at least one mean differs.</p>
-<p><strong>Sums of squares:</strong> \\(SST\\) (total) \\(= SSTr\\) (treatment/between-groups) \\(+\\ SSE\\) (error/within-groups).</p>
-<p><strong>Degrees of freedom:</strong> \\(df(\\text{treatment}) = k-1\\); \\(df(\\text{error}) = n-k\\) (\\(n\\) = total observations); \\(df(\\text{total}) = n-1\\).</p>
-<p><strong>Mean squares:</strong> \\(MSTr = SSTr/df(\\text{treatment})\\); \\(MSE = SSE/df(\\text{error})\\).</p>
-<p><strong>Test statistic:</strong> \\(F = MSTr/MSE\\), compared to an F-critical value (or via p-value). A large \\(F\\) suggests the group means are not all equal.</p>` },
+<p><strong>One-way analysis of variance (ANOVA)</strong> is used to compare the means of \\(k \\ge 3\\) groups at the same time, testing the null hypothesis \\(H_0: \\mu_1 = \\mu_2 = \\cdots = \\mu_k\\) against the alternative \\(H_1\\) that at least one group mean differs from the others. The total variability in the data, measured by the <strong>total sum of squares</strong>, \\(SST\\), is split into two parts: the <strong>treatment</strong> (or between-groups) sum of squares, \\(SSTr\\), which reflects differences among the group means, and the <strong>error</strong> (or within-groups) sum of squares, \\(SSE\\), which reflects variability within each group; these satisfy \\(SST = SSTr + SSE\\).</p>
+<p>Each sum of squares has associated <strong>degrees of freedom</strong>: \\(df(\\text{treatment}) = k-1\\) and \\(df(\\text{error}) = n-k\\), where \\(n\\) is the total number of observations across all groups. Dividing each sum of squares by its degrees of freedom gives the corresponding <strong>mean square</strong>: \\(MSTr = SSTr/df(\\text{treatment})\\) and \\(MSE = SSE/df(\\text{error})\\). The test statistic is the ratio \\(F = MSTr/MSE\\), which is compared to a critical value from the F-distribution (or converted to a p-value); a large \\(F\\) value indicates that the differences among the group means are large relative to the variability within groups, providing evidence against \\(H_0\\).</p>` },
 
 { id:15, title:"15. Simple & Multiple Regression", type:"mc", gen:gen15, review:`
-<p><strong>Simple linear regression</strong> fits a line \\(\\hat{y} = b_0 + b_1x\\) to predict \\(y\\) from a single predictor \\(x\\). \\(b_1\\) (the slope) is interpreted as the average change in \\(y\\) for a one-unit increase in \\(x\\); \\(b_0\\) is the predicted \\(y\\) when \\(x = 0\\).</p>
-<p><strong>Residual</strong> for an observation \\(=\\) observed \\(y\\ -\\) predicted \\(\\hat{y}\\). Least-squares regression minimizes the sum of squared residuals.</p>
-<p><strong>\\(R^2\\) (coefficient of determination)</strong> is the proportion of variability in \\(y\\) explained by the model, between 0 and 1.</p>
-<p><strong>Multiple regression</strong> extends this to several predictors: \\(\\hat{y} = b_0 + b_1x_1 + b_2x_2 + \\cdots\\). Each slope \\(b_i\\) is interpreted "holding all other predictors constant."</p>` },
+<p><strong>Simple linear regression</strong> fits a straight line, \\(\\hat{y} = b_0 + b_1x\\), to predict a response variable \\(y\\) from a single predictor \\(x\\). The slope \\(b_1\\) is interpreted as the average change in the predicted value \\(\\hat{y}\\) for each one-unit increase in \\(x\\), while the intercept \\(b_0\\) is the predicted value of \\(y\\) when \\(x=0\\). For any observed data point, the <strong>residual</strong> is the difference between the observed value and the value predicted by the line: residual \\(=\\) observed \\(y\\ -\\) predicted \\(\\hat{y}\\); the least-squares regression line is the one that minimizes the sum of the squared residuals across all data points.</p>
+<p>The <strong>coefficient of determination</strong>, \\(R^2\\), is the proportion of the total variability in \\(y\\) that is explained by the regression model, and always lies between 0 and 1 \u2014 a value closer to 1 indicates the line fits the data more closely. <strong>Multiple regression</strong> extends this idea to several predictors at once, fitting a model of the form \\(\\hat{y} = b_0 + b_1x_1 + b_2x_2 + \\cdots\\); because the predictors may be related to each other, each slope \\(b_i\\) is interpreted while \u201cholding all other predictors constant,\u201d meaning the predicted change in \\(y\\) for a one-unit increase in that particular predictor, assuming none of the other predictors change.</p>` },
 
 { id:16, title:"16. Control Charts (x\u0304, R, p)", type:"mc", gen:gen16, review:`
-<p>Control charts monitor a process over time using a center line and control limits, typically at \\(\\pm 3\\) standard deviations.</p>
-<p><strong>\\(\\bar{x}\\)-chart</strong> (monitors the process mean): center line \\(= \\bar{\\bar{x}}\\) (grand mean); \\(UCL/LCL = \\bar{\\bar{x}} \\pm A_2\\bar{R}\\), where \\(A_2\\) depends on subgroup size \\(n\\) and \\(\\bar{R}\\) is the average subgroup range.</p>
-<p><strong>R-chart</strong> (monitors process variability): center line \\(= \\bar{R}\\); \\(UCL = D_4\\bar{R}\\), \\(LCL = D_3\\bar{R}\\) (\\(D_3 = 0\\) for small \\(n\\)).</p>
-<p><strong>p-chart</strong> (monitors a proportion nonconforming): center line \\(= \\bar{p}\\); \\(UCL/LCL = \\bar{p} \\pm 3\\sqrt{\\dfrac{\\bar{p}(1-\\bar{p})}{n}}\\), bounded to \\([0,1]\\).</p>
-<p>A process signals "out of control" when a point falls outside the control limits or a nonrandom pattern (e.g., a run or trend) appears.</p>` }
+<p>A <strong>control chart</strong> monitors a process over time by plotting a sample statistic against a center line and a pair of control limits, typically set three standard deviations above and below the center line; a point falling outside these limits, or a nonrandom pattern such as a steady trend or an unusually long run on one side of the center line, signals that the process may be <strong>out of control</strong>.</p>
+<p>An \\(\\bar{x}\\)-chart (x-bar chart) monitors the process mean using repeated subgroups of size \\(n\\). Its center line is the grand mean, \\(\\bar{\\bar{x}}\\), the average of all the subgroup means, and its control limits are \\(UCL/LCL = \\bar{\\bar{x}} \\pm A_2\\bar{R}\\), where \\(\\bar{R}\\) is the average range across the subgroups and \\(A_2\\) is a constant that depends on the subgroup size \\(n\\) and is obtained from a standard table. An <strong>R-chart</strong> monitors the variability within subgroups rather than the mean; its center line is \\(\\bar{R}\\), and its control limits are \\(UCL = D_4\\bar{R}\\) and \\(LCL = D_3\\bar{R}\\), where \\(D_3\\) and \\(D_4\\) are table constants depending on \\(n\\) (\\(D_3 = 0\\) for small subgroup sizes). A <strong>p-chart</strong> monitors the proportion of nonconforming items in a process; its center line is the overall proportion nonconforming, \\(\\bar{p}\\), and its control limits are \\(UCL/LCL = \\bar{p} \\pm 3\\sqrt{\\dfrac{\\bar{p}(1-\\bar{p})}{n}}\\), bounded so that they never fall below 0 or above 1.</p>` }
 ];
 
 /* =========================================================================
