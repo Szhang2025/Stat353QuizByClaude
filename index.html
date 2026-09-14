@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>STAT 353 &mdash; Problem Bank</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googles.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jstat/1.9.4/jstat.min.js"></script>
 <script>
@@ -1523,7 +1523,7 @@ function gen16(){
    ========================================================================= */
 const TOPICS = [
 { id:1, title:"1. Sample Space, Events & Counting", type:"calc", gen:gen1, review:`
-<p>A <strong>random experiment</strong> is any process whose outcome cannot be predicted with certainty. The <strong>sample space</strong>, denoted \\(S\\), is the set of all possible outcomes of a random experiment. An <strong>event</strong>, typically denoted with a capital letter such as \\(A\\) or \\(B\\), is any subset of the sample space \u2014 that is, any collection of outcomes we are interested in. Given two events \\(A\\) and \\(B\\), the <strong>union</strong> \\(A \\cup B\\) is the event that \\(A\\) occurs, or \\(B\\) occurs, or both; the <strong>intersection</strong> \\(A \\cap B\\) is the event that both \\(A\\) and \\(B\\) occur simultaneously.</p>
+<p>A <strong>random experiment</strong> is any process whose outcome cannot be predicted with certainty. The <strong>sample space</strong>, denoted \\(S\\), is the set of all possible outcomes of a random experiment. An <strong>event</strong>, typically denoted with a ctal letter such as \\(A\\) or \\(B\\), is any subset of the sample space \u2014 that is, any collection of outcomes we are interested in. Given two events \\(A\\) and \\(B\\), the <strong>union</strong> \\(A \\cup B\\) is the event that \\(A\\) occurs, or \\(B\\) occurs, or both; the <strong>intersection</strong> \\(A \\cap B\\) is the event that both \\(A\\) and \\(B\\) occur simultaneously.</p>
 <p>Many experiments involve counting how many outcomes are possible, and three counting rules cover most cases. The <strong>multiplicative counting principle</strong> says that if a task consists of \\(k\\) steps, and step 1 can be completed in \\(n_1\\) ways, step 2 in \\(n_2\\) ways, and so on through step \\(k\\) in \\(n_k\\) ways, then the entire task can be completed in \\(n_1 \\times n_2 \\times \\cdots \\times n_k\\) ways. A <strong>permutation</strong> counts the number of ways to arrange or select items when order matters and no item is repeated: arranging all \\(n\\) distinct items in a row can be done in \\(n!\\) (\u201c\\(n\\) factorial,\u201d meaning \\(n \\times (n-1) \\times \\cdots \\times 2 \\times 1\\)) ways, and choosing and ordering \\(r\\) of \\(n\\) distinct items can be done in \\(P(n,r) = \\dfrac{n!}{(n-r)!}\\) ways. A <strong>combination</strong> counts the number of ways to choose \\(r\\) of \\(n\\) distinct items when order does <em>not</em> matter, given by \\(C(n,r) = \\dbinom{n}{r} = \\dfrac{n!}{r!\\,(n-r)!}\\).</p>` },
 
 { id:2, title:"2. Probability of an Event", type:"calc", gen:gen2, review:`
