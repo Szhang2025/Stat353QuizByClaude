@@ -42,11 +42,6 @@
     font-size:16px;
   }
   *{box-sizing:border-box;}
-  /* MathJax's CHTML output (fractions, binomial coefficients, radicals, etc.)
-     relies on its own internal box measurements. The universal border-box
-     reset above breaks that layout — fraction bars disappear and
-     stacked numbers (e.g. in \binom{}{}) stop centering. Excluding
-     MathJax's own elements from the reset fixes both. */
   mjx-container, mjx-container *{box-sizing:content-box;}
   html,body{margin:0;padding:0;}
   body{
@@ -63,7 +58,6 @@
   .mono{font-family:'IBM Plex Mono',monospace;}
   a{color:var(--accent);}
 
-  /* ---------- Password screen ---------- */
   #passwordScreen{
     min-height:100vh;
     display:flex;
@@ -127,7 +121,6 @@
   #pwError{color:var(--bad); font-size:0.85rem; min-height:1.2em; margin-top:4px;}
   #pwNote{font-size:0.78rem; color:var(--ink-soft); margin-top:18px; line-height:1.5;}
 
-  /* ---------- App shell ---------- */
   #app{display:none; min-height:100vh;}
   .shell{
     display:flex;
@@ -269,7 +262,6 @@
 
   .topbar-actions{display:flex; gap:10px; margin:8px 0 24px 0;}
 
-  /* ---------- Review header + examples button ---------- */
   .review-actions{display:flex; justify-content:flex-end; margin-bottom:8px;}
   .btn-examples{
     display:inline-flex;
@@ -295,7 +287,6 @@
     flex-shrink:0;
   }
 
-  /* ---------- Modal (examples & notation) ---------- */
   .modal-overlay{
     display:none;
     position:fixed; inset:0;
@@ -376,7 +367,6 @@
   .modal-body .notation-table td{padding:5px 10px 5px 0; vertical-align:top; border-bottom:1px dashed var(--line);}
   .modal-body .notation-table td:first-child{font-family:'IBM Plex Mono',monospace; color:var(--ink); white-space:nowrap;}
 
-  /* ---------- Solution reveal ---------- */
   .btn-solution{
     background:transparent;
     color:var(--ink-soft);
@@ -414,7 +404,6 @@
   .solution-box p:last-child{margin-bottom:0;}
   .solution-box strong{color:var(--ink);}
 
-  /* ---------- Chat UI styles ---------- */
   #tutor-chat {
     max-width: 800px;
     margin: 2rem auto;
@@ -650,7 +639,6 @@
       </div>
       <div id="problemsBox"></div>
 
-      <!-- ===== CHAT UI ===== -->
       <div id="tutor-chat">
         <div id="chat-output"></div>
         <div class="chat-input-row">
@@ -678,11 +666,6 @@
 </div>
 
 <script>
-/* =========================================================================
-   PASSWORD VERIFICATION
-   Replace APPS_SCRIPT_URL below with the Web App URL from your deployed
-   Google Apps Script (see the accompanying Code.gs + setup instructions).
-   ========================================================================= */
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziC-703EGmAit-MtKIfPfXuaslctrZhI3w-iEKTg4s10yv8YXhWMYrt42n77g1b616/exec";
 
 async function verifyPassword(pwd){
@@ -722,10 +705,6 @@ async function doVerify(){
   }
 }
 
-/* =========================================================================
-   PROBLEM GENERATORS (16 topics)
-   ========================================================================= */
-// ===== Utilities =====
 function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
 function rf(a,b,d=2){return +(Math.random()*(b-a)+a).toFixed(d);}
 function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
@@ -746,7 +725,6 @@ function quartiles(arr){
 }
 function defTol(a){ return Math.max(0.01, Math.abs(a)*0.01); }
 
-// ===== Topic 1: Experiment, sample space, event, multiplicative counting =====
 function gen1(){
   const probs=[];
   let a=ri(2,5),b=ri(2,5),c=ri(2,4);
@@ -773,7 +751,6 @@ function gen1(){
   return probs;
 }
 
-// ===== Topic 2: Probability of an event using sample space, probability rules =====
 function gen2(){
   const probs=[];
   let rank = pick(['King','Queen','Ace','7']);
@@ -806,7 +783,6 @@ function gen2(){
   return probs;
 }
 
-// ===== Topic 3: Disjoint and independent events =====
 function gen3(){
   const probs=[];
   let pA=rf(0.15,0.4,2), pB=rf(0.15,0.4,2);
@@ -834,7 +810,6 @@ function gen3(){
   return probs;
 }
 
-// ===== Topic 4: Total probability formula and Bayes' formula =====
 function gen4(){
   const probs=[];
   function machineScenario(){
@@ -844,8 +819,6 @@ function gen4(){
     let pD = (w1*d1+w2*d2+w3*d3)/100;
     return {w1,w2,w3,d1,d2,d3,pD};
   }
-  // Problems 1 & 2 share one machine scenario: problem 1 finds the total
-  // probability, problem 2 reuses that same value to find a Bayes' posterior.
   let s1=machineScenario();
   probs.push({q:`A factory has three machines producing ${s1.w1}%, ${s1.w2}%, and ${s1.w3}% of its daily output, respectively. Their defect rates are ${rnd(s1.d1*100,1)}%, ${rnd(s1.d2*100,1)}%, and ${rnd(s1.d3*100,1)}% respectively. Using the total probability formula, find the overall probability that a randomly selected item is defective.`, a: rnd(s1.pD,4), tol:0.001,
     sol:`<p>The three machines partition all output. Weight each machine's defect rate by the fraction of output it produces, then add: \\(P(D) = \\sum_i P(M_i)P(D\\mid M_i)\\).</p>
@@ -858,8 +831,6 @@ function gen4(){
 <p>The numerator uses only Machine 1's contribution: \\(P(M_1)P(D\\mid M_1) = (${s1.w1/100})(${s1.d1}) = ${rnd(s1.w1/100*s1.d1,5)}\\).</p>
 <p>\\(P(M_1\\mid D) = \\dfrac{P(M_1)P(D\\mid M_1)}{P(D)} = \\dfrac{${rnd(s1.w1/100*s1.d1,5)}}{${rnd(s1.pD,5)}} \\approx ${rnd(pM1D,4)}\\).</p>`});
 
-  // Problems 3 & 4 share one disease-testing scenario: problem 3 finds the
-  // total probability of testing positive, problem 4 reuses it for Bayes.
   let prev = rf(0.01,0.08,3);
   let sens = rf(0.9,0.99,3);
   let spec = rf(0.9,0.99,3);
@@ -886,17 +857,12 @@ function gen4(){
   return probs;
 }
 
-// quick self-test
-
-// ===== Topic 5: Discrete RVs, PMF/CDF, mean, SD, mean of a function, binomial/geometric/poisson =====
 function gen5(){
   const probs=[];
-  // P1: PMF table -> E[X]
   let xs=[0,1,2,3];
   let raw=[ri(1,4),ri(1,4),ri(1,4),ri(1,4)];
   let tot=raw.reduce((a,b)=>a+b,0);
   let ps=raw.map(r=>rnd(r/tot,4));
-  // fix rounding so sum=1: adjust last
   let sum3=ps[0]+ps[1]+ps[2];
   ps[3]=rnd(1-sum3,4);
   let EX = xs.reduce((s,x,i)=>s+x*ps[i],0);
@@ -904,14 +870,12 @@ function gen5(){
     sol:`<p>The mean of a discrete RV is \\(E(X) = \\sum x\\,p(x)\\): multiply each value by its probability and add.</p>
 <p>\\(E(X) = 0(${ps[0]}) + 1(${ps[1]}) + 2(${ps[2]}) + 3(${ps[3]}) = ${rnd(0*ps[0],4)} + ${rnd(1*ps[1],4)} + ${rnd(2*ps[2],4)} + ${rnd(3*ps[3],4)} = ${rnd(EX,4)}\\).</p>`});
 
-  // P2: mean of function aX+b
   let a2=ri(2,5), b2=ri(1,4);
   let EgX = a2*EX+b2;
   probs.push({q:`Using the same PMF (\\(P(X{=}0){=}${ps[0]}\\), \\(P(X{=}1){=}${ps[1]}\\), \\(P(X{=}2){=}${ps[2]}\\), \\(P(X{=}3){=}${ps[3]}\\)), find \\(E(${a2}X + ${b2})\\).`, a: rnd(EgX,4), tol:0.01,
     sol:`<p>For a linear function of X, use \\(E(aX+b) = aE(X)+b\\) rather than rebuilding a whole new PMF.</p>
 <p>From the previous problem, \\(E(X) = ${rnd(EX,4)}\\). So \\(E(${a2}X+${b2}) = ${a2}(${rnd(EX,4)}) + ${b2} = ${rnd(a2*EX,4)} + ${b2} = ${rnd(EgX,4)}\\).</p>`});
 
-  // P3: binomial
   let n=ri(6,12), p=rf(0.2,0.6,2), k=ri(1,n-1);
   let pBin = nCr(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k);
   probs.push({q:`X follows a \\(\\text{Binomial}(n{=}${n}, p{=}${p})\\) distribution. Find \\(P(X = ${k})\\).`, a: rnd(pBin,4), tol:0.001,
@@ -919,14 +883,12 @@ function gen5(){
 <p>\\(\\binom{${n}}{${k}} = ${nCr(n,k)}\\). \\(p^{${k}} = ${p}^{${k}} = ${rnd(Math.pow(p,k),6)}\\). \\((1-p)^{${n-k}} = ${rnd(1-p,2)}^{${n-k}} = ${rnd(Math.pow(1-p,n-k),6)}\\).</p>
 <p>\\(P(X={${k}}) = ${nCr(n,k)} \\times ${rnd(Math.pow(p,k),6)} \\times ${rnd(Math.pow(1-p,n-k),6)} \\approx ${rnd(pBin,4)}\\).</p>`});
 
-  // P4: geometric (first success on trial k), p = prob success
   let pg=rf(0.15,0.5,2), kg=ri(2,6);
   let pGeo = Math.pow(1-pg,kg-1)*pg;
   probs.push({q:`The probability of success on each independent trial is \\(p = ${pg}\\). Let X be the trial number of the first success (geometric distribution). Find \\(P(X = ${kg})\\).`, a: rnd(pGeo,4), tol:0.001,
     sol:`<p>The Geometric PMF is \\(P(X{=}k) = (1-p)^{k-1}p\\): the first \\(k-1\\) trials must all be failures, then trial \\(k\\) is the first success.</p>
 <p>\\(P(X={${kg}}) = (1-${pg})^{${kg}-1}(${pg}) = (${rnd(1-pg,2)})^{${kg-1}}(${pg}) = ${rnd(Math.pow(1-pg,kg-1),6)} \\times ${pg} \\approx ${rnd(pGeo,4)}\\).</p>`});
 
-  // P5: poisson
   let lam=ri(2,8), kp=ri(0,lam+3);
   let pPois = Math.exp(-lam)*Math.pow(lam,kp)/fact(kp);
   probs.push({q:`The number of arrivals per hour at a service desk follows a Poisson distribution with mean \\(\\lambda = ${lam}\\). Find \\(P(X = ${kp})\\) arrivals in an hour.`, a: rnd(pPois,4), tol:0.001,
@@ -936,17 +898,14 @@ function gen5(){
   return probs;
 }
 
-// ===== Topic 6: Continuous RVs, densities, mean, SD, uniform/exponential/normal =====
 function gen6(){
   const probs=[];
-  // P1: uniform interval probability
   let a=ri(0,5), b=a+ri(8,15);
   let c=ri(a+1,b-1), d=ri(c+1,b);
   probs.push({q:`X is uniformly distributed on the interval \\([${a}, ${b}]\\). Find \\(P(${c} < X < ${d})\\).`, a: rnd((d-c)/(b-a),4), tol:0.005,
     sol:`<p>For a Uniform\\((a,b)\\) random variable, the density is flat, so probability is just <strong>interval length</strong> \\(\\div\\) <strong>total length</strong>.</p>
 <p>\\(P(${c}<X<${d}) = \\dfrac{${d}-${c}}{${b}-${a}} = \\dfrac{${d-c}}{${b-a}} = ${rnd((d-c)/(b-a),4)}\\).</p>`});
 
-  // P2: uniform mean/sd
   let a2=ri(0,5), b2=a2+ri(6,14);
   let which = pick(['mean','sd']);
   let mU = (a2+b2)/2, sdU = (b2-a2)/Math.sqrt(12);
@@ -960,13 +919,11 @@ function gen6(){
 <p>\\(SD(X) = \\dfrac{${b2}-${a2}}{\\sqrt{12}} = \\dfrac{${b2-a2}}{${rnd(Math.sqrt(12),4)}} \\approx ${rnd(sdU,4)}\\).</p>`});
   }
 
-  // P3: exponential P(X>t)
   let lam=rf(0.1,0.5,2), t=ri(2,8);
   probs.push({q:`X follows an Exponential distribution with rate \\(\\lambda = ${lam}\\). Find \\(P(X > ${t})\\).`, a: rnd(Math.exp(-lam*t),4), tol:0.005,
     sol:`<p>For an Exponential\\((\\lambda)\\) RV, the "survival" formula is \\(P(X>t) = e^{-\\lambda t}\\).</p>
 <p>\\(P(X>${t}) = e^{-(${lam})(${t})} = e^{-${rnd(lam*t,3)}} \\approx ${rnd(Math.exp(-lam*t),4)}\\).</p>`});
 
-  // P4: exponential mean given, find lambda then P(X<t)
   let meanX=ri(4,12);
   let t2=ri(1,meanX-1<1?1:meanX-1);
   let lam2=1/meanX;
@@ -974,14 +931,11 @@ function gen6(){
     sol:`<p><strong>Step 1:</strong> the mean of an Exponential is \\(1/\\lambda\\), so \\(\\lambda = 1/\\text{mean} = 1/${meanX} = ${rnd(lam2,5)}\\).</p>
 <p><strong>Step 2:</strong> \\(P(X<t) = 1-P(X>t) = 1-e^{-\\lambda t}\\). With \\(t=${t2}\\): \\(P(X<${t2}) = 1-e^{-(${rnd(lam2,5)})(${t2})} = 1-e^{-${rnd(lam2*t2,4)}} \\approx 1-${rnd(Math.exp(-lam2*t2),4)} = ${rnd(1-Math.exp(-lam2*t2),4)}\\).</p>`});
 
-  // P5: normal probability
   let mu=ri(50,100), sigma=ri(5,15);
   let x=mu+ri(-2,2)*sigma + ri(-3,3);
   let z=(x-mu)/sigma;
-  // standard normal cdf via erf approximation
   function normCdf(zz){ return 0.5*(1+erf(zz/Math.sqrt(2))); }
   function erf(x){
-    // Abramowitz-Stegun approximation
     const sign = x>=0?1:-1; x=Math.abs(x);
     const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
     const t=1/(1+p*x);
@@ -995,19 +949,14 @@ function gen6(){
   return probs;
 }
 
-// ===== Topic 7: Joint distributions of two discrete RVs, marginals, covariance, correlation =====
 function gen7(){
   const probs=[];
-  // Build ONE 2x2 joint pmf table for X in {0,1}, Y in {0,1}, shared by all
-  // five problems below so the topic reads as one worked example that
-  // builds up piece by piece, rather than five disconnected tables.
   function buildTable(){
     let raw=[ri(1,5),ri(1,5),ri(1,5),ri(1,5)];
     let tot=raw.reduce((a,b)=>a+b,0);
     let p=raw.map(r=>rnd(r/tot,3));
     let s3=p[0]+p[1]+p[2];
     p[3]=rnd(1-s3,3);
-    // p[0]=P(X=0,Y=0), p[1]=P(X=0,Y=1), p[2]=P(X=1,Y=0), p[3]=P(X=1,Y=1)
     return p;
   }
   let p=buildTable();
@@ -1045,12 +994,8 @@ function gen7(){
   return probs;
 }
 
-// ===== Topic 8: Population, sample, descriptive stats =====
 function gen8(){
   const probs=[];
-  // One shared dataset for all five problems below, so the topic reads as
-  // a single worked example examined from several angles rather than five
-  // unrelated datasets.
   let n=ri(7,9);
   let d=[];
   for(let i=0;i<n;i++) d.push(ri(10,60));
@@ -1092,15 +1037,10 @@ function gen8(){
   return probs;
 }
 
-
-
 function zForCL(cl){ return jStat.normal.inv(1-(1-cl)/2,0,1); }
 
-// ===== Topic 9: CI and hypothesis test for a population proportion =====
 function gen9(){
   const probs=[];
-  // Problems 1-3 share one sample: point estimate, then margin of error,
-  // then the CI upper bound, each building on the last.
   let n=ri(80,300), x=ri(Math.round(n*0.2),Math.round(n*0.7));
   let phat=x/n;
   probs.push({q:`In a random sample of \\(n = ${n}\\) items, \\(x = ${x}\\) have a certain characteristic. Find the sample proportion \\(\\hat{p} = x/n\\).`, a: rnd(phat,4), tol:0.002,
@@ -1122,8 +1062,6 @@ function gen9(){
     sol:`<p>\\(\\hat{p} = ${rnd(phat,4)}\\) again, but this time at ${cl3*100}% confidence: \\(z\\approx${rnd(z3,3)}\\), so \\(E = ${rnd(z3,3)}\\sqrt{${rnd(phat,4)}(${rnd(1-phat,4)})/${n}} \\approx ${rnd(E3,4)}\\).</p>
 <p>The CI is \\(\\hat{p}\\pm E\\), so the <strong>upper bound</strong> is \\(\\hat{p}+E = ${rnd(phat,4)}+${rnd(E3,4)} = ${rnd(upper3,4)}\\).</p>`});
 
-  // Problems 4-5 share one hypothesis-testing sample: the test statistic,
-  // then the p-value that follows directly from it.
   let n4=ri(120,300); let p0=rf(0.3,0.55,2); let x4=ri(Math.round(n4*(p0-0.08)),Math.round(n4*(p0+0.08)));
   let phat4=x4/n4;
   let z4 = (phat4-p0)/Math.sqrt(p0*(1-p0)/n4);
@@ -1140,13 +1078,10 @@ function gen9(){
   return probs;
 }
 
-// ===== Topic 10: CI and test for difference of two proportions =====
 function gen10(){
   const probs=[];
   function samp(){ let n=ri(80,250); let x=ri(Math.round(n*0.2),Math.round(n*0.7)); return {n,x,p:x/n}; }
 
-  // Problems 1-3 share one pair of samples: the difference, then its
-  // standard error, then a CI upper bound built from that same SE.
   let s1=samp(), s2=samp();
   probs.push({q:`Sample 1: \\(n_1 = ${s1.n}\\), \\(x_1 = ${s1.x}\\). Sample 2: \\(n_2 = ${s2.n}\\), \\(x_2 = ${s2.x}\\). Find the difference in sample proportions, \\(\\hat{p}_1 - \\hat{p}_2\\).`, a: rnd(s1.p-s2.p,4), tol:0.003,
     sol:`<p>Compute each sample proportion, then subtract.</p>
@@ -1166,8 +1101,6 @@ function gen10(){
     sol:`<p>The point estimate \\(\\hat{p}_1-\\hat{p}_2 = ${rnd(s1.p-s2.p,4)}\\) and the standard error \\(SE \\approx ${rnd(SE34,4)}\\) were already found above.</p>
 <p>With \\(z\\approx${rnd(z56,3)}\\) for ${cl2*100}% confidence, the upper bound is \\((\\hat{p}_1-\\hat{p}_2)+zSE = ${rnd(s1.p-s2.p,4)} + ${rnd(z56,3)}(${rnd(SE34,4)}) \\approx ${rnd(upper56,4)}\\).</p>`});
 
-  // Problems 4-5 share a second pair of samples: the pooled proportion
-  // used for a hypothesis test, then the test statistic built from it.
   let s7=samp(), s8=samp();
   let pPool78 = (s7.x+s8.x)/(s7.n+s8.n);
   probs.push({q:`Sample 1: \\(n_1 = ${s7.n}\\), \\(x_1 = ${s7.x}\\). Sample 2: \\(n_2 = ${s8.n}\\), \\(x_2 = ${s8.x}\\). For a test of \\(H_0: p_1 = p_2\\), find the pooled proportion \\(\\hat{p} = \\dfrac{x_1+x_2}{n_1+n_2}\\).`, a: rnd(pPool78,4), tol:0.003,
@@ -1183,15 +1116,10 @@ function gen10(){
   return probs;
 }
 
-// ===== Topic 11: CI and test for a population mean =====
 function gen11(){
   const probs=[];
   function samp(){ return {xbar: ri(40,100), s: ri(5,20), n: ri(10,40)}; }
 
-  // Problems 1, 2, 3, 4 share ONE sample and chain together: SE, then a
-  // t-critical value, then margin of error (reusing the SE), then the CI
-  // upper bound (reusing the margin of error). Problem 5 reuses the same
-  // sample for a hypothesis test.
   let s = samp();
   let SE = s.s/Math.sqrt(s.n);
   probs.push({q:`A sample has \\(\\bar{x} = ${s.xbar}\\), \\(s = ${s.s}\\), \\(n = ${s.n}\\). Find the standard error of the mean, \\(SE = s/\\sqrt{n}\\).`, a: rnd(SE,4), tol:0.02,
@@ -1224,7 +1152,6 @@ function gen11(){
   return probs;
 }
 
-// ===== Topic 12: CI and test for difference of two means (Welch) =====
 function gen12(){
   const probs=[];
   function samp(){ return {xbar: ri(40,100), s: ri(5,20), n: ri(10,35)}; }
@@ -1234,10 +1161,6 @@ function gen12(){
     return num/den;
   }
 
-  // All five problems below share the SAME two samples, so the topic
-  // reads as one flowing Welch two-sample analysis: difference, then SE,
-  // then df, then the test statistic, then a confidence interval \u2014 each
-  // step reusing the quantities already found in the steps before it.
   let a=samp(), b=samp();
 
   probs.push({q:`Sample 1: \\(\\bar{x}_1{=}${a.xbar}\\), \\(s_1{=}${a.s}\\), \\(n_1{=}${a.n}\\). Sample 2: \\(\\bar{x}_2{=}${b.xbar}\\), \\(s_2{=}${b.s}\\), \\(n_2{=}${b.n}\\). Find the difference in sample means, \\(\\bar{x}_1 - \\bar{x}_2\\).`, a: rnd(a.xbar-b.xbar,4), tol:0.05,
@@ -1270,11 +1193,8 @@ function gen12(){
   return probs;
 }
 
-// ===== Topic 13: Chi-square GOF and independence =====
 function gen13(){
   const probs=[];
-  // Problems 1 & 2 share one goodness-of-fit scenario: problem 1 computes
-  // the chi-square statistic, problem 2 reuses the same categories for df.
   function gofSet(){
     let k=ri(3,5);
     let obs=[]; for(let i=0;i<k;i++) obs.push(ri(15,60));
@@ -1294,9 +1214,6 @@ function gen13(){
     sol:`<p>A GOF test has \\(df = (\\text{number of categories}) - 1\\) (one degree of freedom is "used up" because the expected counts must add up to the same total \\(n\\) as the observed counts).</p>
 <p>\\(df = ${g.k} - 1 = ${g.k-1}\\).</p>`});
 
-  // Problems 3, 4 & 5 share one contingency table: problem 3 finds a single
-  // expected cell, problem 4 finds the full chi-square statistic (reusing
-  // that cell), and problem 5 finds df from the same table's dimensions.
   function indTable(){
     let r=2, c=pick([2,3]);
     let rowTot=[], colTot=[];
@@ -1334,20 +1251,15 @@ function gen13(){
   return probs;
 }
 
-
-
 function buildMC(correctText, distractors){
   let choices = [correctText, ...distractors];
-  // shuffle
   for(let i=choices.length-1;i>0;i--){ let j=Math.floor(Math.random()*(i+1)); [choices[i],choices[j]]=[choices[j],choices[i]]; }
   let correct = choices.indexOf(correctText);
   return {choices, correct};
 }
 
-// ===== Topic 14: One-way ANOVA (multiple choice) =====
 function gen14(){
   const probs=[];
-  // P1: df treatment and error
   let k=ri(3,6), n=ri(k*5+3, k*10);
   let dfT=k-1, dfE=n-k;
   let mc1=buildMC(`\\(df(\\text{treatment}) = ${dfT}\\), \\(df(\\text{error}) = ${dfE}\\)`, [
@@ -1358,14 +1270,12 @@ function gen14(){
   probs.push({q:`In a one-way ANOVA with \\(k = ${k}\\) groups and a total of \\(n = ${n}\\) observations, what are the degrees of freedom for treatment and error?`, choices:mc1.choices, correct:mc1.correct,
     sol:`<p>\\(df(\\text{treatment}) = k-1 = ${k}-1 = ${dfT}\\) (one less than the number of groups). \\(df(\\text{error}) = n-k = ${n}-${k} = ${dfE}\\) (total observations minus the number of groups). Together they add to \\(df(\\text{total})=n-1=${n-1}\\).</p>`});
 
-  // P2: SSTr from SST, SSE
   let SST=ri(150,400), SSE=ri(50,SST-30);
   let SSTr=SST-SSE;
   let mc2=buildMC(`\\(SSTr = ${SSTr}\\)`, [`\\(SSTr = ${SST+SSE}\\)`, `\\(SSTr = ${SSE-SST}\\)`, `\\(SSTr = ${SST}\\)`]);
   probs.push({q:`In a one-way ANOVA, \\(SST\\) (total sum of squares) \\(= ${SST}\\) and \\(SSE\\) (error sum of squares) \\(= ${SSE}\\). Since \\(SST = SSTr + SSE\\), what is \\(SSTr\\) (treatment sum of squares)?`, choices:mc2.choices, correct:mc2.correct,
     sol:`<p>Rearrange the sum-of-squares identity: \\(SSTr = SST - SSE = ${SST} - ${SSE} = ${SSTr}\\).</p>`});
 
-  // P3: F statistic from MSTr, MSE
   let MSTr=ri(20,60), MSE=ri(5,19);
   let F=rnd(MSTr/MSE,2);
   let distract=[rnd(MSE/MSTr,2), rnd(MSTr+MSE,2), rnd(MSTr-MSE,2)];
@@ -1374,7 +1284,6 @@ function gen14(){
     sol:`<p>Divide the mean square for treatment by the mean square for error.</p>
 <p>\\(F = \\dfrac{MSTr}{MSE} = \\dfrac{${MSTr}}{${MSE}} = ${F}\\).</p>`});
 
-  // P4: conceptual - null hypothesis of one-way ANOVA
   let mc4=buildMC(`All population (group) means are equal: \\(\\mu_1 = \\mu_2 = \\cdots = \\mu_k\\)`, [
     `All population variances are equal`,
     `At least one pair of sample means is equal`,
@@ -1383,7 +1292,6 @@ function gen14(){
   probs.push({q:`What is the null hypothesis \\(H_0\\) tested by a one-way ANOVA?`, choices:mc4.choices, correct:mc4.correct,
     sol:`<p>One-way ANOVA compares \\(k\\) group means simultaneously. \\(H_0\\) states there is no difference among the groups: \\(\\mu_1=\\mu_2=\\cdots=\\mu_k\\). The alternative, \\(H_1\\), is simply that at least one group mean differs from the others (not necessarily all of them).</p>`});
 
-  // P5: decision rule
   let alpha=pick([0.01,0.05,0.10]);
   let Fstat=rf(1.5,6,2);
   let Fcrit=rf(2.0,3.5,2);
@@ -1400,10 +1308,8 @@ function gen14(){
   return probs;
 }
 
-// ===== Topic 15: Simple and multiple regression (multiple choice) =====
 function gen15(){
   const probs=[];
-  // P1: predict y from simple linear regression line
   let b0=ri(2,20), b1=rf(0.5,4,2), x0=ri(3,15);
   let yhat=rnd(b0+b1*x0,2);
   let mc1=buildMC(`\\(\\hat{y} = ${yhat}\\)`, [`\\(\\hat{y} = ${rnd(b0-b1*x0,2)}\\)`, `\\(\\hat{y} = ${rnd(b1+b0*x0,2)}\\)`, `\\(\\hat{y} = ${rnd(b0*b1*x0,2)}\\)`]);
@@ -1411,7 +1317,6 @@ function gen15(){
     sol:`<p>Substitute \\(x=${x0}\\) directly into the fitted equation.</p>
 <p>\\(\\hat{y} = ${b0} + ${b1}(${x0}) = ${b0} + ${rnd(b1*x0,2)} = ${yhat}\\).</p>`});
 
-  // P2: interpret slope
   let b1b=rf(1,8,2), unitY=pick(['dollars','points','minutes','units']), unitX=pick(['hour','year','item','session']);
   let mc2=buildMC(`For each additional ${unitX}, the predicted y increases by ${b1b} ${unitY}, on average`, [
     `The predicted y increases by ${b1b}% for every unit increase in x`,
@@ -1421,7 +1326,6 @@ function gen15(){
   probs.push({q:`In a simple linear regression \\(\\hat{y} = b_0 + ${b1b}x\\), how should the slope ${b1b} be interpreted?`, choices:mc2.choices, correct:mc2.correct,
     sol:`<p>In simple linear regression, the slope \\(b_1\\) is the average change in \\(\\hat y\\) for a one-unit increase in \\(x\\) \u2014 it's a rate, not a percentage, and it doesn't by itself tell you the value at \\(x=0\\) (that's \\(b_0\\)) or the correlation. So the slope ${b1b} means: for each additional ${unitX}, the predicted y increases by ${b1b} ${unitY}, on average.</p>`});
 
-  // P3: R^2 interpretation
   let r2=rf(0.4,0.95,2);
   let pct=rnd(r2*100,1);
   let mc3=buildMC(`${pct}% of the variability in y is explained by the regression model`, [
@@ -1432,7 +1336,6 @@ function gen15(){
   probs.push({q:`A simple linear regression model has \\(R^2 = ${r2}\\). What does this value mean?`, choices:mc3.choices, correct:mc3.correct,
     sol:`<p>\\(R^2\\) is the <strong>proportion of variability in y explained by the model</strong>, expressed here as a percentage: \\(${r2}\\times100\\% = ${pct}\\%\\). It says nothing about how many points sit exactly on the line, nor is it the correlation itself (though for simple regression, \\(R^2 = \\rho^2\\)), nor does it describe the sign pattern of residuals.</p>`});
 
-  // P4: residual computation
   let yobs=ri(20,80), b0c=ri(5,20), b1c=rf(0.5,3,2), xc=ri(3,15);
   let yhatC=rnd(b0c+b1c*xc,2);
   let resid=rnd(yobs-yhatC,2);
@@ -1441,7 +1344,6 @@ function gen15(){
     sol:`<p><strong>Step 1 \u2014 predicted value:</strong> \\(\\hat y = ${b0c} + ${b1c}(${xc}) = ${b0c} + ${rnd(b1c*xc,2)} = ${yhatC}\\).</p>
 <p><strong>Step 2 \u2014 residual:</strong> residual \\(=\\) observed \\(-\\) predicted \\(= ${yobs} - ${yhatC} = ${resid}\\).</p>`});
 
-  // P5: multiple regression conceptual
   let mc5=buildMC(`Holding all other predictors constant, y is predicted to change by that coefficient's value for a one-unit increase in that predictor`, [
     `That predictor alone determines the value of y`,
     `The coefficient is always equal to the correlation between that predictor and y`,
@@ -1453,15 +1355,13 @@ function gen15(){
   return probs;
 }
 
-// ===== Topic 16: Control charts (x-bar, R, p) (multiple choice) =====
-const CONTROL_CONSTANTS = { // n: {A2, D3, D4}
+const CONTROL_CONSTANTS = {
   2:{A2:1.880,D3:0,D4:3.267}, 3:{A2:1.023,D3:0,D4:2.574}, 4:{A2:0.729,D3:0,D4:2.282},
   5:{A2:0.577,D3:0,D4:2.114}, 6:{A2:0.483,D3:0,D4:2.004}, 7:{A2:0.419,D3:0.076,D4:1.924},
   8:{A2:0.373,D3:0.136,D4:1.864}, 9:{A2:0.337,D3:0.184,D4:1.816}, 10:{A2:0.308,D3:0.223,D4:1.777}
 };
 function gen16(){
   const probs=[];
-  // P1: x-bar chart UCL
   let n=pick([2,3,4,5,6]);
   let xbarbar=ri(40,100), Rbar=ri(3,15);
   let A2=CONTROL_CONSTANTS[n].A2;
@@ -1471,7 +1371,6 @@ function gen16(){
     sol:`<p>Look up \\(A_2=${A2}\\) for subgroup size \\(n=${n}\\), then plug into the formula.</p>
 <p>\\(UCL = \\bar{\\bar{x}} + A_2\\bar{R} = ${xbarbar} + (${A2})(${Rbar}) = ${xbarbar} + ${rnd(A2*Rbar,3)} = ${UCL}\\).</p>`});
 
-  // P2: x-bar chart LCL
   let n2=pick([2,3,4,5,6]);
   let xbarbar2=ri(40,100), Rbar2=ri(3,15);
   let A2b=CONTROL_CONSTANTS[n2].A2;
@@ -1481,7 +1380,6 @@ function gen16(){
     sol:`<p>Same formula as the UCL but subtracting the \\(A_2\\bar{R}\\) term instead of adding it.</p>
 <p>\\(LCL = \\bar{\\bar{x}} - A_2\\bar{R} = ${xbarbar2} - (${A2b})(${Rbar2}) = ${xbarbar2} - ${rnd(A2b*Rbar2,3)} = ${LCL2}\\).</p>`});
 
-  // P3: R chart UCL
   let n3=pick([2,3,4,5,6,7,8]);
   let Rbar3=ri(4,18);
   let D4=CONTROL_CONSTANTS[n3].D4;
@@ -1491,7 +1389,6 @@ function gen16(){
     sol:`<p>The R-chart's UCL is simply the table constant \\(D_4\\) times the average range.</p>
 <p>\\(UCL = D_4\\bar{R} = (${D4})(${Rbar3}) = ${UCLr}\\).</p>`});
 
-  // P4: p chart control limits
   let n4=ri(80,200), pbar=rf(0.02,0.12,3);
   let sigp=Math.sqrt(pbar*(1-pbar)/n4);
   let UCLp=rnd(Math.min(1,pbar+3*sigp),4);
@@ -1505,7 +1402,6 @@ function gen16(){
     sol:`<p><strong>Step 1 \u2014 standard deviation of \\(\\hat p\\):</strong> \\(\\sigma_{\\hat p} = \\sqrt{\\dfrac{\\bar p(1-\\bar p)}{n}} = \\sqrt{\\dfrac{${pbar}(${rnd(1-pbar,3)})}{${n4}}} \\approx ${rnd(sigp,5)}\\).</p>
 <p><strong>Step 2 \u2014 control limits (\\(\\pm3\\) standard deviations):</strong> \\(UCL = ${pbar} + 3(${rnd(sigp,5)}) \\approx ${UCLp}\\); \\(LCL = ${pbar} - 3(${rnd(sigp,5)}) \\approx ${LCLp}\\)${LCLp<=0?' (bounded at 0 since a proportion cannot be negative)':''}.</p>`});
 
-  // P5: conceptual - out of control signal
   let mc5=buildMC(`A point falls outside the control limits (or a nonrandom pattern such as a run appears)`, [
     `Every point falls exactly on the center line`,
     `The sample size is smaller than 30`,
@@ -1517,10 +1413,6 @@ function gen16(){
   return probs;
 }
 
-
-/* =========================================================================
-   TOPIC METADATA (titles + review text)
-   ========================================================================= */
 const TOPICS = [
 { id:1, title:"1. Sample Space, Events & Counting", type:"calc", gen:gen1, review:`
 <p>A <strong>random experiment</strong> is any process whose outcome cannot be predicted with certainty. The <strong>sample space</strong>, denoted \\(S\\), is the set of all possible outcomes of a random experiment. An <strong>event</strong>, typically denoted with a ctal letter such as \\(A\\) or \\(B\\), is any subset of the sample space \u2014 that is, any collection of outcomes we are interested in. Given two events \\(A\\) and \\(B\\), the <strong>union</strong> \\(A \\cup B\\) is the event that \\(A\\) occurs, or \\(B\\) occurs, or both; the <strong>intersection</strong> \\(A \\cap B\\) is the event that both \\(A\\) and \\(B\\) occur simultaneously.</p>
@@ -1588,16 +1480,6 @@ const TOPICS = [
 <p>An \\(\\bar{x}\\)-chart (x-bar chart) monitors the process mean using repeated subgroups of size \\(n\\). Its center line is the grand mean, \\(\\bar{\\bar{x}}\\), the average of all the subgroup means, and its control limits are \\(UCL/LCL = \\bar{\\bar{x}} \\pm A_2\\bar{R}\\), where \\(\\bar{R}\\) is the average range across the subgroups and \\(A_2\\) is a constant that depends on the subgroup size \\(n\\) and is obtained from a standard table. An <strong>R-chart</strong> monitors the variability within subgroups rather than the mean; its center line is \\(\\bar{R}\\), and its control limits are \\(UCL = D_4\\bar{R}\\) and \\(LCL = D_3\\bar{R}\\), where \\(D_3\\) and \\(D_4\\) are table constants depending on \\(n\\) (\\(D_3 = 0\\) for small subgroup sizes). A <strong>p-chart</strong> monitors the proportion of nonconforming items in a process; its center line is the overall proportion nonconforming, \\(\\bar{p}\\), and its control limits are \\(UCL/LCL = \\bar{p} \\pm 3\\sqrt{\\dfrac{\\bar{p}(1-\\bar{p})}{n}}\\), bounded so that they never fall below 0 or above 1.</p>` }
 ];
 
-/* ==========================================================================
-   PASTE THIS BLOCK into the Problem Bank html, immediately AFTER the
-   `const TOPICS = [ ... ];` array and BEFORE the "EXAMPLES & NOTATION"
-   comment. It replaces the review text of all 16 topics so each review
-   covers the ideas tested in the matching Topic Quiz (15 quiz topics).
-   Mapping: bank 1->quiz 1 | bank 2,3,4->quiz 2 | bank 5->quiz 3 |
-   bank 6->quiz 4 | bank 7->quiz 5 | bank 8->quiz 6+7 | bank 9->quiz 8 |
-   bank 10->quiz 9 | bank 11->quiz 10 | bank 12->quiz 11 | bank 13->quiz 12 |
-   bank 14->quiz 13 | bank 15->quiz 14 | bank 16->quiz 15
-   ========================================================================== */
 const NEW_REVIEWS = {
 
 1: `
@@ -1629,23 +1511,30 @@ const NEW_REVIEWS = {
 <p><strong>Covariance</strong> is \\(\\operatorname{Cov}(X,Y)=E[XY]-E[X]E[Y]\\); positive means they tend to increase or decrease together (not that one causes the other), and negative means one tends to fall as the other rises. Independence implies \\(\\operatorname{Cov}=0\\), but \\(\\operatorname{Cov}=0\\) (uncorrelated) does <em>not</em> imply independence. The <strong>correlation</strong> \\(\\rho=\\dfrac{\\operatorname{Cov}(X,Y)}{\\sigma_X\\sigma_Y}\\) lies in \\([-1,1]\\): \\(\\pm1\\) is a perfect linear relationship and 0 means no <em>linear</em> relationship (a nonlinear one may still exist); a strong downward-sloping scatterplot gives \\(\\rho\\) near \\(-1\\). Correlation is a standardized, unit-free version of covariance, while covariance depends on the units. Finally, \\(\\operatorname{Var}(aX+bY)=a^2\\operatorname{Var}(X)+b^2\\operatorname{Var}(Y)+2ab\\operatorname{Cov}(X,Y)\\), with no covariance term when independent.</p>`,
 
 8: `
-<p>A <strong>population</strong> is the entire group of individuals or items of interest, while a <strong>sample</strong> is a subset of the population that is actually observed or measured. A number that describes the population is called a <strong>parameter</strong> (for example, the population mean \\(\\mu\\)), while a number computed from a sample is called a <strong>statistic</strong> (for example, the sample mean \\(\\bar{x}\\)), and a statistic is typically used to estimate the corresponding parameter. An estimator is called <strong>unbiased</strong> if its expected value equals the true parameter it is estimating \u2014 for instance, the sample mean \\(\\bar{x}\\) is an unbiased estimator of the population mean \\(\\mu\\) \u2014 and <strong>bias</strong> refers to the difference between an estimator's expected value and the true parameter value.</p>
-<p>Two properties describe the overall shape of a dataset: its center and its spread. The most common measures of <strong>center</strong> are the mean (the arithmetic average) and the median (the middle value when the data are sorted). The most common measures of <strong>spread</strong> are the standard deviation, the range (maximum minus minimum), and the interquartile range, or \\(IQR\\). The <strong>five-number summary</strong> of a dataset consists of the minimum, the first quartile \\(Q_1\\), the median, the third quartile \\(Q_3\\), and the maximum, and is often visualized with a <strong>boxplot</strong>. Other common graphics include bar and pie charts for categorical data, histograms and density plots for the shape of a numeric distribution, and scatterplots for the relationship between two numeric variables.</p>`,
+<p>A <strong>population</strong> is the entire group of interest and a <strong>sample</strong> is a subset of it. A <strong>parameter</strong> is a numerical summary of a population; a <strong>statistic</strong> is a numerical summary computed from a sample, and is used to estimate the corresponding parameter. Two population types are considered here, and each has its own parameter and matching statistic:</p>
+<ul>
+<li><strong>Discrete (categorical/binary) population</strong> with parameter \\(p\\) = the population proportion. The matching statistic is the <strong>sample proportion</strong> \\(\\hat{p} = \\dfrac{x}{n}\\), where \\(x\\) is the number of sampled individuals having the characteristic and \\(n\\) is the sample size.</li>
+<li><strong>Quantitative population</strong> with parameter \\(\\mu\\) = the population mean. The matching statistic is the <strong>sample mean</strong> \\(\\bar{x} = \\dfrac{\\sum x_i}{n}\\).</li>
+</ul>
+<p>Both \\(\\hat{p}\\) and \\(\\bar{x}\\) are <strong>unbiased</strong> estimators of their parameters: \\(E[\\hat{p}] = p\\) and \\(E[\\bar{x}] = \\mu\\), meaning that over repeated sampling their average value equals the true parameter. <strong>Bias</strong> is defined as \\(E[\\text{estimator}] - \\text{parameter}\\), so an unbiased estimator has bias 0.</p>
+<p><strong>Center and spread for a quantitative sample.</strong> Measures of center: the mean \\(\\bar{x} = \\sum x_i/n\\), the median (middle value when the data are sorted, or the average of the two middle values when \\(n\\) is even), and the mode (most frequent value). Measures of spread: the sample variance \\(s^2 = \\dfrac{\\sum (x_i - \\bar{x})^2}{n-1}\\), the sample standard deviation \\(s = \\sqrt{s^2}\\), the range (max \\(-\\) min), and the interquartile range \\(IQR = Q_3 - Q_1\\). The \\(p\\)th percentile has about \\(p\\%\\) of the data below it. The sample variance divides by \\(n-1\\) precisely so that \\(s^2\\) is unbiased for \\(\\sigma^2\\); dividing by \\(n\\) would systematically underestimate the population variance. The <strong>five-number summary</strong> (minimum, \\(Q_1\\), median, \\(Q_3\\), maximum) is visualized with a boxplot, and points beyond \\(1.5 \\times IQR\\) from \\(Q_1\\) or \\(Q_3\\) are flagged as outliers. A <strong>frequency distribution</strong> shows how often each value or range occurs. Graphics: bar charts and pie charts for categorical data, histograms (contiguous bins, no gaps) for binned numeric data, and scatterplots (with correlation \\(r \\in [-1,1]\\)) for two quantitative variables.</p>
+<p><strong>Sampling distributions.</strong> The sampling distribution of a statistic is its distribution over all possible samples of size \\(n\\). For the sample proportion, \\(E[\\hat{p}] = p\\) and the standard error is \\(SE(\\hat{p}) = \\sqrt{\\dfrac{p(1-p)}{n}}\\). For the sample mean, \\(E[\\bar{x}] = \\mu\\) and the standard error is \\(SE(\\bar{x}) = \\dfrac{\\sigma}{\\sqrt{n}}\\). In both cases the standard error shrinks as \\(n\\) grows (quadrupling \\(n\\) halves it), while the center stays fixed at the parameter. By the <strong>Central Limit Theorem</strong>, \\(\\bar{x}\\) is approximately normally distributed for large \\(n\\) even if the population is skewed, and \\(\\hat{p}\\) is approximately normal when \\(n\\hat{p} \\ge 10\\) and \\(n(1-\\hat{p}) \\ge 10\\). An estimator is <strong>consistent</strong> if it converges to the true parameter as \\(n\\) increases. Increasing \\(n\\) shrinks the standard error but does not remove bias: oversampling one group, or a thermometer that always reads 2 degrees high, stays biased at any sample size. Bias is systematic error; standard error is sample-to-sample spread, and an estimator can be unbiased yet highly variable.
+</p>`,
 
 9: `
 <p>The point estimate of \\(p\\) is \\(\\hat p=x/n\\). The normal approximation needs \\(n\\hat p\\ge10\\) and \\(n(1-\\hat p)\\ge10\\). The confidence interval is \\(\\hat p\\pm z^*\\sqrt{\\dfrac{\\hat p(1-\\hat p)}n}\\), with \\(z^*\\approx1.645,\\,1.96,\\,2.576\\) for 90%, 95%, 99%. The margin of error grows with confidence level and shrinks with larger \\(n\\). <em>Interpretation:</em> if sampling were repeated many times, about 95% of such intervals would contain the true \\(p\\); it is not a 95% probability for one fixed interval.</p>
-<p><strong>Test of \\(H_0 \\colon p = p_0\\):</strong> \\(z=\\dfrac{\\hat p-p_0}{\\sqrt{p_0(1-p_0)/n}}\\), using \\(p_0\\) (not \\(\\hat p\\)) in the standard error, whereas the confidence interval uses \\(\\hat p\\). The alternative is two-tailed (\\(H_a \\colon p \\ne p_0\\)) or one-tailed (\\(p < p_0\\) or \\(p > p_0\\)); for example, testing whether the true proportion of conforming parts is below a claimed 0.95 uses \\(H_0 \\colon p = 0.95\\) vs. \\(H_a \\colon p < 0.95\\). The <strong>p-value</strong> is the probability, assuming \\(H_0\\) is true, of a statistic at least as extreme as observed (it is not the probability that \\(H_0\\) is true); reject \\(H_0\\) if p-value \\(<\\alpha\\). A <strong>Type I error</strong> rejects a true \\(H_0\\) (probability \\(\\alpha\\), chosen by the researcher before the test); a <strong>Type II error</strong> fails to reject a false \\(H_0\\). A two-sided CI that excludes \\(p_0\\) matches rejecting at the same \\(\\alpha\\).</p>`,
+<p><strong>Test of \\(H_0:p=p_0\\):</strong> \\(z=\\dfrac{\\hat p-p_0}{\\sqrt{p_0(1-p_0)/n}}\\), using \\(p_0\\) (not \\(\\hat p\\)) in the standard error, whereas the confidence interval uses \\(\\hat p\\). The alternative is two-tailed (\\(H_a:p\\ne p_0\\)) or one-tailed (\\(p<p_0\\) or \\(p>p_0\\)); for example, testing whether the true proportion of conforming parts is below a claimed 0.95 uses \\(H_0:p=0.95\\) vs. \\(H_a:p<0.95\\). The <strong>p-value</strong> is the probability, assuming \\(H_0\\) is true, of a statistic at least as extreme as observed (it is not the probability that \\(H_0\\) is true); reject \\(H_0\\) if p-value \\(<\\alpha\\). A <strong>Type I error</strong> rejects a true \\(H_0\\) (probability \\(\\alpha\\), chosen by the researcher before the test); a <strong>Type II error</strong> fails to reject a false \\(H_0\\). A two-sided CI that excludes \\(p_0\\) matches rejecting at the same \\(\\alpha\\).</p>`,
 
 10: `
 <p>The estimate of \\(p_1-p_2\\) is \\(\\hat p_1-\\hat p_2\\); the normal approximation needs \\(n_i\\hat p_i\\) and \\(n_i(1-\\hat p_i)\\) all at least 10. The <strong>confidence interval</strong> uses each sample separately (unpooled): \\((\\hat p_1-\\hat p_2)\\pm z^*\\sqrt{\\dfrac{\\hat p_1(1-\\hat p_1)}{n_1}+\\dfrac{\\hat p_2(1-\\hat p_2)}{n_2}}\\).</p>
-<p>For \\(H_0 \\colon p_1 = p_2\\), both proportions are assumed equal, so use the <strong>pooled proportion</strong> \\(\\hat p=\\dfrac{x_1+x_2}{n_1+n_2}\\) and \\(z=\\dfrac{\\hat p_1-\\hat p_2}{\\sqrt{\\hat p(1-\\hat p)(1/n_1+1/n_2)}}\\). Pooling is used in the test but not the CI because \\(H_0\\) assumes \\(p_1=p_2\\), so combining the samples gives a better estimate of that common value. The alternative is \\(H_a \\colon p_1 \\ne p_2\\) (two-tailed) or one-sided. If the CI for \\(p_1-p_2\\) excludes 0 (for example, entirely positive), the proportions differ significantly and \\(p_1\\) is likely larger; if it straddles 0 there is not enough evidence of a difference. Larger samples reduce the standard error and increase power. An A/B test comparing two conversion rates is a typical application (a p-value of 0.03 at \\(\\alpha=0.05\\) means reject \\(H_0\\)); comparing defect rates of two machines is another. These are procedures for proportions, not means.</p>`,
+<p>For \\(H_0:p_1=p_2\\), both proportions are assumed equal, so use the <strong>pooled proportion</strong> \\(\\hat p=\\dfrac{x_1+x_2}{n_1+n_2}\\) and \\(z=\\dfrac{\\hat p_1-\\hat p_2}{\\sqrt{\\hat p(1-\\hat p)(1/n_1+1/n_2)}}\\). Pooling is used in the test but not the CI because \\(H_0\\) assumes \\(p_1=p_2\\), so combining the samples gives a better estimate of that common value. The alternative is \\(H_a:p_1\\ne p_2\\) (two-tailed) or one-sided. If the CI for \\(p_1-p_2\\) excludes 0 (for example, entirely positive), the proportions differ significantly and \\(p_1\\) is likely larger; if it straddles 0 there is not enough evidence of a difference. Larger samples reduce the standard error and increase power. An A/B test comparing two conversion rates is a typical application (a p-value of 0.03 at \\(\\alpha=0.05\\) means reject \\(H_0\\)); comparing defect rates of two machines is another. These are procedures for proportions, not means.</p>`,
 
 11: `
 <p>When \\(\\sigma\\) is unknown, use the <strong>t-distribution</strong> with \\(df=n-1\\) and the sample SD \\(s\\). It has heavier tails than the normal and approaches the normal as \\(df\\) grows. The CI is \\(\\bar x\\pm t^*\\dfrac{s}{\\sqrt n}\\), where \\(t^*\\dfrac{s}{\\sqrt n}\\) is the margin of error; it shrinks with larger \\(n\\) and widens with higher confidence. Conditions: a random sample with independent observations, and a population that is approximately normal or \\(n\\) large enough for the CLT. If \\(\\sigma\\) is known, use a z-procedure instead.</p>
-<p><strong>Test of \\(H_0 \\colon \\mu = \\mu_0\\):</strong> \\(t=\\dfrac{\\bar x-\\mu_0}{s/\\sqrt n}\\) with \\(n-1\\) df. The alternative may be two-tailed (\\(H_a \\colon \\mu \\ne \\mu_0\\)) or one-tailed (\\(\\mu > \\mu_0\\) or \\(\\mu < \\mu_0\\)). If the p-value exceeds \\(\\alpha\\), fail to reject \\(H_0\\) (which is not the same as proving it true); if it is below \\(\\alpha\\) (for example \\(t=2.5\\), \\(df=20\\), \\(p=0.021\\) at \\(\\alpha=0.05\\)), reject. A two-sided CI that contains \\(\\mu_0\\) corresponds to failing to reject at the same \\(\\alpha\\) (a 95% CI of \\((48,55)\\) contains 50). For \\(n=16\\), \\(s=8\\), \\(t^*=2.131\\): margin of error \\(=2.131(8/4)=4.26\\), so with \\(\\bar x=50\\) the interval is \\((45.74,54.26)\\). A sample of 25 bolts compared with a 10 mm target (unknown \\(\\sigma\\)) calls for a one-sample t-test with 24 df.</p>`,
+<p><strong>Test of \\(H_0:\\mu=\\mu_0\\):</strong> \\(t=\\dfrac{\\bar x-\\mu_0}{s/\\sqrt n}\\) with \\(n-1\\) df. The alternative may be two-tailed (\\(H_a:\\mu\\ne\\mu_0\\)) or one-tailed (\\(\\mu>\\mu_0\\) or \\(\\mu<\\mu_0\\)). If the p-value exceeds \\(\\alpha\\), fail to reject \\(H_0\\) (which is not the same as proving it true); if it is below \\(\\alpha\\) (for example \\(t=2.5\\), \\(df=20\\), \\(p=0.021\\) at \\(\\alpha=0.05\\)), reject. A two-sided CI that contains \\(\\mu_0\\) corresponds to failing to reject at the same \\(\\alpha\\) (a 95% CI of \\((48,55)\\) contains 50). For \\(n=16\\), \\(s=8\\), \\(t^*=2.131\\): margin of error \\(=2.131(8/4)=4.26\\), so with \\(\\bar x=50\\) the interval is \\((45.74,54.26)\\). A sample of 25 bolts compared with a 10 mm target (unknown \\(\\sigma\\)) calls for a one-sample t-test with 24 df.</p>`,
 
 12: `
-<p>For <strong>independent samples</strong> (selecting individuals for one sample has no effect on, and is unrelated to, selecting for the other, e.g. different students in Method A and Method B), the estimate is \\(\\bar x_1-\\bar x_2\\) with \\(SE=\\sqrt{\\dfrac{s_1^2}{n_1}+\\dfrac{s_2^2}{n_2}}\\), CI \\((\\bar x_1-\\bar x_2)\\pm t^*SE\\), and test statistic \\(t=\\dfrac{\\bar x_1-\\bar x_2}{SE}\\) for \\(H_0 \\colon \\mu_1 = \\mu_2\\) against \\(H_a \\colon \\mu_1 \\ne \\mu_2\\) (or a one-sided alternative). The <strong>Welch</strong> procedure does not assume equal variances (so it is more broadly valid than the pooled-variance method); its \\(df\\) come from the Welch\u2013Satterthwaite formula (software reports it) and are typically less than \\(n_1+n_2-2\\). A CI for \\(\\mu_1-\\mu_2\\) that is entirely negative suggests \\(\\mu_1 < \\mu_2\\); one containing 0 means fail to reject \\(H_0\\).</p>
+<p>For <strong>independent samples</strong> (selecting individuals for one sample has no effect on, and is unrelated to, selecting for the other, e.g. different students in Method A and Method B), the estimate is \\(\\bar x_1-\\bar x_2\\) with \\(SE=\\sqrt{\\dfrac{s_1^2}{n_1}+\\dfrac{s_2^2}{n_2}}\\), CI \\((\\bar x_1-\\bar x_2)\\pm t^*SE\\), and test statistic \\(t=\\dfrac{\\bar x_1-\\bar x_2}{SE}\\) for \\(H_0:\\mu_1=\\mu_2\\) against \\(H_a:\\mu_1\\ne\\mu_2\\) (or a one-sided alternative). The <strong>Welch</strong> procedure does not assume equal variances (so it is more broadly valid than the pooled-variance method); its \\(df\\) come from the Welch\u2013Satterthwaite formula (software reports it) and are typically less than \\(n_1+n_2-2\\). A CI for \\(\\mu_1-\\mu_2\\) that is entirely negative suggests \\(\\mu_1<\\mu_2\\); one containing 0 means fail to reject \\(H_0\\).</p>
 <p>In a <strong>paired design</strong> each observation is linked to one in the other sample (before/after on the same subject). Analyze the differences \\(d_i\\) as one sample: \\(t=\\dfrac{\\bar d}{s_d/\\sqrt n}\\) with \\(df=n-1\\) (12 athletes gives 11 df). Pairing removes between-subject variability and often increases power. Choose by design: same subjects measured twice means paired; two unrelated groups means two-sample.</p>`,
 
 13: `
@@ -1653,7 +1542,7 @@ const NEW_REVIEWS = {
 <p><strong>Goodness of fit</strong> (one categorical variable vs. a hypothesized distribution): \\(E=n\\,p_0\\), \\(df=k-1\\) (60 die rolls: \\(E=10\\) per face). <strong>Homogeneity</strong> (one variable compared across several independent samples or populations) and <strong>independence</strong> (two variables measured on one sample) both use a two-way table with \\(E=\\dfrac{\\text{row total}\\times\\text{column total}}{\\text{grand total}}\\) and \\(df=(r-1)(c-1)\\); a \\(2\\times3\\) table has 2. They differ in sampling design and hypotheses: \\(H_0\\) for homogeneity is that the distribution is the same across groups, and for independence that the two variables are not associated. Examples: separate samples of students from three universities compared on preferred learning format is homogeneity; one sample of 500 employees classified by department and satisfaction is independence; testing whether 200 candies match claimed color proportions (e.g. \\(200\\times0.20=40\\) blue expected) is goodness of fit.</p>`,
 
 14: `
-<p><strong>One-way ANOVA</strong> compares three or more group means: \\(H_0 \\colon \\mu_1 = \\dots = \\mu_k\\) vs. \\(H_1 \\colon\\) at least one mean differs (not necessarily all of them). <strong>Between-group</strong> variation (SSB/SSTr) measures how far group means are from the grand mean; <strong>within-group</strong> variation (SSW/SSE) measures spread around each group's own mean. With \\(N\\) total observations, \\(df_{between}=k-1\\) and \\(df_{within}=N-k\\); each mean square is its sum of squares divided by its df, and \\(F=\\dfrac{MSB}{MSW}\\). A large \\(F\\) (small p-value) rejects \\(H_0\\). Assumptions: independent observations, approximately normal residuals, and roughly equal variances. After a significant result, use post-hoc comparisons such as <strong>Tukey's HSD</strong> to see which groups differ. Example: \\(F(3,36)=5.2\\), \\(p=0.004\\) with 4 treatments means reject \\(H_0\\), and \\(N=36+4=40\\) since \\(df_{within}=N-k\\).</p>
+<p><strong>One-way ANOVA</strong> compares three or more group means: \\(H_0:\\mu_1=\\dots=\\mu_k\\) vs. \\(H_1:\\) at least one mean differs (not necessarily all of them). <strong>Between-group</strong> variation (SSB/SSTr) measures how far group means are from the grand mean; <strong>within-group</strong> variation (SSW/SSE) measures spread around each group's own mean. With \\(N\\) total observations, \\(df_{between}=k-1\\) and \\(df_{within}=N-k\\); each mean square is its sum of squares divided by its df, and \\(F=\\dfrac{MSB}{MSW}\\). A large \\(F\\) (small p-value) rejects \\(H_0\\). Assumptions: independent observations, approximately normal residuals, and roughly equal variances. After a significant result, use post-hoc comparisons such as <strong>Tukey's HSD</strong> to see which groups differ. Example: \\(F(3,36)=5.2\\), \\(p=0.004\\) with 4 treatments means reject \\(H_0\\), and \\(N=36+4=40\\) since \\(df_{within}=N-k\\).</p>
 <p><strong>Multiple testing:</strong> running many tests inflates the chance of at least one false positive. The <strong>family-wise error rate</strong> is the probability of at least one Type I error across the family; for 10 independent tests at \\(\\alpha=0.05\\) it is \\(1-0.95^{10}\\approx0.40\\). The <strong>Bonferroni</strong> correction uses \\(\\alpha/m\\) for each of \\(m\\) comparisons. A single ANOVA is preferred to many t-tests because it holds the overall error rate at \\(\\alpha\\).</p>`,
 
 15: `
@@ -1665,12 +1554,8 @@ const NEW_REVIEWS = {
 <p><strong>\\(\\bar x\\) chart</strong> (process mean, subgroup averages): \\(CL=\\bar{\\bar x}\\), \\(UCL/LCL=\\bar{\\bar x}\\pm A_2\\bar R\\). <strong>R chart</strong> (variability, subgroup range): \\(CL=\\bar R\\), \\(UCL=D_4\\bar R\\), \\(LCL=D_3\\bar R\\). Use them together, and check that variability is in control first, since the \\(\\bar x\\) limits depend on \\(\\bar R\\). <strong>p chart</strong> (proportion nonconforming): \\(CL=\\bar p\\), limits \\(\\bar p\\pm3\\sqrt{\\bar p(1-\\bar p)/n}\\); if the LCL is negative, set it to 0. Constants \\(A_2,D_3,D_4\\) depend on subgroup size \\(n\\) and come from a table.</p>`
 };
 
-// Apply: replaces each topic's review with the quiz-aligned version.
 TOPICS.forEach(t => { if (NEW_REVIEWS[t.id]) t.review = NEW_REVIEWS[t.id]; });
 
-/* =========================================================================
-   EXAMPLES & NOTATION (shown in the popup modal, per topic)
-   ========================================================================= */
 const NOTES = {
 1: `
 <p><strong>Notation used in this topic:</strong></p>
@@ -1806,7 +1691,7 @@ const NOTES = {
 <p>In a sample of \\(n=200\\), \\(x=64\\) favor a proposal. Build a 95% CI for \\(p\\).</p>
 <p><strong>Solution:</strong> \\(\\hat{p}=64/200=0.32\\). \\(E = 1.96\\sqrt{\\dfrac{0.32(0.68)}{200}} = 1.96\\sqrt{0.0010880} = 1.96(0.03298)\\approx 0.0646\\). CI: \\(0.32 \\pm 0.0646 = (0.2554, 0.3846)\\).</p></div>
 <div class="ex-block"><div class="ex-label">Worked example (test)</div>
-<p>Test \\(H_0 \\colon p = 0.5\\) vs \\(H_1 \\colon p \\ne 0.5\\) with \\(n=150\\), \\(x=87\\).</p>
+<p>Test \\(H_0:p=0.5\\) vs \\(H_1:p\\ne0.5\\) with \\(n=150\\), \\(x=87\\).</p>
 <p><strong>Solution:</strong> \\(\\hat{p}=87/150=0.58\\). \\(z = \\dfrac{0.58-0.5}{\\sqrt{0.5(0.5)/150}} = \\dfrac{0.08}{0.04082}\\approx 1.96\\). Two-sided p-value \\(=2P(Z>1.96)\\approx 2(0.025)=0.05\\); at \\(\\alpha=0.05\\) this is borderline (marginally significant).</p></div>
 `,
 10: `
@@ -1814,11 +1699,11 @@ const NOTES = {
 <table class="notation-table">
 <tr><td>\\(\\hat{p}_1,\\hat{p}_2\\)</td><td>the two sample proportions</td></tr>
 <tr><td>unpooled SE</td><td>used for the <em>confidence interval</em> (each \\(\\hat{p}_i\\) uses its own sample)</td></tr>
-<tr><td>pooled \\(\\hat{p}\\)</td><td>used for the <em>hypothesis test</em> of \\(H_0 \\colon p_1 = p_2\\) \u2014 combines both samples</td></tr>
+<tr><td>pooled \\(\\hat{p}\\)</td><td>used for the <em>hypothesis test</em> of \\(H_0:p_1=p_2\\) \u2014 combines both samples</td></tr>
 </table>
 <div class="ex-block"><div class="ex-label">Worked example</div>
-<p>Sample 1: \\(n_1=100\\), \\(x_1=40\\). Sample 2: \\(n_2=120\\), \\(x_2=36\\). Test \\(H_0 \\colon p_1 = p_2\\) vs \\(H_1 \\colon p_1 \\ne p_2\\).</p>
-<p><strong>Solution:</strong> \\(\\hat{p}_1=0.40\\), \\(\\hat{p}_2=0.30\\). Pooled \\(\\hat{p} = \\dfrac{40+36}{100+120} = \\dfrac{76}{220}\\approx0.3455\\). \\(SE_{pool} = \\sqrt{0.3455(0.6545)\\left(\\frac{1}{100}+\\frac{1}{120}\\right)} = \\sqrt{0.2261\\times0.01833}\\approx\\sqrt{0.004145}\\approx0.0644\\). \\(z = \\dfrac{0.40-0.30}{0.0644}\\approx1.553\\) \u2014 not significant at \\(\\alpha=0.05\\) since \\(|z| < 1.96\\).</p></div>
+<p>Sample 1: \\(n_1=100\\), \\(x_1=40\\). Sample 2: \\(n_2=120\\), \\(x_2=36\\). Test \\(H_0:p_1=p_2\\) vs \\(H_1:p_1\\ne p_2\\).</p>
+<p><strong>Solution:</strong> \\(\\hat{p}_1=0.40\\), \\(\\hat{p}_2=0.30\\). Pooled \\(\\hat{p} = \\dfrac{40+36}{100+120} = \\dfrac{76}{220}\\approx0.3455\\). \\(SE_{pool} = \\sqrt{0.3455(0.6545)\\left(\\frac{1}{100}+\\frac{1}{120}\\right)} = \\sqrt{0.2261\\times0.01833}\\approx\\sqrt{0.004145}\\approx0.0644\\). \\(z = \\dfrac{0.40-0.30}{0.0644}\\approx1.553\\) \u2014 not significant at \\(\\alpha=0.05\\) since \\(|z|<1.96\\).</p></div>
 `,
 11: `
 <p><strong>Notation used in this topic:</strong></p>
@@ -1830,8 +1715,8 @@ const NOTES = {
 <p>\\(\\bar{x}=52\\), \\(s=9\\), \\(n=16\\). Build a 95% CI for \\(\\mu\\).</p>
 <p><strong>Solution:</strong> \\(df=15\\); \\(t_{0.025,15}\\approx2.131\\). \\(ME = 2.131\\times\\dfrac{9}{\\sqrt{16}} = 2.131\\times2.25\\approx4.795\\). CI: \\(52\\pm4.795 = (47.205, 56.795)\\).</p></div>
 <div class="ex-block"><div class="ex-label">Worked example (test)</div>
-<p>Test \\(H_0 \\colon \\mu = 50\\) vs \\(H_1 \\colon \\mu \\ne 50\\) using the same sample (\\(\\bar{x}=52\\), \\(s=9\\), \\(n=16\\)).</p>
-<p><strong>Solution:</strong> \\(t = \\dfrac{52-50}{9/\\sqrt{16}} = \\dfrac{2}{2.25}\\approx0.889\\). Since \\(|t| = 0.889\\) is far below \\(t_{0.025,15}=2.131\\), we fail to reject \\(H_0\\).</p></div>
+<p>Test \\(H_0:\\mu=50\\) vs \\(H_1:\\mu\\ne50\\) using the same sample (\\(\\bar{x}=52\\), \\(s=9\\), \\(n=16\\)).</p>
+<p><strong>Solution:</strong> \\(t = \\dfrac{52-50}{9/\\sqrt{16}} = \\dfrac{2}{2.25}\\approx0.889\\). Since \\(|t|=0.889\\) is far below \\(t_{0.025,15}=2.131\\), we fail to reject \\(H_0\\).</p></div>
 `,
 12: `
 <p><strong>Notation used in this topic:</strong></p>
@@ -1840,7 +1725,7 @@ const NOTES = {
 <tr><td>\\(df\\) (Welch)</td><td>computed from the Welch\u2013Satterthwaite formula, usually not a whole number \u2014 round down or to nearest integer</td></tr>
 </table>
 <div class="ex-block"><div class="ex-label">Worked example</div>
-<p>Group 1: \\(\\bar{x}_1=80\\), \\(s_1=10\\), \\(n_1=12\\). Group 2: \\(\\bar{x}_2=75\\), \\(s_2=6\\), \\(n_2=15\\). Test \\(H_0 \\colon \\mu_1 = \\mu_2\\).</p>
+<p>Group 1: \\(\\bar{x}_1=80\\), \\(s_1=10\\), \\(n_1=12\\). Group 2: \\(\\bar{x}_2=75\\), \\(s_2=6\\), \\(n_2=15\\). Test \\(H_0:\\mu_1=\\mu_2\\).</p>
 <p><strong>Solution:</strong> \\(SE = \\sqrt{\\dfrac{10^2}{12}+\\dfrac{6^2}{15}} = \\sqrt{8.333+2.4} = \\sqrt{10.733}\\approx3.276\\). \\(t = \\dfrac{80-75}{3.276}\\approx1.526\\). Welch df: numerator \\(=(8.333+2.4)^2=114.99\\); denominator \\(=\\dfrac{8.333^2}{11}+\\dfrac{2.4^2}{14} = 6.313+0.411=6.724\\); \\(df\\approx114.99/6.724\\approx17.1\\), rounds to 17. Compare \\(t\\approx1.526\\) to \\(t_{0.025,17}\\approx2.110\\): fail to reject \\(H_0\\).</p></div>
 `,
 13: `
@@ -1897,9 +1782,6 @@ const NOTES = {
 `
 };
 
-/* =========================================================================
-   APP RENDERING LOGIC
-   ========================================================================= */
 let currentTopicId = 1;
 let currentProblems = [];
 
@@ -1939,41 +1821,32 @@ function initApp(){
   });
   selectTopic(currentTopicId);
 
-  // ===== CHAT LOGIC =====
   const PROXY_URL = "https://script.google.com/macros/s/AKfycbxSRD8ayq-zRW4mFOtxYvwNAibpQDLHdh4_1xEl1Xs9HL7qUhIW4t8Y1yL9zi1BZF-L/exec";
   let conversationHistory = [];
 
-  // ===== FORMAT RESPONSE =====
   function formatResponse(text) {
   let html = text;
 
-  // ===== FIRST: Protect LaTeX from being modified =====
-  // Replace LaTeX delimiters with placeholders
   html = html.replace(/\\\(/g, 'MATHJAX_INLINE_START');
   html = html.replace(/\\\)/g, 'MATHJAX_INLINE_END');
   html = html.replace(/\\\[/g, 'MATHJAX_DISPLAY_START');
   html = html.replace(/\\\]/g, 'MATHJAX_DISPLAY_END');
   html = html.replace(/\$\$(.*?)\$\$/g, 'MATHJAX_DISPLAY_START$1MATHJAX_DISPLAY_END');
 
-  // ===== HEADERS =====
   html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
   html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
   html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
 
-  // ===== BOLD & ITALIC =====
   html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
 
-  // ===== BLOCKQUOTES =====
   html = html.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
   html = html.replace(/<\/blockquote>\s*<blockquote>/g, '<br>');
 
-  // ===== HORIZONTAL RULES =====
   html = html.replace(/^---$/gm, '<hr>');
   html = html.replace(/^___$/gm, '<hr>');
 
-  // ===== TABLES =====
   const tableRegex = /\|(.+)\|\s*\n\|[-: |]+\|\s*\n((?:\|.+\|\s*\n)+)/gm;
   html = html.replace(tableRegex, function(match, headerRow, dataRows) {
     const headers = headerRow.split('|').filter(cell => cell.trim() !== '');
@@ -1998,21 +1871,17 @@ function initApp(){
     return tableHtml;
   });
 
-  // ===== LISTS =====
   html = html.replace(/^[\*\-] (.*$)/gm, '<li>$1</li>');
   html = html.replace(/((?:<li>.*<\/li>\s*)+)/g, '<ul>$1</ul>');
 
   html = html.replace(/^\d+\. (.*$)/gm, '<li>$1</li>');
   html = html.replace(/((?:<li>.*<\/li>\s*)+)/g, '<ol>$1</ol>');
 
-  // ===== INLINE CODE =====
   html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
 
-  // ===== LINE BREAKS =====
   html = html.replace(/\n\n/g, '</p><p>');
   html = html.replace(/\n/g, '<br>');
 
-  // ===== WRAP IN PARAGRAPHS =====
   const blockTags = ['<h1>', '<h2>', '<h3>', '<h4>', '<blockquote>', '<hr>', '<ul>', '<ol>', '<table>', '<pre>'];
   let startsWithBlock = false;
   for (const tag of blockTags) {
@@ -2026,13 +1895,11 @@ function initApp(){
     html = '<p>' + html + '</p>';
   }
 
-  // ===== CLEAN UP =====
   html = html.replace(/<p><\/p>/g, '');
   html = html.replace(/<li><\/li>/g, '');
   html = html.replace(/<br><\/li>/g, '</li>');
   html = html.replace(/<blockquote><\/blockquote>/g, '');
 
-  // ===== RESTORE LATEX =====
   html = html.replace(/MATHJAX_INLINE_START/g, '\\(');
   html = html.replace(/MATHJAX_INLINE_END/g, '\\)');
   html = html.replace(/MATHJAX_DISPLAY_START/g, '\\[');
@@ -2040,8 +1907,6 @@ function initApp(){
 
   return html;
 }
-
-
 
   async function sendToTutor(studentMessage, studentId) {
     try {
