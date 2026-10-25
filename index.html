@@ -579,8 +579,13 @@ function gen4(){
 <p><strong>Step 3 — numerator.</strong> \\( P(D)\\,P(+ \\mid D) = (${prev})(${sens}) = ${rnd(prev*sens,5)} \\).</p>
 <p><strong>Step 4 — divide.</strong></p>
 <p>\\( P(D \\mid +) = \\dfrac{${rnd(prev*sens,5)}}{${rnd(pPos,5)}} \\approx ${rnd(pDisPos,4)} \\).</p>
-<p><strong>Sanity check.</strong> When prevalence is low (as it is here, ${(prev*100).toFixed(1)}%), a positive test usually still means "probably no disease" — the posterior \\( ${rnd(pDisPos,
+<p><strong>Sanity check.</strong> When prevalence is low (as it is here, ${(prev*100).toFixed(1)}%), a positive test usually still means "probably no disease" — the posterior \\( ${rnd(pDisPos,4)} \\) is often much smaller than the sensitivity. This counterintuitive result is the classic base-rate fallacy.</p>`
+  });
 
+  return probs;
+}
+
+function gen5(){
 function gen5(){
   const probs=[];
 
