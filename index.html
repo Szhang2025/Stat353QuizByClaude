@@ -586,7 +586,6 @@ function gen4(){
 }
 
 function gen5(){
-function gen5(){
   const probs=[];
 
   let xs=[0,1,2,3];
@@ -1149,33 +1148,7 @@ function gen11(){
   return probs;
 }
 
-function gen12(){
-  const probs=[];
-  function samp(){ return {xbar: ri(40,100), s: ri(5,20), n: ri(10,35)}; }
-  function welchDf(s1,s2){
-    let num = Math.pow(s1.s*s1.s/s1.n + s2.s*s2.s/s2.n, 2);
-    let den = Math.pow(s1.s*s1.s/s1.n,2)/(s1.n-1) + Math.pow(s2.s*s2.s/s2.n,2)/(s2.n-1);
-    return num/den;
-  }
-  let a=samp(), b=samp();
-  probs.push({q:`Sample 1: \\(\\bar{x}_1{=}${a.xbar}\\), \\(s_1{=}${a.s}\\), \\(n_1{=}${a.n}\\). Sample 2: \\(\\bar{x}_2{=}${b.xbar}\\), \\(s_2{=}${b.s}\\), \\(n_2{=}${b.n}\\). Find \\(\\bar{x}_1 - \\bar{x}_2\\).`, a: rnd(a.xbar-b.xbar,4), tol:0.05,
-    sol:`<p>\\(${a.xbar} - ${b.xbar} = ${rnd(a.xbar-b.xbar,4)}\\).</p>`});
-  let SE = Math.sqrt(a.s*a.s/a.n + b.s*b.s/b.n);
-  probs.push({q:`Using the same two samples, find the Welch SE.`, a: rnd(SE,4), tol:0.02,
-    sol:`<p>\\(SE = \\sqrt{${rnd(a.s*a.s/a.n,4)} + ${rnd(b.s*b.s/b.n,4)}} \\approx ${rnd(SE,4)}\\).</p>`});
-  let df = welchDf(a,b);
-  probs.push({q:`Using the same two samples, find the Welch–Satterthwaite df (nearest whole number).`, a: Math.round(df), tol:1,
-    sol:`<p>\\(df \\approx ${rnd(df,2)} \\to ${Math.round(df)}\\).</p>`});
-  let t4 = (a.xbar-b.xbar)/SE;
-  probs.push({q:`Using the same two samples, find the test statistic t for \\(H_0: \\mu_1 = \\mu_2\\).`, a: rnd(t4,4), tol:0.04,
-    sol:`<p>\\(t \\approx ${rnd(t4,4)}\\).</p>`});
-  let cl5=pick([0.90,0.95,0.99]);
-  let tcrit5 = jStat.studentt.inv(1-(1-cl5)/2, df);
-  let ME5 = tcrit5*SE;
-  probs.push({q:`Using the same two samples and df, find the margin of error for a ${cl5*100}% CI for \\(\\mu_1-\\mu_2\\).`, a: rnd(ME5,4), tol:0.15,
-    sol:`<p>\\(ME \\approx ${rnd(ME5,4)}\\).</p>`});
-  return probs;
-}
+
 
 function gen12(){
   const probs=[];
@@ -1261,6 +1234,7 @@ function gen12(){
 
   return probs;
 }
+    
 function gen13(){
   const probs=[];
 
