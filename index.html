@@ -2224,22 +2224,51 @@ const NOTES = {
    TOPICS — 15-topic layout. Cards read REVIEWS[n]; modal reads NOTES[n].
    ========================================================================= */
 const TOPICS = [
-  { id:1,  title:"1. Experiment, Sample Space, Events & Counting Methods",              type:"calc", gen:gen1,  review:REVIEWS[1] },
-  { id:2,  title:"2. Probability, Conditional Probability, Independence & Bayes' Formula", type:"calc", gen:gen2,  review:REVIEWS[2] },
-  { id:3,  title:"3. Discrete Random Variables: pmf, Mean, SD, Binomial, Geometric & Poisson", type:"calc", gen:gen5,  review:REVIEWS[5] },
-  { id:4,  title:"4. Continuous Random Variables: Mean, SD, Uniform, Normal & Exponential", type:"calc", gen:gen6,  review:REVIEWS[6] },
-  { id:5,  title:"5. Joint Distributions, Covariance & Correlation",                    type:"calc", gen:gen7,  review:REVIEWS[7] },
-  { id:6,  title:"6. Population & Sample, Descriptive Statistics & Charts",             type:"calc", gen:gen8,  review:REVIEWS[8] },
-  { id:7,  title:"7. Sampling Distribution, Bias & Standard Error",                      type:"calc", gen:gen7b, review:REVIEWS[7] },
-  { id:8,  title:"8. Confidence Interval & Hypothesis Testing for a Single Proportion",   type:"calc", gen:gen9,  review:REVIEWS[9] },
-  { id:9,  title:"9. CI & Hypothesis Testing for the Difference Between Two Proportions", type:"calc", gen:gen10, review:REVIEWS[10] },
-  { id:10, title:"10. CI & Hypothesis Testing for a Single Population Mean",              type:"calc", gen:gen11, review:REVIEWS[11] },
-  { id:11, title:"11. CI & Hypothesis Testing for the Difference Between Two Population Means", type:"calc", gen:gen12, review:REVIEWS[12] },
-  { id:12, title:"12. Chi-Square Tests: Goodness of Fit, Homogeneity & Independence",     type:"calc", gen:gen13, review:REVIEWS[13] },
-  { id:13, title:"13. One-Way ANOVA and Multiple Testing",                                type:"mc",   gen:gen14, review:REVIEWS[14] },
-  { id:14, title:"14. Simple & Multiple Linear Regression",                               type:"mc",   gen:gen15, review:REVIEWS[15] },
-  { id:15, title:"15. Control Charts: x̄, R & p Chart",                                    type:"mc",   gen:gen16, review:`<p class="rv-h">Control charts</p><ul><li>A <strong>control chart</strong> monitors a process over time by plotting a statistic against a center line and UCL/LCL bounds (typically \\(\\pm 3\\) standard deviations).</li><li>\\(\\bar{x}\\)-chart: \\(UCL/LCL = \\bar{\\bar{x}} \\pm A_2\\bar{R}\\). R-chart: \\(UCL = D_4\\bar{R}\\), \\(LCL = D_3\\bar{R}\\). p-chart: \\(\\bar{p} \\pm 3\\sqrt{\\bar{p}(1-\\bar{p})/n}\\), bounded to \\([0,1]\\).</li><li>Out-of-control signals: a point beyond the limits, or a nonrandom pattern such as a run or a trend.</li></ul>` }
+  { id:1,  title:"1. Experiment, Sample Space, Events & Counting Methods",
+    type:"calc", gen:gen1,  review:REVIEWS[1],  notes:NOTES[1] },
+  { id:2,  title:"2. Probability, Conditional Probability, Independence & Bayes' Formula",
+    type:"calc", gen:gen2,  review:REVIEWS[2],  notes:NOTES[2] },
+  { id:3,  title:"3. Discrete Random Variables: pmf, Mean, SD, Binomial, Geometric & Poisson",
+    type:"calc", gen:gen5,  review:REVIEWS[5],  notes:NOTES[5] },
+  { id:4,  title:"4. Continuous Random Variables: Mean, SD, Uniform, Normal & Exponential",
+    type:"calc", gen:gen6,  review:REVIEWS[6],  notes:NOTES[6] },
+  { id:5,  title:"5. Joint Distributions, Covariance & Correlation",
+    type:"calc", gen:gen7,  review:REVIEWS[7],  notes:NOTES[7] },
+  { id:6,  title:"6. Population & Sample, Descriptive Statistics & Charts",
+    type:"calc", gen:gen8,  review:REVIEWS[8],  notes:NOTES[8] },
+  { id:7,  title:"7. Sampling Distribution, Bias & Standard Error",
+    type:"calc", gen:gen7b, review:REVIEWS[7],  notes:NOTES[7] },
+  { id:8,  title:"8. Confidence Interval & Hypothesis Testing for a Single Proportion",
+    type:"calc", gen:gen9,  review:REVIEWS[9],  notes:NOTES[9] },
+  { id:9,  title:"9. CI & Hypothesis Testing for the Difference Between Two Proportions",
+    type:"calc", gen:gen10, review:REVIEWS[10], notes:NOTES[10] },
+  { id:10, title:"10. CI & Hypothesis Testing for a Single Population Mean",
+    type:"calc", gen:gen11, review:REVIEWS[11], notes:NOTES[11] },
+  { id:11, title:"11. CI & Hypothesis Testing for the Difference Between Two Population Means",
+    type:"calc", gen:gen12, review:REVIEWS[12], notes:NOTES[12] },
+  { id:12, title:"12. Chi-Square Tests: Goodness of Fit, Homogeneity & Independence",
+    type:"calc", gen:gen13, review:REVIEWS[13], notes:NOTES[13] },
+  { id:13, title:"13. One-Way ANOVA and Multiple Testing",
+    type:"mc",   gen:gen14, review:REVIEWS[14], notes:NOTES[14] },
+  { id:14, title:"14. Simple & Multiple Linear Regression",
+    type:"mc",   gen:gen15, review:REVIEWS[15], notes:NOTES[15] },
+  { id:15, title:"15. Control Charts: x̄, R & p Chart",
+    type:"mc",   gen:gen16,
+    review:`<p class="rv-h">Control charts</p><ul><li>A <strong>control chart</strong> monitors a process over time by plotting a statistic against a center line and UCL/LCL bounds (typically \\(\\pm 3\\) standard deviations).</li><li>\\(\\bar{x}\\)-chart: \\(UCL/LCL = \\bar{\\bar{x}} \\pm A_2\\bar{R}\\). R-chart: \\(UCL = D_4\\bar{R}\\), \\(LCL = D_3\\bar{R}\\). p-chart: \\(\\bar{p} \\pm 3\\sqrt{\\bar{p}(1-\\bar{p})/n}\\), bounded to \\([0,1]\\).</li><li>Out-of-control signals: a point beyond the limits, or a nonrandom pattern such as a run or a trend.</li></ul>`,
+    notes:`<p class="rv-h">Notation</p><table class="notation-table">
+<tr><td>\\(\\bar{\\bar{x}}\\)</td><td>grand mean (average of subgroup means)</td></tr>
+<tr><td>\\(\\bar{R}\\)</td><td>average subgroup range</td></tr>
+<tr><td>\\(A_2, D_3, D_4\\)</td><td>control-chart constants depending on subgroup size \\(n\\)</td></tr>
+<tr><td>\\(\\bar{p}\\)</td><td>overall proportion nonconforming</td></tr></table>
+<div class="ex-block"><div class="ex-label">Worked example (x-bar chart)</div>
+<p>\\(n = 5\\), \\(\\bar{\\bar{x}} = 50\\), \\(\\bar{R} = 6\\), \\(A_2 = 0.577\\). Find the control limits.</p>
+<p><strong>Solution:</strong> \\(UCL = 50 + 0.577(6) = 53.46\\), \\(LCL = 50 - 3.46 = 46.54\\).</p></div>
+<div class="ex-block"><div class="ex-label">Worked example (p-chart)</div>
+<p>\\(n = 100\\), \\(\\bar{p} = 0.04\\). Find the control limits.</p>
+<p><strong>Solution:</strong> \\(\\sigma_{\\hat p} = \\sqrt{0.04 \\cdot 0.96 / 100} \\approx 0.0196\\). \\(UCL = 0.04 + 3(0.0196) \\approx 0.0988\\), \\(LCL = \\max(0, 0.04 - 0.0588) = 0\\).</p></div>` }
 ];
+
+    
 
 /* =========================================================================
    APP RENDERING
@@ -2251,7 +2280,7 @@ function openExamplesModal(){
   const topic = TOPICS.find(t => t.id === currentTopicId);
   document.getElementById('modalTitle').textContent = topic.title;
   const body = document.getElementById('modalBody');
-  body.innerHTML = (NOTES[topic.id] || '<p>No extra examples yet for this topic.</p>');
+  body.innerHTML = (topic.notes || '<p>No extra examples yet for this topic.</p>');
   const overlay = document.getElementById('modalOverlay');
   overlay.classList.add('open');
   typesetMath(body);
