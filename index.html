@@ -1626,6 +1626,16 @@ function gen14(){
 function gen15(){
   const probs=[];
 
+  const CONTROL_CONSTANTS = {
+  2:{A2:1.880,D3:0,D4:3.267},
+  3:{A2:1.023,D3:0,D4:2.574},
+  4:{A2:0.729,D3:0,D4:2.282},
+  5:{A2:0.577,D3:0,D4:2.114},
+  6:{A2:0.483,D3:0,D4:2.004},
+  7:{A2:0.419,D3:0.076,D4:1.924},
+  8:{A2:0.373,D3:0.136,D4:1.864}
+};
+  
   // ---- P1: x-bar chart UCL ----
   let n=pick([2,3,4,5,6]);
   let xbarbar=ri(40,100), Rbar=ri(3,15);
@@ -2076,15 +2086,6 @@ const TOPICS = [
 let currentTopicId = 1;
 let currentProblems = [];
 
-function openExamplesModal(){
-  const topic = TOPICS.find(t => t.id === currentTopicId);
-  document.getElementById('modalTitle').textContent = topic.title;
-  const body = document.getElementById('modalBody');
-  body.innerHTML = (topic.notes || '<p>No extra examples yet for this topic.</p>');
-  const overlay = document.getElementById('modalOverlay');
-  overlay.classList.add('open');
-  typesetMath(body);
-}
 function closeExamplesModal(){
   document.getElementById('modalOverlay').classList.remove('open');
 }
@@ -2102,7 +2103,6 @@ function initApp(){
     nav.appendChild(b);
   });
   document.getElementById('regenBtn').addEventListener('click', () => renderProblems());
-  document.getElementById('examplesBtn').addEventListener('click', openExamplesModal);
   document.getElementById('modalClose').addEventListener('click', closeExamplesModal);
   document.getElementById('modalOverlay').addEventListener('click', (e) => {
     if(e.target.id === 'modalOverlay') closeExamplesModal();
