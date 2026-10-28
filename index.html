@@ -432,14 +432,6 @@ function gen2(){
 <p><strong>Sanity check.</strong> The three category probabilities should add to 1. \\( \\tfrac{${counts[0]}}{${total}} + \\tfrac{${counts[1]}}{${total}} + \\tfrac{${counts[2]}}{${total}} = 1 \\).</p>`
   });
 
-  return probs;
-}
-
-   
-
-function gen2(){
-  const probs=[];
-
   let pA=rf(0.15,0.4,2), pB=rf(0.15,0.4,2);
   probs.push({
     q:`Events A and B are disjoint (mutually exclusive), with \\(P(A) = ${pA}\\) and \\(P(B) = ${pB}\\). Find \\(P(A \\cup B)\\).`,
