@@ -435,7 +435,9 @@ function gen2(){
   return probs;
 }
 
-function gen3(){
+   
+
+function gen2(){
   const probs=[];
 
   let pA=rf(0.15,0.4,2), pB=rf(0.15,0.4,2);
@@ -497,13 +499,7 @@ function gen3(){
 <p><strong>Sanity check.</strong> \\( P(D) \\) must be between 0 and 1. Our result ${pD} is positive and less than 1 ✓.</p>`
   });
 
-  return probs;
-}
-
-function gen4(){
-  const probs=[];
-
-  function machineScenario(){
+function machineScenario(){
     let w1=ri(25,40), w2=ri(25,40), w3=100-w1-w2;
     if(w3<15){w3=20;w1=40;w2=40;}
     let d1=rf(0.01,0.04,3), d2=rf(0.02,0.05,3), d3=rf(0.03,0.07,3);
@@ -580,9 +576,12 @@ function gen4(){
   });
 
   return probs;
-}
+} 
 
-function gen5(){
+
+
+
+function gen3(){
   const probs=[];
 
   let xs=[0,1,2,3];
@@ -672,8 +671,9 @@ function gen5(){
   });
 
   return probs;
-}
-function gen6(){
+} 
+
+function gen4(){
   const probs=[];
 
   let a=ri(0,5), b=a+ri(8,15);
@@ -764,8 +764,10 @@ function gen6(){
   });
 
   return probs;
-}
-function gen7(){
+}    
+    
+
+function gen5(){
   const probs=[];
 
   function buildTable(){
@@ -839,7 +841,7 @@ function gen7(){
 
   return probs;
 }
-function gen8(){
+function gen6(){
   const probs=[];
 
   let n=ri(7,9);
@@ -909,7 +911,99 @@ function gen8(){
   return probs;
 }
 
-function gen9(){
+function gen7(){
+  const probs=[];
+
+  // ---- P1: SE of the sample mean ----
+  let sigma=ri(4,15), n=ri(9,64);
+  let SE=rnd(sigma/Math.sqrt(n),4);
+  probs.push({
+    q:`A population has standard deviation \\(\\sigma = ${sigma}\\). For a random sample of size \\(n = ${n}\\), find the standard error of the sample mean, \\(SE = \\sigma/\\sqrt{n}\\).`,
+    a: SE, tol:0.02,
+    sol:`<p><strong>Step 1 — what is the standard error?</strong> The standard error of the sample mean is the standard deviation of the <em>sampling distribution</em> of \\( \\bar{x} \\) — it measures how much \\( \\bar{x} \\) varies from sample to sample.</p>
+<p><strong>Step 2 — the formula.</strong> For a random sample of size \\( n \\) from a population with standard deviation \\( \\sigma \\),</p>
+<p>\\( SE(\\bar{x}) = \\dfrac{\\sigma}{\\sqrt{n}} \\).</p>
+<p>Note it uses the <em>population</em> SD \\( \\sigma \\), not the sample SD — this is the theoretical standard error. In practice, when \\( \\sigma \\) is unknown, we substitute \\( s \\) to get the <em>estimated</em> standard error.</p>
+<p><strong>Step 3 — plug in.</strong></p>
+<p>\\( \\sqrt{n} = \\sqrt{${n}} \\approx ${rnd(Math.sqrt(n),4)} \\).</p>
+<p>\\( SE = \\dfrac{${sigma}}{${rnd(Math.sqrt(n),4)}} \\approx ${SE} \\).</p>
+<p><strong>Sanity check.</strong> The SE must be smaller than the population SD \\( \\sigma = ${sigma} \\), because we are dividing by \\( \\sqrt{n} > 1 \\). Here \\( ${SE} < ${sigma} \\) ✓. Also, the SE shrinks as \\( n \\) grows — a larger sample gives a more precise estimate of the mean.</p>`
+  });
+
+  // ---- P2: SE shrinks when n quadruples ----
+  let sigma2=ri(4,12), n2=pick([9,16,25,36]);
+  let SE_old=rnd(sigma2/Math.sqrt(n2),4);
+  let SE_new=rnd(sigma2/Math.sqrt(4*n2),4);
+  probs.push({
+    q:`A sample of size \\(n = ${n2}\\) has \\(SE = ${SE_old}\\). If the sample size quadruples to \\(n = ${4*n2}\\) (all else equal), what is the new standard error?`,
+    a: SE_new, tol:0.01,
+    sol:`<p><strong>Step 1 — how does SE depend on \\( n \\)?</strong> From \\( SE = \\dfrac{\\sigma}{\\sqrt{n}} \\), we see the standard error is proportional to \\( 1/\\sqrt{n} \\).</p>
+<p><strong>Step 2 — what happens when \\( n \\) quadruples?</strong> Replace \\( n \\) with \\( 4n \\):</p>
+<p>\\( SE_{\\text{new}} = \\dfrac{\\sigma}{\\sqrt{4n}} = \\dfrac{\\sigma}{2\\sqrt{n}} = \\dfrac{1}{2} \\cdot \\dfrac{\\sigma}{\\sqrt{n}} = \\dfrac{SE_{\\text{old}}}{2} \\).</p>
+<p>So <strong>quadrupling \\( n \\) halves the standard error</strong>.</p>
+<p><strong>Step 3 — compute the new SE.</strong></p>
+<p>\\( SE_{\\text{new}} = \\dfrac{${SE_old}}{2} = ${SE_new} \\).</p>
+<p><strong>Why not "divide by 4"?</strong> Because the SE depends on \\( \\sqrt{n} \\), not \\( n \\) directly. To halve the SE you must quadruple the sample size; to reduce SE by a factor of 4 you'd need 16× the sample. This is the well-known "square-root law" for the cost of precision in sampling.</p>`
+  });
+
+  // ---- P3: SE of the sample proportion ----
+  let p=rf(0.15,0.65,2), n3=ri(50,400);
+  let SE_p=rnd(Math.sqrt(p*(1-p)/n3),4);
+  probs.push({
+    q:`A sample of size \\(n = ${n3}\\) is drawn from a population with proportion \\(p = ${p}\\). Find the standard error of the sample proportion, \\(SE = \\sqrt{p(1-p)/n}\\).`,
+    a: SE_p, tol:0.005,
+    sol:`<p><strong>Step 1 — what is \\( \\hat{p} \\) and its sampling distribution?</strong> \\( \\hat{p} \\) is the sample proportion. When the sample is random and large enough, \\( \\hat{p} \\) is approximately normally distributed with mean \\( p \\) and standard deviation</p>
+<p>\\( SE(\\hat{p}) = \\sqrt{\\dfrac{p(1-p)}{n}} \\).</p>
+<p><strong>Step 2 — plug in.</strong> \\( p = ${p} \\), so \\( 1 - p = ${rnd(1-p,2)} \\).</p>
+<p>\\( p(1 - p) = ${p} \\times ${rnd(1-p,2)} = ${rnd(p*(1-p),4)} \\).</p>
+<p>\\( \\dfrac{p(1-p)}{n} = \\dfrac{${rnd(p*(1-p),4)}}{${n3}} = ${rnd(p*(1-p)/n3,6)} \\).</p>
+<p>\\( SE = \\sqrt{${rnd(p*(1-p)/n3,6)}} \\approx ${SE_p} \\).</p>
+<p><strong>Sanity check.</strong> The SE of a proportion is largest when \\( p = 0.5 \\) (worst case \\( \\sqrt{0.25/n} = 0.5/\\sqrt{n} \\)). Here \\( p = ${p} \\), so the SE should be at or below the worst-case value \\( 0.5/\\sqrt{${n3}} \\approx ${rnd(0.5/Math.sqrt(n3),4)} \\). \\( ${SE_p} \\le ${rnd(0.5/Math.sqrt(n3),4)} \\) ✓.</p>`
+  });
+
+  // ---- P4: unbiased estimator ----
+  let mc4=buildMC(`Its expected value equals the true value of the parameter it estimates`, [
+    `It always produces the correct value from every single sample`,
+    `Its variance is zero`,
+    `It is calculated from the entire population`
+  ]);
+  probs.push({
+    q:`An estimator is called "unbiased" if:`,
+    choices:mc4.choices, correct:mc4.correct,
+    sol:`<p><strong>Step 1 — what does "unbiased" mean?</strong> An estimator \\( \\hat{\\theta} \\) of a parameter \\( \\theta \\) is unbiased if its <em>expected value</em> equals \\( \\theta \\):</p>
+<p>\\( E(\\hat{\\theta}) = \\theta \\).</p>
+<p>The word "expected" is key: unbiasedness is a property of the estimator's sampling distribution over many samples, not of any single sample.</p>
+<p><strong>Step 2 — why the other answers are wrong.</strong></p>
+<p>— "It always produces the correct value from every single sample" would require zero variance and perfect accuracy — no realistic estimator achieves this. Bias is about <em>average</em> accuracy, not per-sample accuracy.</p>
+<p>— "Its variance is zero" describes a <em>degenerate</em> estimator (one that always outputs the same value); it says nothing about whether that value equals the parameter.</p>
+<p>— "Calculated from the entire population" would make the estimator a <em>parameter</em>, not an estimator; estimation is only relevant when we have a sample.</p>
+<p><strong>Step 3 — example.</strong> The sample mean \\( \\bar{x} \\) is an unbiased estimator of the population mean \\( \\mu \\) because \\( E(\\bar{x}) = \\mu \\). But \\( \\bar{x} \\) still varies from sample to sample — unbiasedness says nothing about variability, only about the long-run center of its sampling distribution.</p>`
+  });
+
+  // ---- P5: Central Limit Theorem ----
+  let mc5=buildMC(`Approximately normal, regardless of the shape of the population distribution`, [
+    `Exactly the same shape as the population distribution`,
+    `Strongly skewed in the opposite direction`,
+    `Uniform on \\([0,1]\\)`
+  ]);
+  probs.push({
+    q:`According to the Central Limit Theorem, for a sufficiently large sample size \\(n\\), the sampling distribution of the sample mean \\(\\bar{x}\\) is:`,
+    choices:mc5.choices, correct:mc5.correct,
+    sol:`<p><strong>Step 1 — what does the Central Limit Theorem (CLT) say?</strong> For a large enough sample size \\( n \\), the sampling distribution of \\( \\bar{x} \\) is <em>approximately normal</em> with mean \\( \\mu \\) and standard deviation \\( \\sigma/\\sqrt{n} \\), <strong>regardless of the shape of the underlying population</strong>.</p>
+<p><strong>Step 2 — why is this remarkable?</strong> Individual observations might come from a strongly skewed, bimodal, or otherwise non-normal population. Yet their sample average tends toward normality as \\( n \\) grows. This is why many statistical procedures that assume normality (t-tests, z-tests, confidence intervals for means) work well in practice even when the raw data are not normal — provided \\( n \\) is reasonably large.</p>
+<p><strong>Step 3 — how large is "sufficiently large"?</strong> Depends on the shape of the population. For roughly symmetric populations, \\( n \\ge 30 \\) is usually enough. For heavily skewed populations, you might need \\( n \\ge 50 \\) or more.</p>
+<p><strong>Why the other answers are wrong:</strong></p>
+<p>— "Same shape as the population" would be true only for \\( n = 1 \\); the whole point of the CLT is that shape converges to normal.</p>
+<p>— "Skewed in the opposite direction" is incorrect — averaging reduces skew, not reverses it.</p>
+<p>— "Uniform on \\( [0,1] \\)" would only apply if the population itself were Uniform and \\( n = 1 \\); averaging smooths toward normal, not Uniform.</p>`
+  });
+
+  return probs;
+}
+
+    
+
+function gen8(){
   const probs=[];
 
   let n=ri(80,300), x=ri(Math.round(n*0.2),Math.round(n*0.7));
@@ -988,7 +1082,7 @@ function gen9(){
 
   return probs;
 }
-function gen10(){
+function gen9(){
   const probs=[];
   function samp(){ let n=ri(80,250); let x=ri(Math.round(n*0.2),Math.round(n*0.7)); return {n,x,p:x/n}; }
 
@@ -1065,7 +1159,7 @@ function gen10(){
   return probs;
 }
 
-function gen11(){
+function gen10(){
   const probs=[];
   function samp(){ return {xbar: ri(40,100), s: ri(5,20), n: ri(10,40)}; }
 
@@ -1147,7 +1241,7 @@ function gen11(){
 
 
 
-function gen12(){
+function gen11(){
   const probs=[];
   function samp(){ return {xbar: ri(40,100), s: ri(5,20), n: ri(10,35)}; }
   function welchDf(s1,s2){
@@ -1232,7 +1326,7 @@ function gen12(){
   return probs;
 }
     
-function gen13(){
+function gen12(){
   const probs=[];
 
   // ---- Goodness-of-fit (P1, P2) ----
@@ -1338,7 +1432,7 @@ function gen13(){
 
   return probs;
 }
-function gen14(){
+function gen13(){
   const probs=[];
 
   // ---- P1: degrees of freedom ----
@@ -1435,7 +1529,7 @@ function gen14(){
   return probs;
 }
 
-function gen15(){
+function gen14(){
   const probs=[];
 
   // ---- P1: predict y from fitted line ----
@@ -1537,7 +1631,7 @@ function gen15(){
   return probs;
 }
 
-function gen16(){
+function gen15(){
   const probs=[];
 
   // ---- P1: x-bar chart UCL ----
@@ -1647,97 +1741,6 @@ function gen16(){
 
   return probs;
 }
-
-
-function gen7b(){
-  const probs=[];
-
-  // ---- P1: SE of the sample mean ----
-  let sigma=ri(4,15), n=ri(9,64);
-  let SE=rnd(sigma/Math.sqrt(n),4);
-  probs.push({
-    q:`A population has standard deviation \\(\\sigma = ${sigma}\\). For a random sample of size \\(n = ${n}\\), find the standard error of the sample mean, \\(SE = \\sigma/\\sqrt{n}\\).`,
-    a: SE, tol:0.02,
-    sol:`<p><strong>Step 1 — what is the standard error?</strong> The standard error of the sample mean is the standard deviation of the <em>sampling distribution</em> of \\( \\bar{x} \\) — it measures how much \\( \\bar{x} \\) varies from sample to sample.</p>
-<p><strong>Step 2 — the formula.</strong> For a random sample of size \\( n \\) from a population with standard deviation \\( \\sigma \\),</p>
-<p>\\( SE(\\bar{x}) = \\dfrac{\\sigma}{\\sqrt{n}} \\).</p>
-<p>Note it uses the <em>population</em> SD \\( \\sigma \\), not the sample SD — this is the theoretical standard error. In practice, when \\( \\sigma \\) is unknown, we substitute \\( s \\) to get the <em>estimated</em> standard error.</p>
-<p><strong>Step 3 — plug in.</strong></p>
-<p>\\( \\sqrt{n} = \\sqrt{${n}} \\approx ${rnd(Math.sqrt(n),4)} \\).</p>
-<p>\\( SE = \\dfrac{${sigma}}{${rnd(Math.sqrt(n),4)}} \\approx ${SE} \\).</p>
-<p><strong>Sanity check.</strong> The SE must be smaller than the population SD \\( \\sigma = ${sigma} \\), because we are dividing by \\( \\sqrt{n} > 1 \\). Here \\( ${SE} < ${sigma} \\) ✓. Also, the SE shrinks as \\( n \\) grows — a larger sample gives a more precise estimate of the mean.</p>`
-  });
-
-  // ---- P2: SE shrinks when n quadruples ----
-  let sigma2=ri(4,12), n2=pick([9,16,25,36]);
-  let SE_old=rnd(sigma2/Math.sqrt(n2),4);
-  let SE_new=rnd(sigma2/Math.sqrt(4*n2),4);
-  probs.push({
-    q:`A sample of size \\(n = ${n2}\\) has \\(SE = ${SE_old}\\). If the sample size quadruples to \\(n = ${4*n2}\\) (all else equal), what is the new standard error?`,
-    a: SE_new, tol:0.01,
-    sol:`<p><strong>Step 1 — how does SE depend on \\( n \\)?</strong> From \\( SE = \\dfrac{\\sigma}{\\sqrt{n}} \\), we see the standard error is proportional to \\( 1/\\sqrt{n} \\).</p>
-<p><strong>Step 2 — what happens when \\( n \\) quadruples?</strong> Replace \\( n \\) with \\( 4n \\):</p>
-<p>\\( SE_{\\text{new}} = \\dfrac{\\sigma}{\\sqrt{4n}} = \\dfrac{\\sigma}{2\\sqrt{n}} = \\dfrac{1}{2} \\cdot \\dfrac{\\sigma}{\\sqrt{n}} = \\dfrac{SE_{\\text{old}}}{2} \\).</p>
-<p>So <strong>quadrupling \\( n \\) halves the standard error</strong>.</p>
-<p><strong>Step 3 — compute the new SE.</strong></p>
-<p>\\( SE_{\\text{new}} = \\dfrac{${SE_old}}{2} = ${SE_new} \\).</p>
-<p><strong>Why not "divide by 4"?</strong> Because the SE depends on \\( \\sqrt{n} \\), not \\( n \\) directly. To halve the SE you must quadruple the sample size; to reduce SE by a factor of 4 you'd need 16× the sample. This is the well-known "square-root law" for the cost of precision in sampling.</p>`
-  });
-
-  // ---- P3: SE of the sample proportion ----
-  let p=rf(0.15,0.65,2), n3=ri(50,400);
-  let SE_p=rnd(Math.sqrt(p*(1-p)/n3),4);
-  probs.push({
-    q:`A sample of size \\(n = ${n3}\\) is drawn from a population with proportion \\(p = ${p}\\). Find the standard error of the sample proportion, \\(SE = \\sqrt{p(1-p)/n}\\).`,
-    a: SE_p, tol:0.005,
-    sol:`<p><strong>Step 1 — what is \\( \\hat{p} \\) and its sampling distribution?</strong> \\( \\hat{p} \\) is the sample proportion. When the sample is random and large enough, \\( \\hat{p} \\) is approximately normally distributed with mean \\( p \\) and standard deviation</p>
-<p>\\( SE(\\hat{p}) = \\sqrt{\\dfrac{p(1-p)}{n}} \\).</p>
-<p><strong>Step 2 — plug in.</strong> \\( p = ${p} \\), so \\( 1 - p = ${rnd(1-p,2)} \\).</p>
-<p>\\( p(1 - p) = ${p} \\times ${rnd(1-p,2)} = ${rnd(p*(1-p),4)} \\).</p>
-<p>\\( \\dfrac{p(1-p)}{n} = \\dfrac{${rnd(p*(1-p),4)}}{${n3}} = ${rnd(p*(1-p)/n3,6)} \\).</p>
-<p>\\( SE = \\sqrt{${rnd(p*(1-p)/n3,6)}} \\approx ${SE_p} \\).</p>
-<p><strong>Sanity check.</strong> The SE of a proportion is largest when \\( p = 0.5 \\) (worst case \\( \\sqrt{0.25/n} = 0.5/\\sqrt{n} \\)). Here \\( p = ${p} \\), so the SE should be at or below the worst-case value \\( 0.5/\\sqrt{${n3}} \\approx ${rnd(0.5/Math.sqrt(n3),4)} \\). \\( ${SE_p} \\le ${rnd(0.5/Math.sqrt(n3),4)} \\) ✓.</p>`
-  });
-
-  // ---- P4: unbiased estimator ----
-  let mc4=buildMC(`Its expected value equals the true value of the parameter it estimates`, [
-    `It always produces the correct value from every single sample`,
-    `Its variance is zero`,
-    `It is calculated from the entire population`
-  ]);
-  probs.push({
-    q:`An estimator is called "unbiased" if:`,
-    choices:mc4.choices, correct:mc4.correct,
-    sol:`<p><strong>Step 1 — what does "unbiased" mean?</strong> An estimator \\( \\hat{\\theta} \\) of a parameter \\( \\theta \\) is unbiased if its <em>expected value</em> equals \\( \\theta \\):</p>
-<p>\\( E(\\hat{\\theta}) = \\theta \\).</p>
-<p>The word "expected" is key: unbiasedness is a property of the estimator's sampling distribution over many samples, not of any single sample.</p>
-<p><strong>Step 2 — why the other answers are wrong.</strong></p>
-<p>— "It always produces the correct value from every single sample" would require zero variance and perfect accuracy — no realistic estimator achieves this. Bias is about <em>average</em> accuracy, not per-sample accuracy.</p>
-<p>— "Its variance is zero" describes a <em>degenerate</em> estimator (one that always outputs the same value); it says nothing about whether that value equals the parameter.</p>
-<p>— "Calculated from the entire population" would make the estimator a <em>parameter</em>, not an estimator; estimation is only relevant when we have a sample.</p>
-<p><strong>Step 3 — example.</strong> The sample mean \\( \\bar{x} \\) is an unbiased estimator of the population mean \\( \\mu \\) because \\( E(\\bar{x}) = \\mu \\). But \\( \\bar{x} \\) still varies from sample to sample — unbiasedness says nothing about variability, only about the long-run center of its sampling distribution.</p>`
-  });
-
-  // ---- P5: Central Limit Theorem ----
-  let mc5=buildMC(`Approximately normal, regardless of the shape of the population distribution`, [
-    `Exactly the same shape as the population distribution`,
-    `Strongly skewed in the opposite direction`,
-    `Uniform on \\([0,1]\\)`
-  ]);
-  probs.push({
-    q:`According to the Central Limit Theorem, for a sufficiently large sample size \\(n\\), the sampling distribution of the sample mean \\(\\bar{x}\\) is:`,
-    choices:mc5.choices, correct:mc5.correct,
-    sol:`<p><strong>Step 1 — what does the Central Limit Theorem (CLT) say?</strong> For a large enough sample size \\( n \\), the sampling distribution of \\( \\bar{x} \\) is <em>approximately normal</em> with mean \\( \\mu \\) and standard deviation \\( \\sigma/\\sqrt{n} \\), <strong>regardless of the shape of the underlying population</strong>.</p>
-<p><strong>Step 2 — why is this remarkable?</strong> Individual observations might come from a strongly skewed, bimodal, or otherwise non-normal population. Yet their sample average tends toward normality as \\( n \\) grows. This is why many statistical procedures that assume normality (t-tests, z-tests, confidence intervals for means) work well in practice even when the raw data are not normal — provided \\( n \\) is reasonably large.</p>
-<p><strong>Step 3 — how large is "sufficiently large"?</strong> Depends on the shape of the population. For roughly symmetric populations, \\( n \\ge 30 \\) is usually enough. For heavily skewed populations, you might need \\( n \\ge 50 \\) or more.</p>
-<p><strong>Why the other answers are wrong:</strong></p>
-<p>— "Same shape as the population" would be true only for \\( n = 1 \\); the whole point of the CLT is that shape converges to normal.</p>
-<p>— "Skewed in the opposite direction" is incorrect — averaging reduces skew, not reverses it.</p>
-<p>— "Uniform on \\( [0,1] \\)" would only apply if the population itself were Uniform and \\( n = 1 \\); averaging smooths toward normal, not Uniform.</p>`
-  });
-
-  return probs;
-}
     
     
 
@@ -1773,8 +1776,7 @@ const REVIEWS = {
 <li>Every event \\(A\\) has a <strong>complement</strong> \\(A'\\), the event that \\(A\\) does not occur; because \\(A\\) and \\(A'\\) together cover every outcome without overlapping, the <strong>complement rule</strong> states \\(P(A') = 1 - P(A)\\).</li>
 <li>The <strong>general addition rule</strong> gives the probability that at least one of two events occurs: \\(P(A \\cup B) = P(A) + P(B) - P(A \\cap B)\\).</li>
 <li>The term \\(P(A \\cap B)\\) is subtracted because outcomes belonging to both events are counted once in \\(P(A)\\) and once again in \\(P(B)\\), so they would otherwise be counted twice.</li>
-</ul>`,
-  3: `
+</ul>
 <p class="rv-h">Disjoint events</p>
 <ul>
 <li>Two events \\(A\\) and \\(B\\) are <strong>disjoint</strong> (or mutually exclusive) when they cannot occur at the same time, that is, \\(A \\cap B = \\varnothing\\) and therefore \\(P(A \\cap B) = 0\\).</li>
@@ -1790,8 +1792,7 @@ const REVIEWS = {
 <p class="rv-h">Do not confuse the two ideas</p>
 <ul>
 <li>Disjoint events with nonzero probabilities are <em>never</em> independent: if \\(A\\) occurs, then \\(B\\) cannot occur, so knowing about \\(A\\) changes what we know about \\(B\\).</li>
-</ul>`,
-  4: `
+</ul>`
 <p class="rv-h">Conditional probability</p>
 <ul>
 <li>For events \\(A\\) and \\(B\\) with \\(P(B) > 0\\), the <strong>conditional probability</strong> of \\(A\\) given \\(B\\) is \\(P(A \\mid B) = \\dfrac{P(A \\cap B)}{P(B)}\\), the probability that \\(A\\) occurs once we know that \\(B\\) has occurred.</li>
@@ -1808,7 +1809,7 @@ const REVIEWS = {
 <li>The denominator of Bayes' formula is exactly the total probability \\(P(A)\\), so the two formulas are normally used together: first compute \\(P(A)\\), then divide the contribution of \\(B_j\\) by it.</li>
 <li>In a diagnostic test, <strong>sensitivity</strong> is \\(P(\\text{positive} \\mid \\text{disease})\\) and <strong>specificity</strong> is \\(P(\\text{negative} \\mid \\text{no disease})\\); Bayes' formula combines these with the disease prevalence to find the probability of disease given a positive result.</li>
 </ul>`,
-  5: `
+  3: `
 <p class="rv-h">Distributions of a discrete random variable</p>
 <ul>
 <li>A <strong>random variable</strong> is a numerical quantity whose value is determined by the outcome of a random experiment, and it is <strong>discrete</strong> when it takes a countable set of values.</li>
@@ -1827,7 +1828,7 @@ const REVIEWS = {
 <li>A <strong>Geometric\\((p)\\)</strong> random variable is the number of the trial on which the first success occurs, when independent trials each have success probability \\(p\\); its PMF is \\(P(X=k) = (1-p)^{k-1}p\\) for \\(k = 1, 2, \\ldots\\), its mean is \\(1/p\\), and its variance is \\((1-p)/p^2\\).</li>
 <li>A <strong>Poisson\\((\\lambda)\\)</strong> random variable counts the number of occurrences of a rare event in a fixed interval of time or space, where \\(\\lambda\\) is the average number of occurrences in that interval; its PMF is \\(P(X=k) = \\dfrac{e^{-\\lambda}\\lambda^k}{k!}\\) for \\(k = 0, 1, 2, \\ldots\\), and both its mean and its variance equal \\(\\lambda\\).</li>
 </ul>`,
-  6: `
+  4: `
 <p class="rv-h">Density functions</p>
 <ul>
 <li>A <strong>continuous random variable</strong> \\(X\\) can take any value in an interval of real numbers, and its distribution is described by a <strong>density function</strong> \\(f(x)\\) that is never negative and has total area 1 under its curve.</li>
@@ -1845,24 +1846,24 @@ const REVIEWS = {
 <li>To find a Normal probability, first <strong>standardize</strong> the value with the z-score \\(z = \\dfrac{x-\\mu}{\\sigma}\\), which counts how many standard deviations \\(x\\) lies from the mean.</li>
 <li>Then use the standard normal table or CDF to find \\(P(Z < z)\\), which equals \\(P(X < x)\\); for the upper tail use \\(P(Z > z) = 1 - P(Z < z)\\).</li>
 </ul>`,
-  7: `
-<p class="rv-h">Sampling distribution</p>
+  5: `
+<p class="rv-h">Joint and marginal distributions</p>
 <ul>
-<li>A <strong>sampling distribution</strong> is the probability distribution of a statistic (such as \\(\\bar{x}\\) or \\(\\hat{p}\\)) computed from all possible random samples of a given size \\(n\\) from a population.</li>
-<li>The <strong>standard error</strong> is the standard deviation of that sampling distribution; it measures how much a statistic varies from sample to sample.</li>
-<li>For the sample mean, \\(SE = \\dfrac{\\sigma}{\\sqrt{n}}\\) (or \\(\\dfrac{s}{\\sqrt{n}}\\) when \\(\\sigma\\) is estimated from the sample); it decreases as \\(n\\) grows.</li>
-<li>For the sample proportion, \\(SE = \\sqrt{\\dfrac{p(1-p)}{n}}\\).</li>
+<li>The <strong>joint PMF</strong> of two discrete random variables \\(X\\) and \\(Y\\) is \\(p(x,y) = P(X=x, Y=y)\\), the probability of each pair of values; all joint probabilities sum to 1.</li>
+<li>The <strong>marginal distribution</strong> of \\(X\\) is obtained by adding the joint probabilities across all values of \\(Y\\), that is, \\(P(X=x) = \\sum_y p(x,y)\\); the marginal distribution of \\(Y\\) is \\(P(Y=y) = \\sum_x p(x,y)\\).</li>
+<li>The means \\(E(X)\\) and \\(E(Y)\\) and the variances \\(\\operatorname{Var}(X)\\) and \\(\\operatorname{Var}(Y)\\) are computed from the marginal distributions exactly as for a single discrete random variable.</li>
 </ul>
-<p class="rv-h">The Central Limit Theorem</p>
+<p class="rv-h">Covariance and correlation</p>
 <ul>
-<li>For a sufficiently large sample size, the sampling distribution of \\(\\bar{x}\\) is <strong>approximately normal</strong> with mean \\(\\mu\\) and standard deviation \\(\\sigma/\\sqrt{n}\\), regardless of the shape of the population.</li>
+<li>The <strong>covariance</strong> measures how \\(X\\) and \\(Y\\) vary together: \\(\\operatorname{Cov}(X,Y) = E(XY) - E(X)E(Y)\\), where \\(E(XY) = \\sum_x \\sum_y xy\\,p(x,y)\\).</li>
+<li>A positive covariance means that large values of \\(X\\) tend to go with large values of \\(Y\\), and a negative covariance means that large values of \\(X\\) tend to go with small values of \\(Y\\).</li>
+<li>The <strong>correlation coefficient</strong> \\(\\rho = \\dfrac{\\operatorname{Cov}(X,Y)}{SD(X)\\cdot SD(Y)}\\) rescales the covariance so that it always lies between \\(-1\\) and \\(1\\) and does not depend on the units of measurement.</li>
 </ul>
-<p class="rv-h">Bias and variability</p>
+<p class="rv-h">Independence</p>
 <ul>
-<li>An estimator is <strong>unbiased</strong> when \\(E(\\hat{\\theta}) = \\theta\\) \u2014 its values average to the true parameter over many samples. Unbiasedness says nothing about how <em>variable</em> the estimator is; an unbiased estimator can still have a large standard error.</li>
-<li><strong>Bias</strong> is systematic error (off-target on average), while <strong>variability</strong> is the spread of the estimator's values across samples. A good estimator is low on both.</li>
-</ul>`,
-  8: `
+<li>The variables \\(X\\) and \\(Y\\) are <strong>independent</strong> when \\(p(x,y) = P(X=x)\\,P(Y=y)\\) for every pair \\((x,y)\\); independent variables always have \\(\\operatorname{Cov}(X,Y) = 0\\), but a covariance of 0 does not guarantee independence.</li>
+</ul>`,  
+  6: `
 <p class="rv-h">Populations and samples</p>
 <ul>
 <li>A <strong>population</strong> is the entire group of individuals or items of interest, and a <strong>sample</strong> is the subset of the population that is actually observed.</li>
@@ -1881,7 +1882,25 @@ const REVIEWS = {
 <li>A <strong>boxplot</strong> displays the five-number summary; a common rule flags a value as a potential outlier when it lies more than \\(1.5 \\times IQR\\) below \\(Q_1\\) or above \\(Q_3\\).</li>
 <li>Bar charts and pie charts display categorical data, histograms and density plots display the shape of a numeric distribution, and scatterplots display the relationship between two numeric variables.</li>
 </ul>`,
-  9: `
+  7: `
+<p class="rv-h">Sampling distribution</p>
+<ul>
+<li>A <strong>sampling distribution</strong> is the probability distribution of a statistic (such as \\(\\bar{x}\\) or \\(\\hat{p}\\)) computed from all possible random samples of a given size \\(n\\) from a population.</li>
+<li>The <strong>standard error</strong> is the standard deviation of that sampling distribution; it measures how much a statistic varies from sample to sample.</li>
+<li>For the sample mean, \\(SE = \\dfrac{\\sigma}{\\sqrt{n}}\\) (or \\(\\dfrac{s}{\\sqrt{n}}\\) when \\(\\sigma\\) is estimated from the sample); it decreases as \\(n\\) grows.</li>
+<li>For the sample proportion, \\(SE = \\sqrt{\\dfrac{p(1-p)}{n}}\\).</li>
+</ul>
+<p class="rv-h">The Central Limit Theorem</p>
+<ul>
+<li>For a sufficiently large sample size, the sampling distribution of \\(\\bar{x}\\) is <strong>approximately normal</strong> with mean \\(\\mu\\) and standard deviation \\(\\sigma/\\sqrt{n}\\), regardless of the shape of the population.</li>
+</ul>
+<p class="rv-h">Bias and variability</p>
+<ul>
+<li>An estimator is <strong>unbiased</strong> when \\(E(\\hat{\\theta}) = \\theta\\) \u2014 its values average to the true parameter over many samples. Unbiasedness says nothing about how <em>variable</em> the estimator is; an unbiased estimator can still have a large standard error.</li>
+<li><strong>Bias</strong> is systematic error (off-target on average), while <strong>variability</strong> is the spread of the estimator's values across samples. A good estimator is low on both.</li>
+</ul>`,
+
+  8: `
 <p class="rv-h">Estimating a proportion</p>
 <ul>
 <li>When a random sample of size \\(n\\) contains \\(x\\) individuals with a characteristic of interest, the <strong>sample proportion</strong> \\(\\hat{p} = x/n\\) is a point estimate of the unknown population proportion \\(p\\).</li>
@@ -1897,7 +1916,7 @@ const REVIEWS = {
 <li>Compare the p-value with the significance level \\(\\alpha\\) (commonly 0.05): reject \\(H_0\\) when the p-value is at most \\(\\alpha\\), and otherwise fail to reject \\(H_0\\).</li>
 <li>These methods require a random sample that is large enough for the normal approximation to be reasonable, for example at least 10 successes and at least 10 failures.</li>
 </ul>`,
-  10: `
+  9: `
 <p class="rv-h">Estimating the difference</p>
 <ul>
 <li>Suppose independent random samples of sizes \\(n_1\\) and \\(n_2\\) contain \\(x_1\\) and \\(x_2\\) individuals with the characteristic; the sample proportions are \\(\\hat{p}_1 = x_1/n_1\\) and \\(\\hat{p}_2 = x_2/n_2\\).</li>
@@ -1912,7 +1931,7 @@ const REVIEWS = {
 <li>The test statistic is \\(z = \\dfrac{\\hat{p}_1 - \\hat{p}_2}{\\sqrt{\\hat{p}(1-\\hat{p})\\left(\\frac{1}{n_1} + \\frac{1}{n_2}\\right)}}\\), and the p-value is found from the standard normal distribution as in the one-sample case.</li>
 <li>Reject \\(H_0\\) when the p-value is at most the significance level \\(\\alpha\\); the methods require independent random samples with at least 10 successes and at least 10 failures in each sample for the normal approximation.</li>
 </ul>`,
-  11: `
+  10: `
 <p class="rv-h">Setting</p>
 <ul>
 <li>The population standard deviation \\(\\sigma\\) is never assumed to be known; inference about a population mean \\(\\mu\\) always uses the sample mean \\(\\bar{x}\\) and the sample standard deviation \\(s\\) computed from a random sample of size \\(n\\).</li>
@@ -1931,7 +1950,7 @@ const REVIEWS = {
 <li>The test statistic is \\(t = \\dfrac{\\bar{x} - \\mu_0}{s/\\sqrt{n}}\\), which follows a t-distribution with \\(n-1\\) degrees of freedom when \\(H_0\\) is true.</li>
 <li>Determine a p-value; reject \\(H_0\\) when the p-value is at most the significance level \\(\\alpha\\).</li>
 </ul>`,
-  12: `
+  11: `
 <p class="rv-h">Setting</p>
 <ul>
 <li>To compare the means \\(\\mu_1\\) and \\(\\mu_2\\) of two populations, we use independent random samples with sizes \\(n_1, n_2\\), means \\(\\bar{x}_1, \\bar{x}_2\\), and standard deviations \\(s_1, s_2\\); the population standard deviations are never assumed to be known or equal.</li>
@@ -1949,7 +1968,7 @@ const REVIEWS = {
 <li>To test \\(H_0: \\mu_1 = \\mu_2\\) against \\(H_1: \\mu_1 \\ne \\mu_2\\) (or a one-sided alternative), use \\(t = \\dfrac{\\bar{x}_1 - \\bar{x}_2}{SE}\\) with the Welch degrees of freedom.</li>
 <li>Reject \\(H_0\\) when the p-value is at most the significance level \\(\\alpha\\), or equivalently when \\(|t|\\) exceeds the t-critical value.</li>
 </ul>`,
-  13: `
+  12: `
 <p class="rv-h">The chi-square statistic</p>
 <ul>
 <li>Both chi-square tests compare <strong>observed counts</strong> \\(O\\) with the <strong>expected counts</strong> \\(E\\) that would occur if the null hypothesis were true, using the statistic \\(\\chi^2 = \\displaystyle\\sum \\dfrac{(O-E)^2}{E}\\), summed over all categories or cells.</li>
@@ -1968,7 +1987,7 @@ const REVIEWS = {
 <li>The expected count for a cell is \\(E = \\dfrac{\\text{row total} \\times \\text{column total}}{\\text{grand total}}\\).</li>
 <li>The degrees of freedom are \\(df = (r-1)(c-1)\\).</li>
 </ul>`,
-  14: `
+  13: `
 <p class="rv-h">Purpose and hypotheses</p>
 <ul>
 <li><strong>One-way analysis of variance (ANOVA)</strong> compares the means of \\(k \\ge 3\\) groups with a single test, which avoids the inflated error rate of running many separate two-sample tests.</li>
@@ -1988,7 +2007,7 @@ const REVIEWS = {
 <li>A large \\(F\\) value (larger than the F-critical value, or with a small p-value) is evidence against \\(H_0\\); reject \\(H_0\\) when the p-value is at most \\(\\alpha\\).</li>
 <li>A significant result shows that the means are not all equal, but it does not say which means differ; that requires follow-up comparisons.</li>
 </ul>`,
-  15: `
+  14: `
 <p class="rv-h">Simple linear regression</p>
 <ul>
 <li><strong>Simple linear regression</strong> fits the line \\(\\hat{y} = b_0 + b_1 x\\) to predict a response variable \\(y\\) from a single predictor \\(x\\); \\(\\hat{y}\\) is the predicted value of \\(y\\).</li>
@@ -2005,11 +2024,23 @@ const REVIEWS = {
 <ul>
 <li><strong>Multiple regression</strong> uses several predictors at once, \\(\\hat{y} = b_0 + b_1 x_1 + b_2 x_2 + \\cdots + b_p x_p\\).</li>
 <li>Because the predictors can be related to one another, each slope \\(b_i\\) is interpreted <strong>holding all other predictors constant</strong>: it is the average change in \\(\\hat{y}\\) for a one-unit increase in \\(x_i\\) when the other predictors do not change.</li>
-</ul>`
+</ul>`,
+  15: `<p class="rv-h">Control charts</p>
+  <ul>
+  <li>A <strong>control chart</strong> monitors a process over time by plotting a statistic against a center line and UCL/LCL bounds (typically \\(\\pm 3\\) standard deviations).
+  </li>
+  <li>\\(\\bar{x}\\)-chart: \\(UCL/LCL = \\bar{\\bar{x}} \\pm A_2\\bar{R}\\). 
+  <li>R-chart: \\(UCL = D_4\\bar{R}\\), \\(LCL = D_3\\bar{R}\\). 
+  </li>
+  <li>p-chart: \\(\\bar{p} \\pm 3\\sqrt{\\bar{p}(1-\\bar{p})/n}\\), bounded to \\([0,1]\\).
+  </li>
+  <li>Out-of-control signals: a point beyond the limits, or a nonrandom pattern such as a run or a trend.
+  </li>
+  </ul>`
 };
 
 /* =========================================================================
-   TOPICS — 15-topic layout. Cards read REVIEWS[n]; modal reads NOTES[n].
+   TOPICS — 15-topic layout. Cards read REVIEWS[n].
    ========================================================================= */
 const TOPICS = [
   { id:1,  title:"1. Experiment, Sample Space, Events & Counting Methods",
@@ -2017,32 +2048,32 @@ const TOPICS = [
   { id:2,  title:"2. Probability, Conditional Probability, Independence & Bayes' Formula",
     type:"calc", gen:gen2,  review:REVIEWS[2]},
   { id:3,  title:"3. Discrete Random Variables: pmf, Mean, SD, Binomial, Geometric & Poisson",
-    type:"calc", gen:gen5,  review:REVIEWS[5]},
+    type:"calc", gen:gen5,  review:REVIEWS[3]},
   { id:4,  title:"4. Continuous Random Variables: Mean, SD, Uniform, Normal & Exponential",
-    type:"calc", gen:gen6,  review:REVIEWS[6]},
+    type:"calc", gen:gen6,  review:REVIEWS[4]},
   { id:5,  title:"5. Joint Distributions, Covariance & Correlation",
-    type:"calc", gen:gen7,  review:REVIEWS[7]},
+    type:"calc", gen:gen7,  review:REVIEWS[5]},
   { id:6,  title:"6. Population & Sample, Descriptive Statistics & Charts",
-    type:"calc", gen:gen8,  review:REVIEWS[8]},
+    type:"calc", gen:gen8,  review:REVIEWS[6]},
   { id:7,  title:"7. Sampling Distribution, Bias & Standard Error",
     type:"calc", gen:gen7b, review:REVIEWS[7]},
   { id:8,  title:"8. Confidence Interval & Hypothesis Testing for a Single Proportion",
-    type:"calc", gen:gen9,  review:REVIEWS[9]},
+    type:"calc", gen:gen9,  review:REVIEWS[8]},
   { id:9,  title:"9. CI & Hypothesis Testing for the Difference Between Two Proportions",
-    type:"calc", gen:gen10, review:REVIEWS[10]},
+    type:"calc", gen:gen10, review:REVIEWS[9]},
   { id:10, title:"10. CI & Hypothesis Testing for a Single Population Mean",
-    type:"calc", gen:gen11, review:REVIEWS[11]},
+    type:"calc", gen:gen11, review:REVIEWS[10]},
   { id:11, title:"11. CI & Hypothesis Testing for the Difference Between Two Population Means",
-    type:"calc", gen:gen12, review:REVIEWS[12]},
+    type:"calc", gen:gen12, review:REVIEWS[11]},
   { id:12, title:"12. Chi-Square Tests: Goodness of Fit, Homogeneity & Independence",
-    type:"calc", gen:gen13, review:REVIEWS[13]},
+    type:"calc", gen:gen13, review:REVIEWS[12]},
   { id:13, title:"13. One-Way ANOVA and Multiple Testing",
-    type:"mc",   gen:gen14, review:REVIEWS[14]},
+    type:"mc",   gen:gen14, review:REVIEWS[13]},
   { id:14, title:"14. Simple & Multiple Linear Regression",
-    type:"mc",   gen:gen15, review:REVIEWS[15]},
+    type:"mc",   gen:gen15, review:REVIEWS[14]},
   { id:15, title:"15. Control Charts: x̄, R & p Chart",
     type:"mc",   gen:gen16,
-    review:`<p class="rv-h">Control charts</p><ul><li>A <strong>control chart</strong> monitors a process over time by plotting a statistic against a center line and UCL/LCL bounds (typically \\(\\pm 3\\) standard deviations).</li><li>\\(\\bar{x}\\)-chart: \\(UCL/LCL = \\bar{\\bar{x}} \\pm A_2\\bar{R}\\). R-chart: \\(UCL = D_4\\bar{R}\\), \\(LCL = D_3\\bar{R}\\). p-chart: \\(\\bar{p} \\pm 3\\sqrt{\\bar{p}(1-\\bar{p})/n}\\), bounded to \\([0,1]\\).</li><li>Out-of-control signals: a point beyond the limits, or a nonrandom pattern such as a run or a trend.</li></ul>` }
+    review:REVIEWS[15] }
 ];
 
     
