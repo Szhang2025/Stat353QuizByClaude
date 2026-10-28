@@ -2031,7 +2031,8 @@ const REVIEWS = {
   <ul>
   <li>A <strong>control chart</strong> monitors a process over time by plotting a statistic against a center line and UCL/LCL bounds (typically \\(\\pm 3\\) standard deviations).
   </li>
-  <li>\\(\\bar{x}\\)-chart: \\(UCL/LCL = \\bar{\\bar{x}} \\pm A_2\\bar{R}\\). 
+  <li>\\(\\bar{x}\\)-chart: \\(LCL = \\bar{\\bar{x}} - A_2\\bar{R}\\), \\(UCL = \\bar{\\bar{x}} + A_2\\bar{R}\\). 
+  </li>
   <li>R-chart: \\(UCL = D_4\\bar{R}\\), \\(LCL = D_3\\bar{R}\\). 
   </li>
   <li>p-chart: \\(\\bar{p} \\pm 3\\sqrt{\\bar{p}(1-\\bar{p})/n}\\), bounded to \\([0,1]\\).
