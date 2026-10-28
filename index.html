@@ -2011,261 +2011,41 @@ const REVIEWS = {
 </ul>`
 };
 
-// Merge the original Topic 2, 3, 4 reviews into the merged Topic 2.
-REVIEWS[2] = REVIEWS[2] + REVIEWS[3] + REVIEWS[4];
-
-/* =========================================================================
-   NOTES — "Examples & notation" modal content. Distinct from REVIEWS.
-   ========================================================================= */
-const NOTES = {
-  1: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>\\(S\\)</td><td>sample space (set of all possible outcomes)</td></tr>
-<tr><td>\\(A, B\\)</td><td>events (subsets of \\(S\\))</td></tr>
-<tr><td>\\(n!\\)</td><td>\\(n\\) factorial: \\(n(n-1)\\cdots 2\\cdot 1\\); \\(0! = 1\\)</td></tr>
-<tr><td>\\(P(n,r)\\)</td><td>permutations: \\(\\dfrac{n!}{(n-r)!}\\)</td></tr>
-<tr><td>\\(\\binom{n}{r}\\)</td><td>combinations: \\(\\dfrac{n!}{r!\\,(n-r)!}\\)</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example</div>
-<p>A pizzeria offers 3 crusts, 4 sauces, and 5 toppings, and a "build your own" pizza uses exactly one of each. How many different pizzas are possible?</p>
-<p><strong>Solution:</strong> By the multiplicative principle, \\(3 \\times 4 \\times 5 = 60\\) pizzas.</p></div>
-<div class="ex-block"><div class="ex-label">Worked example</div>
-<p>From a class of 8 students, how many unordered study groups of 3 can be formed? How many ways to assign 3 of those students to distinct offices (president, secretary, treasurer)?</p>
-<p><strong>Solution:</strong> Group (combination): \\(\\binom{8}{3} = 56\\). Offices (permutation): \\(P(8,3) = 336\\). The permutation count is larger because each group can be arranged into offices in \\(3! = 6\\) ways, and \\(56 \\times 6 = 336\\).</p></div>
-`,
-  2: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>\\(P(A)\\)</td><td>probability of event \\(A\\)</td></tr>
-<tr><td>\\(A'\\)</td><td>complement of \\(A\\)</td></tr>
-<tr><td>\\(A \\cup B\\)</td><td>"\\(A\\) or \\(B\\)" (union)</td></tr>
-<tr><td>\\(A \\cap B\\)</td><td>"\\(A\\) and \\(B\\)" (intersection)</td></tr>
-<tr><td>\\(P(A \\mid B)\\)</td><td>conditional probability of \\(A\\) given \\(B\\)</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example</div>
-<p>A fair 6-sided die is rolled once. \\(A\\) = "even", \\(B\\) = "at least 4". Find \\(P(A \\cup B)\\).</p>
-<p><strong>Solution:</strong> \\(A=\\{2,4,6\\}\\), \\(B=\\{4,5,6\\}\\), \\(A\\cap B=\\{4,6\\}\\). \\(P(A\\cup B) = 3/6 + 3/6 - 2/6 = 4/6 \\approx 0.667\\).</p></div>
-<div class="ex-block"><div class="ex-label">Worked example</div>
-<p>Draw a single card from a 52-card deck. What is \\(P(\\text{King} \\mid \\text{Face card})\\)?</p>
-<p><strong>Solution:</strong> 4 kings, 12 face cards. \\(P(\\text{King} \\mid \\text{Face}) = 4/12 = 1/3\\).</p></div>
-`,
-  3: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>disjoint</td><td>\\(A \\cap B = \\varnothing\\), so \\(P(A\\cap B) = 0\\)</td></tr>
-<tr><td>independent</td><td>\\(P(A\\cap B) = P(A)\\,P(B)\\)</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example (disjoint)</div>
-<p>A part is "minor defect" with probability 0.12 or "major defect" with probability 0.05; a part cannot be both. Find \\(P(\\text{some defect})\\).</p>
-<p><strong>Solution:</strong> The two events are disjoint, so add: \\(0.12 + 0.05 = 0.17\\).</p></div>
-<div class="ex-block"><div class="ex-label">Worked example (independent)</div>
-<p>Two independent machines each have a 10% failure chance on a given day. Find \\(P(\\text{at least one fails})\\).</p>
-<p><strong>Solution:</strong> \\(1 - (0.9)(0.9) = 0.19\\).</p></div>
-`,
-  4: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>\\(B_1,\\ldots,B_k\\)</td><td>a partition of \\(S\\): disjoint, union covers \\(S\\)</td></tr>
-<tr><td>total prob.</td><td>\\(P(A) = \\sum_i P(B_i)\\,P(A \\mid B_i)\\)</td></tr>
-<tr><td>Bayes</td><td>\\(P(B_j\\mid A) = \\dfrac{P(B_j)P(A\\mid B_j)}{P(A)}\\)</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example</div>
-<p>A shipment has parts from Supplier A (60%) and Supplier B (40%); 2% of A's parts and 5% of B's parts are defective. (a) Find the overall defect probability. (b) Given a defective part, find \\(P(\\text{from B})\\).</p>
-<p><strong>Solution (a):</strong> \\(P(D) = 0.60(0.02)+0.40(0.05) = 0.012+0.020 = 0.032\\).</p>
-<p><strong>Solution (b):</strong> \\(P(B\\mid D) = \\dfrac{0.020}{0.032} = 0.625\\).</p></div>
-`,
-  5: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>\\(p(x)\\)</td><td>PMF: \\(P(X=x)\\)</td></tr>
-<tr><td>\\(E(X)\\)</td><td>\\(\\sum x\\,p(x)\\)</td></tr>
-<tr><td>\\(\\operatorname{Var}(X)\\)</td><td>\\(E(X^2)-[E(X)]^2\\)</td></tr>
-<tr><td>Binomial\\((n,p)\\)</td><td>\\(P(X=k)=\\binom{n}{k}p^k(1-p)^{n-k}\\)</td></tr>
-<tr><td>Geometric\\((p)\\)</td><td>\\(P(X=k)=(1-p)^{k-1}p\\)</td></tr>
-<tr><td>Poisson\\((\\lambda)\\)</td><td>\\(P(X=k)=e^{-\\lambda}\\lambda^k/k!\\)</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example</div>
-<p>\\(X\\) has PMF \\(P(1)=0.2\\), \\(P(2)=0.5\\), \\(P(3)=0.3\\). Find \\(E(X)\\) and \\(E(2X+1)\\).</p>
-<p><strong>Solution:</strong> \\(E(X)=1(0.2)+2(0.5)+3(0.3)=2.1\\). \\(E(2X+1)=2(2.1)+1=5.2\\).</p></div>
-<div class="ex-block"><div class="ex-label">Worked example (Binomial)</div>
-<p>\\(X\\sim\\text{Binomial}(n{=}5,p{=}0.8)\\). Find \\(P(X=4)\\).</p>
-<p><strong>Solution:</strong> \\(\\binom{5}{4}(0.8)^4(0.2)^1 = 5(0.4096)(0.2) = 0.4096\\).</p></div>
-`,
-  6: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>\\(f(x)\\)</td><td>density function</td></tr>
-<tr><td>Uniform\\((a,b)\\)</td><td>\\(f(x)=\\dfrac{1}{b-a}\\) on \\([a,b]\\)</td></tr>
-<tr><td>Exponential\\((\\lambda)\\)</td><td>\\(f(x)=\\lambda e^{-\\lambda x}\\), \\(P(X>t)=e^{-\\lambda t}\\)</td></tr>
-<tr><td>Normal\\((\\mu,\\sigma)\\)</td><td>\\(z=(x-\\mu)/\\sigma\\)</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example (Uniform)</div>
-<p>Bus arrival gaps are Uniform on \\([0,10]\\) minutes. Find \\(P(2<X<5)\\) and \\(E(X)\\).</p>
-<p><strong>Solution:</strong> \\(P(2<X<5) = (5-2)/10 = 0.3\\). \\(E(X) = (0+10)/2 = 5\\).</p></div>
-<div class="ex-block"><div class="ex-label">Worked example (Normal)</div>
-<p>\\(X\\sim N(\\mu{=}70,\\sigma{=}8)\\). Find \\(P(X<82)\\).</p>
-<p><strong>Solution:</strong> \\(z = (82-70)/8 = 1.5\\). \\(P(Z<1.5)\\approx 0.9332\\).</p></div>
-`,
-  7: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>\\(p(x,y)\\)</td><td>joint PMF: \\(P(X{=}x,Y{=}y)\\)</td></tr>
-<tr><td>marginal \\(X\\)</td><td>\\(P(X{=}x)=\\sum_y p(x,y)\\)</td></tr>
-<tr><td>\\(\\operatorname{Cov}(X,Y)\\)</td><td>\\(E(XY)-E(X)E(Y)\\)</td></tr>
-<tr><td>\\(\\rho\\)</td><td>\\(\\operatorname{Cov}/(SD_X\\,SD_Y)\\), in \\([-1,1]\\)</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example</div>
-<p>Joint PMF: \\(p(0,0){=}0.3\\), \\(p(0,1){=}0.1\\), \\(p(1,0){=}0.2\\), \\(p(1,1){=}0.4\\). Find \\(E(X)\\), \\(E(Y)\\), \\(E(XY)\\), \\(\\operatorname{Cov}(X,Y)\\).</p>
-<p><strong>Solution:</strong> \\(P(X{=}0){=}0.4\\), \\(P(X{=}1){=}0.6\\), \\(E(X){=}0.6\\). \\(P(Y{=}0){=}0.5\\), \\(E(Y){=}0.5\\). \\(E(XY)=0.4\\). \\(\\operatorname{Cov}=0.4-(0.6)(0.5)=0.1\\).</p></div>
-`,
-  8: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>\\(\\mu,\\sigma\\)</td><td>population mean, population SD</td></tr>
-<tr><td>\\(\\bar{x},s\\)</td><td>sample mean, sample SD</td></tr>
-<tr><td>\\(Q_1,Q_3\\)</td><td>first and third quartiles</td></tr>
-<tr><td>\\(IQR\\)</td><td>\\(Q_3-Q_1\\)</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example</div>
-<p>Sample: \\(\\{4,7,7,9,12\\}\\). Find mean, median, and sample SD.</p>
-<p><strong>Solution:</strong> Mean \\(= 39/5 = 7.8\\). Median (odd \\(n\\)) \\(= 7\\). Squared deviations: 14.44, 0.64, 0.64, 1.44, 17.64; sum \\(=34.8\\). \\(s^2 = 34.8/4 = 8.7\\), \\(s \\approx 2.95\\).</p></div>
-`,
-  9: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>\\(\\hat{p}\\)</td><td>sample proportion \\(x/n\\)</td></tr>
-<tr><td>CI</td><td>\\(\\hat{p} \\pm z\\sqrt{\\hat{p}(1-\\hat{p})/n}\\)</td></tr>
-<tr><td>test stat</td><td>\\(z=\\dfrac{\\hat{p}-p_0}{\\sqrt{p_0(1-p_0)/n}}\\)</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example (CI)</div>
-<p>\\(n=200\\), \\(x=64\\). Build a 95% CI for \\(p\\).</p>
-<p><strong>Solution:</strong> \\(\\hat{p}=0.32\\). \\(E = 1.96\\sqrt{0.32(0.68)/200} \\approx 0.0646\\). CI: \\((0.255, 0.385)\\).</p></div>
-<div class="ex-block"><div class="ex-label">Worked example (test)</div>
-<p>Test \\(H_0: p=0.5\\) vs \\(H_1: p\\neq 0.5\\) with \\(n=150\\), \\(x=87\\).</p>
-<p><strong>Solution:</strong> \\(\\hat{p}=0.58\\). \\(z = (0.58-0.5)/\\sqrt{0.25/150} \\approx 1.96\\). Two-sided p-value \\(\\approx 0.05\\).</p></div>
-`,
-  10: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>\\(\\hat{p}_1,\\hat{p}_2\\)</td><td>two sample proportions</td></tr>
-<tr><td>CI</td><td>unpooled standard error</td></tr>
-<tr><td>test</td><td>pooled \\(\\hat{p} = \\dfrac{x_1+x_2}{n_1+n_2}\\)</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example</div>
-<p>Sample 1: \\(n_1=100\\), \\(x_1=40\\). Sample 2: \\(n_2=120\\), \\(x_2=36\\). Test \\(H_0:p_1=p_2\\).</p>
-<p><strong>Solution:</strong> \\(\\hat{p}_1=0.40\\), \\(\\hat{p}_2=0.30\\). Pooled \\(\\hat{p}=76/220 \\approx 0.3455\\). \\(SE_{pool}\\approx 0.0644\\). \\(z \\approx 1.55\\). Not significant at \\(\\alpha=0.05\\).</p></div>
-`,
-  11: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>\\(t\\)</td><td>t critical value, \\(df=n-1\\)</td></tr>
-<tr><td>CI</td><td>\\(\\bar{x} \\pm t\\,s/\\sqrt{n}\\)</td></tr>
-<tr><td>test stat</td><td>\\(t = \\dfrac{\\bar{x}-\\mu_0}{s/\\sqrt{n}}\\)</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example (CI)</div>
-<p>\\(\\bar{x}=52\\), \\(s=9\\), \\(n=16\\). Build a 95% CI.</p>
-<p><strong>Solution:</strong> \\(df=15\\), \\(t_{0.025,15}\\approx 2.131\\). \\(ME = 2.131 \\times 9/4 \\approx 4.795\\). CI: \\((47.2, 56.8)\\).</p></div>
-<div class="ex-block"><div class="ex-label">Worked example (test)</div>
-<p>Same sample, test \\(H_0:\\mu=50\\).</p>
-<p><strong>Solution:</strong> \\(t = 2/(9/4) \\approx 0.889\\). Compare to \\(t_{0.025,15}=2.131\\). Fail to reject.</p></div>
-`,
-  12: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>Welch SE</td><td>\\(\\sqrt{s_1^2/n_1 + s_2^2/n_2}\\)</td></tr>
-<tr><td>Welch df</td><td>Welch–Satterthwaite formula, rounded to nearest integer</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example</div>
-<p>Group 1: \\(\\bar{x}_1=80\\), \\(s_1=10\\), \\(n_1=12\\). Group 2: \\(\\bar{x}_2=75\\), \\(s_2=6\\), \\(n_2=15\\). Test \\(H_0:\\mu_1=\\mu_2\\).</p>
-<p><strong>Solution:</strong> \\(SE = \\sqrt{100/12 + 36/15} \\approx 3.28\\). \\(t = 5/3.28 \\approx 1.53\\). Welch df \\(\\approx 17\\). Compare to \\(t_{0.025,17}\\approx 2.11\\). Fail to reject.</p></div>
-`,
-  13: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>\\(O, E\\)</td><td>observed and expected counts</td></tr>
-<tr><td>\\(\\chi^2\\)</td><td>\\(\\sum (O-E)^2/E\\)</td></tr>
-<tr><td>GOF df</td><td>\\(k-1\\)</td></tr>
-<tr><td>independence df</td><td>\\((r-1)(c-1)\\)</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example (GOF)</div>
-<p>Die rolled 60 times; counts \\(\\{8,12,9,11,10,10\\}\\). Test fairness.</p>
-<p><strong>Solution:</strong> \\(E=10\\) each. \\(\\chi^2 = 0.4+0.4+0.1+0.1+0+0 = 1.0\\), \\(df=5\\). Small \\(\\chi^2\\) — consistent with a fair die.</p></div>
-<div class="ex-block"><div class="ex-label">Worked example (independence)</div>
-<p>\\(2\\times2\\) table: row totals 50, 50; column totals 40, 60; grand 100. Find \\(E\\) for row 1, col 1.</p>
-<p><strong>Solution:</strong> \\(E = (50)(40)/100 = 20\\).</p></div>
-`,
-  14: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>\\(k\\)</td><td>number of groups</td></tr>
-<tr><td>\\(SST=SSTr+SSE\\)</td><td>total, treatment, error sums of squares</td></tr>
-<tr><td>\\(MSTr, MSE\\)</td><td>mean squares (divide SS by df)</td></tr>
-<tr><td>\\(F\\)</td><td>\\(MSTr/MSE\\)</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example</div>
-<p>\\(k=4\\), \\(n=24\\). \\(SST=300\\), \\(SSE=180\\). Find \\(df\\)'s, \\(SSTr\\), \\(MSTr\\), \\(MSE\\), \\(F\\).</p>
-<p><strong>Solution:</strong> \\(df_T=3\\), \\(df_E=20\\). \\(SSTr=120\\). \\(MSTr=40\\), \\(MSE=9\\), \\(F\\approx 4.44\\).</p></div>
-`,
-  15: `
-<p class="rv-h">Notation</p>
-<table class="notation-table">
-<tr><td>\\(b_0,b_1\\)</td><td>intercept, slope of \\(\\hat{y}=b_0+b_1 x\\)</td></tr>
-<tr><td>residual</td><td>observed \\(y\\) − predicted \\(\\hat{y}\\)</td></tr>
-<tr><td>\\(R^2\\)</td><td>proportion of variability in \\(y\\) explained (0 to 1)</td></tr>
-</table>
-<div class="ex-block"><div class="ex-label">Worked example</div>
-<p>Fitted line \\(\\hat{y}=5+2.5x\\). At \\(x=6\\), observed \\(y=21\\). Find predicted and residual.</p>
-<p><strong>Solution:</strong> \\(\\hat{y}=5+2.5(6)=20\\). Residual \\(= 21-20=1\\) (model under-predicted slightly).</p></div>
-`
-};
-
 /* =========================================================================
    TOPICS — 15-topic layout. Cards read REVIEWS[n]; modal reads NOTES[n].
    ========================================================================= */
 const TOPICS = [
   { id:1,  title:"1. Experiment, Sample Space, Events & Counting Methods",
-    type:"calc", gen:gen1,  review:REVIEWS[1],  notes:NOTES[1] },
+    type:"calc", gen:gen1,  review:REVIEWS[1]},
   { id:2,  title:"2. Probability, Conditional Probability, Independence & Bayes' Formula",
-    type:"calc", gen:gen2,  review:REVIEWS[2],  notes:NOTES[2] },
+    type:"calc", gen:gen2,  review:REVIEWS[2]},
   { id:3,  title:"3. Discrete Random Variables: pmf, Mean, SD, Binomial, Geometric & Poisson",
-    type:"calc", gen:gen5,  review:REVIEWS[5],  notes:NOTES[5] },
+    type:"calc", gen:gen5,  review:REVIEWS[5]},
   { id:4,  title:"4. Continuous Random Variables: Mean, SD, Uniform, Normal & Exponential",
-    type:"calc", gen:gen6,  review:REVIEWS[6],  notes:NOTES[6] },
+    type:"calc", gen:gen6,  review:REVIEWS[6]},
   { id:5,  title:"5. Joint Distributions, Covariance & Correlation",
-    type:"calc", gen:gen7,  review:REVIEWS[7],  notes:NOTES[7] },
+    type:"calc", gen:gen7,  review:REVIEWS[7]},
   { id:6,  title:"6. Population & Sample, Descriptive Statistics & Charts",
-    type:"calc", gen:gen8,  review:REVIEWS[8],  notes:NOTES[8] },
+    type:"calc", gen:gen8,  review:REVIEWS[8]},
   { id:7,  title:"7. Sampling Distribution, Bias & Standard Error",
-    type:"calc", gen:gen7b, review:REVIEWS[7],  notes:NOTES[7] },
+    type:"calc", gen:gen7b, review:REVIEWS[7]},
   { id:8,  title:"8. Confidence Interval & Hypothesis Testing for a Single Proportion",
-    type:"calc", gen:gen9,  review:REVIEWS[9],  notes:NOTES[9] },
+    type:"calc", gen:gen9,  review:REVIEWS[9]},
   { id:9,  title:"9. CI & Hypothesis Testing for the Difference Between Two Proportions",
-    type:"calc", gen:gen10, review:REVIEWS[10], notes:NOTES[10] },
+    type:"calc", gen:gen10, review:REVIEWS[10]},
   { id:10, title:"10. CI & Hypothesis Testing for a Single Population Mean",
-    type:"calc", gen:gen11, review:REVIEWS[11], notes:NOTES[11] },
+    type:"calc", gen:gen11, review:REVIEWS[11]},
   { id:11, title:"11. CI & Hypothesis Testing for the Difference Between Two Population Means",
-    type:"calc", gen:gen12, review:REVIEWS[12], notes:NOTES[12] },
+    type:"calc", gen:gen12, review:REVIEWS[12]},
   { id:12, title:"12. Chi-Square Tests: Goodness of Fit, Homogeneity & Independence",
-    type:"calc", gen:gen13, review:REVIEWS[13], notes:NOTES[13] },
+    type:"calc", gen:gen13, review:REVIEWS[13]},
   { id:13, title:"13. One-Way ANOVA and Multiple Testing",
-    type:"mc",   gen:gen14, review:REVIEWS[14], notes:NOTES[14] },
+    type:"mc",   gen:gen14, review:REVIEWS[14]},
   { id:14, title:"14. Simple & Multiple Linear Regression",
-    type:"mc",   gen:gen15, review:REVIEWS[15], notes:NOTES[15] },
+    type:"mc",   gen:gen15, review:REVIEWS[15]},
   { id:15, title:"15. Control Charts: x̄, R & p Chart",
     type:"mc",   gen:gen16,
-    review:`<p class="rv-h">Control charts</p><ul><li>A <strong>control chart</strong> monitors a process over time by plotting a statistic against a center line and UCL/LCL bounds (typically \\(\\pm 3\\) standard deviations).</li><li>\\(\\bar{x}\\)-chart: \\(UCL/LCL = \\bar{\\bar{x}} \\pm A_2\\bar{R}\\). R-chart: \\(UCL = D_4\\bar{R}\\), \\(LCL = D_3\\bar{R}\\). p-chart: \\(\\bar{p} \\pm 3\\sqrt{\\bar{p}(1-\\bar{p})/n}\\), bounded to \\([0,1]\\).</li><li>Out-of-control signals: a point beyond the limits, or a nonrandom pattern such as a run or a trend.</li></ul>`,
-    notes:`<p class="rv-h">Notation</p><table class="notation-table">
-<tr><td>\\(\\bar{\\bar{x}}\\)</td><td>grand mean (average of subgroup means)</td></tr>
-<tr><td>\\(\\bar{R}\\)</td><td>average subgroup range</td></tr>
-<tr><td>\\(A_2, D_3, D_4\\)</td><td>control-chart constants depending on subgroup size \\(n\\)</td></tr>
-<tr><td>\\(\\bar{p}\\)</td><td>overall proportion nonconforming</td></tr></table>
-<div class="ex-block"><div class="ex-label">Worked example (x-bar chart)</div>
-<p>\\(n = 5\\), \\(\\bar{\\bar{x}} = 50\\), \\(\\bar{R} = 6\\), \\(A_2 = 0.577\\). Find the control limits.</p>
-<p><strong>Solution:</strong> \\(UCL = 50 + 0.577(6) = 53.46\\), \\(LCL = 50 - 3.46 = 46.54\\).</p></div>
-<div class="ex-block"><div class="ex-label">Worked example (p-chart)</div>
-<p>\\(n = 100\\), \\(\\bar{p} = 0.04\\). Find the control limits.</p>
-<p><strong>Solution:</strong> \\(\\sigma_{\\hat p} = \\sqrt{0.04 \\cdot 0.96 / 100} \\approx 0.0196\\). \\(UCL = 0.04 + 3(0.0196) \\approx 0.0988\\), \\(LCL = \\max(0, 0.04 - 0.0588) = 0\\).</p></div>` }
+    review:`<p class="rv-h">Control charts</p><ul><li>A <strong>control chart</strong> monitors a process over time by plotting a statistic against a center line and UCL/LCL bounds (typically \\(\\pm 3\\) standard deviations).</li><li>\\(\\bar{x}\\)-chart: \\(UCL/LCL = \\bar{\\bar{x}} \\pm A_2\\bar{R}\\). R-chart: \\(UCL = D_4\\bar{R}\\), \\(LCL = D_3\\bar{R}\\). p-chart: \\(\\bar{p} \\pm 3\\sqrt{\\bar{p}(1-\\bar{p})/n}\\), bounded to \\([0,1]\\).</li><li>Out-of-control signals: a point beyond the limits, or a nonrandom pattern such as a run or a trend.</li></ul>` }
 ];
 
     
