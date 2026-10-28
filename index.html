@@ -397,25 +397,25 @@ function gen2(){
 <p><strong>Sanity check.</strong> Sums near 7 are most likely (6 ways), and sums near 2 or 12 are least likely (1 way). Our value of ${count} ways fits that pattern for sum = ${s}.</p>`
   });
 
-  let pA=rf(0.2,0.5,2), pB=rf(0.15,0.4,2); let capMin=Math.min(pA,pB); let pAB=rf(0.02, Math.max(0.03,capMin*0.6),2);
+  let pA0=rf(0.2,0.5,2), pB0=rf(0.15,0.4,2); let capMin=Math.min(pA,pB); let pAB=rf(0.02, Math.max(0.03,capMin*0.6),2);
   probs.push({
-    q:`For two events A and B, \\(P(A) = ${pA}\\), \\(P(B) = ${pB}\\), and \\(P(A \\cap B) = ${pAB}\\). Find \\(P(A \\cup B)\\).`,
-    a: rnd(pA+pB-pAB,4), tol:0.005,
+    q:`For two events A and B, \\(P(A) = ${pA0}\\), \\(P(B) = ${pB0}\\), and \\(P(A \\cap B) = ${pAB}\\). Find \\(P(A \\cup B)\\).`,
+    a: rnd(pA0+pB0-pAB,4), tol:0.005,
     sol:`<p><strong>Step 1 — pick the right formula.</strong> We want the probability of the union of two events, so the general addition rule applies: \\( P(A \\cup B) = P(A) + P(B) - P(A \\cap B) \\).</p>
 <p><strong>Step 2 — understand why we subtract \\( P(A \\cap B) \\).</strong> If we simply added \\( P(A) \\) and \\( P(B) \\), outcomes belonging to both events would be counted twice. Subtracting \\( P(A \\cap B) \\) once corrects for this double count.</p>
 <p><strong>Step 3 — plug in the numbers.</strong></p>
-<p>\\( P(A \\cup B) = ${pA} + ${pB} - ${pAB} = ${rnd(pA+pB-pAB,4)} \\).</p>
-<p><strong>Sanity check.</strong> The result is between \\( \\max(P(A), P(B)) = ${Math.max(pA,pB)} \\) and 1, as the union must be at least as likely as either event alone.</p>`
+<p>\\( P(A \\cup B) = ${pA0} + ${pB0} - ${pAB} = ${rnd(pA0+pB0-pAB,4)} \\).</p>
+<p><strong>Sanity check.</strong> The result is between \\( \\max(P(A), P(B)) = ${Math.max(pA0,pB0)} \\) and 1, as the union must be at least as likely as either event alone.</p>`
   });
 
-  let pA2=rf(0.1,0.8,2);
+  let pA20=rf(0.1,0.8,2);
   probs.push({
-    q:`If \\(P(A) = ${pA2}\\), what is \\(P(A')\\), the probability of the complement of A?`,
-    a: rnd(1-pA2,4), tol:0.005,
+    q:`If \\(P(A) = ${pA20}\\), what is \\(P(A')\\), the probability of the complement of A?`,
+    a: rnd(1-pA20,4), tol:0.005,
     sol:`<p><strong>Step 1 — recall the complement rule.</strong> The event \\( A \\) and its complement \\( A' \\) (everything not in \\( A \\)) together cover the entire sample space and cannot both happen. Therefore \\( P(A) + P(A') = 1 \\).</p>
 <p><strong>Step 2 — solve for \\( P(A') \\).</strong></p>
-<p>\\( P(A') = 1 - P(A) = 1 - ${pA2} = ${rnd(1-pA2,4)} \\).</p>
-<p><strong>Sanity check.</strong> The two probabilities should add to 1. \\( ${pA2} + ${rnd(1-pA2,4)} = 1 \\), confirming the answer is correct.</p>`
+<p>\\( P(A') = 1 - P(A) = 1 - ${pA20} = ${rnd(1-pA20,4)} \\).</p>
+<p><strong>Sanity check.</strong> The two probabilities should add to 1. \\( ${pA20} + ${rnd(1-pA20,4)} = 1 \\), confirming the answer is correct.</p>`
   });
 
   let counts=[ri(10,20),ri(10,20),ri(10,20)];
