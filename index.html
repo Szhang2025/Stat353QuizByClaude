@@ -82,7 +82,7 @@
   .review-card li{margin:0 0 12px 0;}
   .review-card li:last-child{margin-bottom:0;}
   .review-card strong{color:var(--ink);}
-  .problems-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+  .s-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
   .problems-header h3{font-size:1.05rem; font-family:'Inter',sans-serif; font-weight:700; color:var(--ink);}
   .problem-card{background:var(--paper-card); border:1px solid var(--line); border-radius:var(--radius); padding:18px 22px; margin-bottom:14px;}
   .problem-card .pnum{font-family:'IBM Plex Mono',monospace; font-size:0.75rem; color:var(--accent); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px;}
@@ -2264,7 +2264,7 @@ function renderProblems(){
     card.className = 'problem-card';
     if(topic.type === 'mc'){
       card.innerHTML = `
-        <div class="pnum">Problem ${idx+1} of 5</div>
+        <div class="pnum">Problem ${idx+1}</div>
         <div class="qtext">${p.q}</div>
         <div class="mc-choices" id="mc-${idx}"></div>
         <div class="solution-box" id="sol-${idx}">
@@ -2288,7 +2288,7 @@ function renderProblems(){
       });
     } else {
       card.innerHTML = `
-        <div class="pnum">Problem ${idx+1} of 5</div>
+        <div class="pnum">Problem ${idx+1}</div>
         <div class="qtext">${p.q}</div>
         <div class="answer-row">
           <input type="text" id="ans-${idx}" placeholder="Your answer" inputmode="decimal">
