@@ -397,7 +397,7 @@ function gen2(){
 <p><strong>Sanity check.</strong> Sums near 7 are most likely (6 ways), and sums near 2 or 12 are least likely (1 way). Our value of ${count} ways fits that pattern for sum = ${s}.</p>`
   });
 
-  let pA0=rf(0.2,0.5,2), pB0=rf(0.15,0.4,2); let capMin=Math.min(pA,pB); let pAB=rf(0.02, Math.max(0.03,capMin*0.6),2);
+  let pA0=rf(0.2,0.5,2), pB0=rf(0.15,0.4,2); let capMin=Math.min(pA0,pB0); let pAB=rf(0.02, Math.max(0.03,capMin*0.6),2);
   probs.push({
     q:`For two events A and B, \\(P(A) = ${pA0}\\), \\(P(B) = ${pB0}\\), and \\(P(A \\cap B) = ${pAB}\\). Find \\(P(A \\cup B)\\).`,
     a: rnd(pA0+pB0-pAB,4), tol:0.005,
