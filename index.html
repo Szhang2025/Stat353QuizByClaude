@@ -1871,7 +1871,7 @@ const REVIEWS = {
 <p class="rv-h">Measures of center and spread</p>
 <ul>
 <li>The <strong>sample mean</strong> is \\(\\bar{x} = \\dfrac{\\sum x_i}{n}\\), and the <strong>median</strong> is the middle value of the sorted data (or the average of the two middle values when \\(n\\) is even); the median is less affected by extreme values than the mean.</li>
-<li>The <strong>sample standard deviation</strong> is \\(s = \\sqrt{\\dfrac{\\sum (x_i - \\bar{x})^2}{n-1}}\\), which measures the typical distance of the observations from the mean.</li>
+<li>The <strong>sample standard deviation</strong> is \\(s = \\sqrt{\\dfrac{\\sum (x_i - \\bar{x})^2}{n-1}}\\), which measures the typical distance of the observations from the mean. Here, \\(s = \\sum (x_i - \\bar{x})^2\\) is called the total sum of squares of the data.</li>
 <li>The <strong>range</strong> is the maximum minus the minimum, and the <strong>interquartile range</strong> is \\(IQR = Q_3 - Q_1\\), the spread of the middle half of the data.</li>
 </ul>
 <p class="rv-h">Five-number summary and graphics</p>
@@ -1994,7 +1994,7 @@ const REVIEWS = {
 </ul>
 <p class="rv-h">Partitioning the variability</p>
 <ul>
-<li>The <strong>total sum of squares</strong> splits into two parts, \\(SST = SSTr + SSE\\).</li>
+<li>The <strong>total sum of squares</strong> (refer to Topic 6) splits into two parts, \\(SST = SSTr + SSE\\).</li>
 <li>The <strong>treatment sum of squares</strong> \\(SSTr\\) measures the variability between the group means, and the <strong>error sum of squares</strong> \\(SSE\\) measures the variability of the observations within their groups.</li>
 <li>The degrees of freedom are \\(df(\\text{treatment}) = k-1\\), \\(df(\\text{error}) = n-k\\), and \\(df(\\text{total}) = n-1\\), where \\(n\\) is the total number of observations; the first two add up to the third.</li>
 <li>The <strong>mean squares</strong> divide each sum of squares by its degrees of freedom: \\(MSTr = \\dfrac{SSTr}{k-1}\\) and \\(MSE = \\dfrac{SSE}{n-k}\\).</li>
