@@ -1966,10 +1966,10 @@ const REVIEWS = {
 <li>To test \\(H_0: \\mu_1 = \\mu_2\\) against \\(H_1: \\mu_1 \\ne \\mu_2\\) (or a one-sided alternative), use \\(t = \\dfrac{\\bar{x}_1 - \\bar{x}_2}{SE}\\) with the Welch degrees of freedom.</li>
 <li>Reject \\(H_0\\) when the p-value is at most the significance level \\(\\alpha\\), or equivalently when \\(|t|\\) exceeds the t-critical value.</li>
 </ul>`,
-  12: `
+  12: `  
 <p class="rv-h">The chi-square statistic</p>
 <ul>
-<li>Both chi-square tests compare <strong>observed counts</strong> \\(O\\) with the <strong>expected counts</strong> \\(E\\) that would occur if the null hypothesis were true, using the statistic \\(\\chi^2 = \\displaystyle\\sum \\dfrac{(O-E)^2}{E}\\), summed over all categories or cells.</li>
+<li>Chi-square tests compare <strong>observed counts</strong> \\(O\\) with the <strong>expected counts</strong> \\(E\\) that would occur if the null hypothesis were true, using the statistic \\(\\chi^2 = \\displaystyle\\sum \\dfrac{(O-E)^2}{E}\\), summed over all categories or cells.</li>
 <li>The statistic is large when the observed counts differ greatly from the expected counts, so the test is right-tailed: reject \\(H_0\\) when \\(\\chi^2\\) exceeds the chi-square critical value (or when the p-value is at most \\(\\alpha\\)).</li>
 <li>The approximation is reliable when every expected count is at least 5.</li>
 </ul>
@@ -1984,7 +1984,39 @@ const REVIEWS = {
 <li>The <strong>test of independence</strong> uses a contingency table with \\(r\\) rows and \\(c\\) columns to ask whether two categorical variables are related; \\(H_0\\) states that they are independent, and \\(H_1\\) states that they are associated.</li>
 <li>The expected count for a cell is \\(E = \\dfrac{\\text{row total} \\times \\text{column total}}{\\text{grand total}}\\).</li>
 <li>The degrees of freedom are \\(df = (r-1)(c-1)\\).</li>
-</ul>`,
+</ul>
+<p class="rv-h">Test of homogeneity</p>
+<ul>
+<li>The <strong>test of homogeneity</strong> checks whether the frequency distribution of a single categorical variable is the same across two or more different populations or groups. Just like the test of independence, it uses a contingency table with \\(r\\) rows (groups) and \\(c\\) columns (categories) to ask whether the categorical variable has the same distribution across groups; \\(H_0\\) states that the distribution of the categorical variable is the same across groups, and \\(H_1\\) states that the distribution is different.</li>
+<li>The expected count for a cell is \\(E = \\dfrac{\\text{row total} \\times \\text{column total}}{\\text{grand total}}\\).</li>
+<li>The degrees of freedom are \\(df = (r-1)(c-1)\\).</li>
+</ul>
+<p class="rv-h">Difference between the test of independence and homogeneity</p>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-family: sans-serif; font-size: 16px; text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e0e0e0;">
+  <thead>
+    <tr style="background-color: #f4f6f8; border-bottom: 2px solid #d0d0d0;">
+      <th style="padding: 12px 15px; font-weight: bold; color: #333;">Feature</th>
+      <th style="padding: 12px 15px; font-weight: bold; color: #333;">Test of Homogeneity</th>
+      <th style="padding: 12px 15px; font-weight: bold; color: #333;">Test of Independence</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid #e0e0e0;">
+      <td style="padding: 12px 15px; font-weight: bold; color: #555; background-color: #fafafa; width: 20%;">Core Question</td>
+      <td style="padding: 12px 15px; color: #333;">Are the proportions/distributions the same across different groups?</td>
+      <td style="padding: 12px 15px; color: #333;">Are two variables related or associated?</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #e0e0e0;">
+      <td style="padding: 12px 15px; font-weight: bold; color: #555; background-color: #fafafa;">Sampling Design</td>
+      <td style="padding: 12px 15px; color: #333;"><strong>Multiple samples</strong> (sampled separately from each population/group)</td>
+      <td style="padding: 12px 15px; color: #333;"><strong>Single sample</strong> (one group classified by two variables)</td>
+    </tr>
+    <tr>
+      <td style="padding: 12px 15px; font-weight: bold; color: #555; background-color: #fafafa;">Calculation</td>
+      <td style="padding: 12px 15px; color: #333;" colspan="2; text-align: center;">Both tests use the exact same mathematical formulas for expected cell counts and the final chi-square test statistic. The difference is entirely in the sampling framework.</td>
+    </tr>
+  </tbody>
+</table>`,
   13: `
 <p class="rv-h">Purpose and hypotheses</p>
 <ul>
